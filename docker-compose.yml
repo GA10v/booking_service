@@ -21,6 +21,22 @@ services:
         gelf-address: udp://127.0.0.1:5044
         tag: nginx
 
+  postgres_:
+    container_name: postgres_
+    image: postgres:15.2-alpine3.17
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - .env
+    networks:
+      - project-network
+    healthcheck:
+      test: [ "CMD-SHELL", "su postgres", "&&", "pg_isready" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
 volumes:
   
 
