@@ -38,7 +38,7 @@ services:
       retries: 10
 
 volumes:
-  
+
 
 networks:
   project-network:
