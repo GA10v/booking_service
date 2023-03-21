@@ -2,7 +2,7 @@ name: pre-commit
 
 on:
   push:
-    branches: [main, git_action]
+    branches: [main,]
   pull_request:
     branches: [main]
 

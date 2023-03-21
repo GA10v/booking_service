@@ -1,0 +1,45 @@
+version: '3.9'
+
+services:
+  nginx:
+    container_name: nginx
+    image: nginx:1.23
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/configs:/etc/nginx/conf.d:ro
+    depends_on:
+      # notification_api:
+      #   condition: service_started
+    ports:
+      - 8080:8080
+    restart: always
+    networks:
+      - project-network
+    logging:
+      driver: gelf
+      options:
+        gelf-address: udp://127.0.0.1:5044
+        tag: nginx
+
+  postgres_:
+    container_name: postgres_
+    image: postgres:15.2-alpine3.17
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - .env
+    networks:
+      - project-network
+    healthcheck:
+      test: [ "CMD-SHELL", "su postgres", "&&", "pg_isready" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+
+
+networks:
+  project-network:
+    external: true
