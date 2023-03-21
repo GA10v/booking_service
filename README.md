@@ -1,3 +1,5 @@
+[![Build Status](https://github.com/GA10v/graduate_work/actions/workflows/checks.yml/badge.svg?branch=main)](https://github.com/GA10v/graduate_work/actions/workflows/checks.yml)
+
 # Проектная работа: диплом
 
 У вас будет один репозиторий на все 4 недели работы над дипломным проектом.
