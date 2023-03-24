@@ -5,3 +5,9 @@ services:
     ports:
       - 5432:5432
 
+  booking_api:
+    ports:
+      - 8080:8080
+    # expose:
+    #   - 8080
+
