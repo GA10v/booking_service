@@ -114,7 +114,43 @@
 
 ## Модели
 
+### Announcement
+
+class AnnounceStatus(str, enum):
+Created = 0
+Closed = 1
+Done = 2
+
+- id: str | uuid (announcement_id)
+- status: AnnouncetStatus (статус объявления, необходимо для сортировки + [?]нотификация)
+- title: str (название объявления)
+- description: str (описание, условия, цена)
+- movie_id: str | uuid
+- author_id: str | uuid
+- sub_only: bool (флаг приватности, необходим для фильтрации)
+- is_free: bool (флаг для фильтрации)
+- ticket_count: int (количество участников)
+- event_time: datetime (дата встречи)
+- event_location: str (место встречи)
+- created: datetime
+- modified: datetime
+- [?] guest_list: list[str]
+- [*] rating: float
+
+### Booking
+
 ...
+
+## API
+
+### Announcement
+
+- POST /api/v1/announcement/{movie_id} - создание объявления
+- PUT /api/v1/announcement/{announcement_id} - изменение объявления
+- GET /api/v1/announcement/{announcement_id} - получить подробную информацию из объявления
+- GET /api/v1/announcements/{movie_id} - получить список объявлений конкретного фильма
+- GET /api/v1/announcements - получить весь список объявлений
+- DELETE /api/v1/announcement/{announcement_id}
 
 ## Я.Практика
 
