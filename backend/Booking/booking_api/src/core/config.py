@@ -5,7 +5,7 @@ from pydantic import BaseSettings
 
 class BaseConfig(BaseSettings):
     class Config:
-        env_file = Path(Path(__file__).parent.parent.parent.parent.parent, 'env')
+        env_file = Path(Path(__file__).parent.parent.parent.parent.parent.parent, 'env')
         env_file_encoding = 'utf-8'
 
 
@@ -44,12 +44,22 @@ class PostgresSettings(BaseConfig):
         env_prefix = 'GRADUTE_POSTGRES_'
 
 
+class FastapiSetting(BaseConfig):
+    HOST: str = 'localhost'
+    PORT: int = 8080
+    API_PREFIX: str = '/app/v1'
+
+    class Config:
+        env_prefix = 'GRADUTE_FASTAPI_'
+
+
 class ProjectSettings(BaseConfig):
     PROJECT_NAME: str = 'Graduate_work'
     BASE_DIR = Path(__file__).parent.parent
     logging: LogingSettings = LogingSettings()
     debug: DebugSettings = DebugSettings()
     postgres: PostgresSettings = PostgresSettings()
+    fastapi: FastapiSetting = FastapiSetting()
 
 
 settings = ProjectSettings()
