@@ -16,3 +16,12 @@
    `$ pre-commit install`
 3. Создать внешнюю сеть "project-network" командой:
    `$ docker network create 'project-network'`
+
+## Запуск
+
+1. Установить зависимости командой
+   `$ poetry install`
+2. Создать файл конфигурации `.env` в корне проекта и заполнить его согласно `example.env`
+3. Запустить API командой:
+   `$ python3 backend/Booking/booking_api/src/main.py`
+4. Перейти к документации API по url: `http://localhost:8080/api/openapi`
