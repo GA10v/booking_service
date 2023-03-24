@@ -41,7 +41,7 @@ class PostgresSettings(BaseConfig):
         return f'postgresql+asyncpg://{self.USER}:{self.PASSWORD}@{self.HOST}:{self.PORT}/{self.DB}'
 
     class Config:
-        env_prefix = 'GRADUTE_POSTGRES_'
+        env_prefix = 'POSTGRES_'
 
 
 class FastapiSetting(BaseConfig):
@@ -50,7 +50,7 @@ class FastapiSetting(BaseConfig):
     API_PREFIX: str = '/app/v1'
 
     class Config:
-        env_prefix = 'GRADUTE_FASTAPI_'
+        env_prefix = 'FASTAPI_'
 
 
 class ProjectSettings(BaseConfig):
