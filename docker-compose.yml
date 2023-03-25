@@ -54,7 +54,7 @@ services:
       driver: gelf
       options:
         gelf-address: udp://127.0.0.1:5044
-        tag: BOOKING_API
+        tag: booking_api
 
 volumes:
   postgres_data:

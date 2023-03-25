@@ -1,11 +1,16 @@
 import logging
 
 import uvicorn
+from fastapi import FastAPI
+from fastapi.responses import ORJSONResponse
+
 from api.v1 import test
 from core.config import settings
 from core.logger import LOGGING
-from fastapi import FastAPI
-from fastapi.responses import ORJSONResponse
+from middleware.logger import logging_middleware
+from utils.sentry import init_sentry
+
+init_sentry()
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -13,6 +18,9 @@ app = FastAPI(
     openapi_url='/api/openapi.json',
     default_response_class=ORJSONResponse,
 )
+
+# middleware
+logging_middleware(app=app)
 
 
 @app.on_event('startup')

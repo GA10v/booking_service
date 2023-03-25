@@ -17,6 +17,13 @@
 3. Создать внешнюю сеть "project-network" командой:
    `$ docker network create 'project-network'`
 
+## Запуск ELK
+
+1. Создать внешнюю сеть "project-network" командой:
+   `$ docker network create 'project-network'`
+2. Зпустить контейнер командой
+   `$ cd ELK && docker-compose up`
+
 ## Запуск локально
 
 1. Установить зависимости командой
@@ -34,3 +41,9 @@
 3. Запустить контейнер командой
    `$ docker-compose up`
 4. Перейти к документации API по url: `http://localhost:8080/api/openapi`
+
+### Запуск тестов
+
+1. Создать файл конфигурации `.env` в корне проекта и заполнить его согласно `example.env`
+2. Запустить контейнер командой
+   `$ docker-compose -f docker-compose.test.yml up`
