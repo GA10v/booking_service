@@ -13,6 +13,7 @@ fastapi = "^0.95.0"
 uvicorn = "^0.21.1"
 orjson = "^3.8.8"
 asyncio = "^3.4.3"
+pyjwt = "^2.6.0"
 
 
 [tool.poetry.dev-dependencies]
