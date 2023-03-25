@@ -13,7 +13,7 @@ def auth_middleware(app: FastAPI):
         auth_header = request.headers.get('Authorization')
         if auth_header is None:
             return Response('Authorization header is missing', HTTPStatus.UNAUTHORIZED)
-        claims = parse_header(auth_header)['claims']
+        claims = parse_header(auth_header)
         if claims.get('is_super'):
             return await call_next(request)
 

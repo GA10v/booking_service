@@ -67,8 +67,9 @@ def parse_header(auth_header) -> dict:
             algorithms=[settings.jwt.ALGORITHM],
         )
         return {
-            'user_id': decoded_jwt.identity,
-            'claims': decoded_jwt.additional_claims,
+            'user_id': decoded_jwt.get('sub'),
+            'permissions': decoded_jwt.get('permissions'),
+            'is_super': decoded_jwt.get('is_super'),
         }
     except (DecodeError, ExpiredSignatureError) as ex:
         logger.exception('Error while decode access_token: \n %s', str(ex))
