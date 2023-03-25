@@ -1,0 +1,63 @@
+version: '3.9'
+
+services:
+
+  postgres:
+    container_name: postgres
+    image: postgres:15.2-alpine3.17
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - .env
+    networks:
+      - project-network
+    healthcheck:
+      test: [ "CMD-SHELL", "su postgres", "&&", "pg_isready" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  booking_api:
+    container_name: booking_api
+    build:
+      context: backend/Booking/booking_api
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - 8080:8080
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - project-network
+    logging:
+      driver: gelf
+      options:
+        gelf-address: udp://127.0.0.1:5044
+        tag: BOOKING_API
+
+  test:
+    container_name: test_booking
+    build:
+      context: backend/Booking/booking_api
+      dockerfile: test.Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      booking_api:
+        condition: service_started
+    networks:
+      - project-network
+
+volumes:
+  postgres_data:
+
+
+networks:
+  project-network:
+    external: true
