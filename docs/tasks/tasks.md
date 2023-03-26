@@ -131,14 +131,14 @@ ticket_count - количество участников
 event_time - дата события
 event_location - место события
 created - дата создания объявления
-modified - дата последнего измененися объявления
+modified - дата последнего изменения объявления
 
 movie_title - название фильма (для Response)
 author_name - имя автора объявления (для Response)
 guest_list - список гостей с их статусом и [*]рейтингом (для Response)
 rating - рейтинг автора объявления (для Response)
 
-#### DB Layer:
+#### Layer DB:
 
 - Announcement
 
@@ -156,7 +156,7 @@ rating - рейтинг автора объявления (для Response)
 `created: datetime`
 `modified: datetime`
 
-#### API Layer:
+#### Layer API:
 
 - AnnouncementResponse
 
@@ -190,6 +190,20 @@ rating - рейтинг автора объявления (для Response)
 
 ### Booking
 
+#### Поля
+
+id - booking_id
+announcement_id - uuid объявления
+author_id - uuid автора объявления
+guest_id - uuid гостя
+author_status - по дефолту None, если заявка одобрена TRUE, отклонена - FALSE
+guest_status - по дефолту TRUE, если гость передумал FALSE
+event_time - дата события [учавствует в индексе уникальности]
+created - дата создания записи
+modified - дата последнего изменения записи
+
+#### Layer DB:
+
 - id: str | uuid (booking_id)
 - announcement_id: str | uuid
 - author_id: str | uuid
@@ -200,16 +214,19 @@ rating - рейтинг автора объявления (для Response)
 - created: datetime
 - modified: datetime
 
+#### Layer API:
+
+...
 ## API
 
 ### Announcement
 
-- POST /api/v1/announcement/{movie_id} - создание объявления
-- PUT /api/v1/announcement/{announcement_id} - изменение объявления
-- GET /api/v1/announcement/{announcement_id} - получить подробную информацию из объявления
-- GET /api/v1/announcements/{movie_id} - получить список объявлений конкретного фильма
-- GET /api/v1/announcements - получить весь список объявлений
-- DELETE /api/v1/announcement/{announcement_id}
+- POST /api/v1/announcement/{movie_id} - создание объявления [Response: DetailAnnouncementResponse]
+- PUT /api/v1/announcement/{announcement_id} - изменение объявления [Response: DetailAnnouncementResponse]
+- GET /api/v1/announcement/{announcement_id} - получить подробную информацию из объявления [Response: DetailAnnouncementResponse]
+- GET /api/v1/announcements/{movie_id} - получить список объявлений конкретного фильма [Response: list[AnnouncementResponse]]
+- GET /api/v1/announcements - получить весь список объявлений [Response: list[AnnouncementResponse]]
+- DELETE /api/v1/announcement/{announcement_id} [Response: HTTPStatus.OK]
 
 ### Booking
 
