@@ -224,8 +224,7 @@ modified - дата последнего изменения записи
 - POST /api/v1/announcement/{movie_id} - создание объявления [Response: DetailAnnouncementResponse]
 - PUT /api/v1/announcement/{announcement_id} - изменение объявления [Response: DetailAnnouncementResponse]
 - GET /api/v1/announcement/{announcement_id} - получить подробную информацию из объявления [Response: DetailAnnouncementResponse]
-- GET /api/v1/announcements/{movie_id} - получить список объявлений конкретного фильма [Response: list[AnnouncementResponse]]
-- GET /api/v1/announcements - получить весь список объявлений [Response: list[AnnouncementResponse]]
+- GET /api/v1/announcements - получить весь список объявлений по условию [Response: list[AnnouncementResponse]]
 - DELETE /api/v1/announcement/{announcement_id} [Response: HTTPStatus.OK]
 
 ### Booking
