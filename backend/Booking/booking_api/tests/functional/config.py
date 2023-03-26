@@ -40,12 +40,20 @@ class TestDataSettings(BaseConfig):
     MODERATOR: str = 'a5a8f573-3cee-4ccc-8a2b-91cb9f55250a'
 
 
+class DebugSettings(BaseConfig):
+    DEBUG: bool = False
+
+    class Config:
+        env_prefix = 'TEST_'
+
+
 class ProjectSettings(BaseConfig):
     PROJECT_NAME: str = 'Graduate_work'
     BASE_DIR = Path(__file__).parent.parent
     fastapi: FastapiSettings = FastapiSettings()
     jwt: JWTSettings = JWTSettings()
     data: TestDataSettings = TestDataSettings()
+    debug: DebugSettings = DebugSettings()
 
 
 settings = ProjectSettings()

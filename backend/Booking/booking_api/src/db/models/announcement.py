@@ -2,7 +2,7 @@ import enum
 import uuid
 from datetime import datetime
 
-from sqlalchemy import TIMESTAMP, Boolean, Column, Enum, Integer, String
+from sqlalchemy import TIMESTAMP, Boolean, Column, Enum, Integer, String, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import declarative_base
 
@@ -18,6 +18,7 @@ class EventStatus(enum.Enum):
 
 class Announcement(Base):
     __tablename__ = 'announcements'
+    __table_args__ = (UniqueConstraint('author_id', 'event_time', name='_author_event_time'),)
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     status = Column(Enum(EventStatus))
