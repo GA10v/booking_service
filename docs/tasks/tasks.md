@@ -1,5 +1,8 @@
 ## Сервис бронирования билетов
 
+- [*] - задание со звездочкой
+- [?] - что-то не понятно
+
 ## Легенда
 
 Хочется посмотреть фильм/сериал, но не хочется тупить в одного или ты в новом городе и здесь нет знакомых...
@@ -119,131 +122,131 @@
 
 #### Поля
 
-id - announcement_id
-status - ['Created', 'Alive', 'Closed', 'Done'] статус объявления, необходимо для сортировки + [?]нотификация (выбор шаблона для события)
-title - название объявления
-description - описание, условия, цена
-movie_id - uuid фильма
-author_id - uuid автора объявления
-sub_only - флаг приватности, если TRUE: объявление будет показываться только списку подписчиков
-is_free - флаг для фильтрации, если событие платое: FALSE
-ticket_count - количество участников
-event_time - дата события
-event_location - место события
-created - дата создания объявления
-modified - дата последнего изменения объявления
+- id - announcement_id
+- status - ['Created', 'Alive', 'Closed', 'Done'] статус объявления, необходимо для сортировки + [?]нотификация (выбор шаблона для события)
+- title - название объявления
+- description - описание, условия, цена
+- movie_id - uuid фильма
+- author_id - uuid автора объявления
+- sub_only - флаг приватности, если TRUE: объявление будет показываться только списку подписчиков
+- is_free - флаг для фильтрации, если событие платое: FALSE
+- ticket_count - количество участников
+- event_time - дата события
+- event_location - место события
+- created - дата создания объявления
+- modified - дата последнего изменения объявления
 
-movie_title - название фильма (для Response)
-author_name - имя автора объявления (для Response)
-guest_list - список гостей с их статусом и [*]рейтингом (для Response)
-author_rating - рейтинг автора объявления (для Response)
+- movie_title - название фильма (для Response)
+- author_name - имя автора объявления (для Response)
+- guest_list - список гостей с их статусом и [*]рейтингом (для Response)
+- author_rating - рейтинг автора объявления (для Response)
 
 #### Layer DB:
 
 - Announcement
 
-`id: uuid [pk]`
-`status: AnnouncetStatus`
-`title: str`
-`description: str`
-`movie_id: uuid`
-`author_id: uuid`
-`sub_only: bool`
-`is_free: bool`
-`ticket_count: int`
-`event_time: datetime [unique]`
-`event_location: str`
-`created: datetime`
-`modified: datetime`
+- `id: uuid [pk]`
+- `status: AnnouncetStatus`
+- `title: str`
+- `description: str`
+- `movie_id: uuid`
+- `author_id: uuid`
+- `sub_only: bool`
+- `is_free: bool`
+- `ticket_count: int`
+- `event_time: datetime [unique]`
+- `event_location: str`
+- `created: datetime`
+- `modified: datetime`
 
 #### Layer API:
 
 - AnnouncementResponse
 
-`id: str | UUID`
-`status: EventStatus`
-`title: str`
-`author_id: str | UUID`
-`sub_only: bool`
-`is_free: bool`
-`ticket_count: int`
-`event_time: datetime`
-`event_location: str`
+- `id: str | UUID`
+- `status: EventStatus`
+- `title: str`
+- `author_id: str | UUID`
+- `sub_only: bool`
+- `is_free: bool`
+- `ticket_count: int`
+- `event_time: datetime`
+- `event_location: str`
 
 - DetailAnnouncementResponse
 
-`id: str | uuid`
-`status: AnnouncetStatus`
-`title: str`
-`description: str`
-`movie_title: str`
-`author_name: str`
-`sub_only: bool`
-`is_free: bool`
-`ticket_count: int`
-`event_time: datetime`
-`event_location: str`
-`created: datetime`
-`modified: datetime`
-`guest_list: list[str]`
-`author_rating: float`
+- `id: str | uuid`
+- `status: AnnouncetStatus`
+- `title: str`
+- `description: str`
+- `movie_title: str`
+- `author_name: str`
+- `sub_only: bool`
+- `is_free: bool`
+- `ticket_count: int`
+- `event_time: datetime`
+- `event_location: str`
+- `created: datetime`
+- `modified: datetime`
+- `guest_list: list[str]`
+- `author_rating: float`
 
 ### Booking
 
 #### Поля
 
-id - booking_id
-announcement_id - uuid объявления
-author_id - uuid автора объявления
-guest_id - uuid гостя
-author_status - по дефолту None, если заявка одобрена TRUE, отклонена - FALSE
-guest_status - по дефолту TRUE, если гость передумал FALSE
-event_time - дата события [учавствует в индексе уникальности]
-created - дата создания записи
-modified - дата последнего изменения записи
+- id - booking_id
+- announcement_id - uuid объявления
+- author_id - uuid автора объявления
+- guest_id - uuid гостя
+- author_status - по дефолту None, если заявка одобрена TRUE, отклонена - FALSE
+- guest_status - по дефолту TRUE, если гость передумал FALSE
+- event_time - дата события [учавствует в индексе уникальности]
+- created - дата создания записи
+- modified - дата последнего изменения записи
 
-movie_title - название фильма (для Response)
-author_name - имя автора объявления (для Response)
-guest_name - имя гостя (для Response)
-author_rating - рейтинг автора объявления (для Response)
-guest_rating - рейтинг гостя (для Response)
+- movie_title - название фильма (для Response)
+- author_name - имя автора объявления (для Response)
+- guest_name - имя гостя (для Response)
+- author_rating - рейтинг автора объявления (для Response)
+- guest_rating - рейтинг гостя (для Response)
 
 #### Layer DB:
 
 - Booking
 
-`id: uuid [pk]`
-`announcement_id: uuid [fk Announcement.id]`
-`author_id: uuid [_unique]`
-`guest_id: uuid`
-`author_status: bool`
-`guest_status: bool`
-`event_time: datetime [_unique]`
-`created: datetime`
-`modified: datetime`
+- `id: uuid [pk]`
+- `announcement_id: uuid [fk Announcement.id]`
+- `author_id: uuid [_unique]`
+- `guest_id: uuid`
+- `author_status: bool`
+- `guest_status: bool`
+- `event_time: datetime [_unique]`
+- `created: datetime`
+- `modified: datetime`
 
 #### Layer API:
 
 - BookingResponse
 
-`booking_id: str | uuid`
-`guest_name: str`
-`author_status: bool`
-`guest_status: bool`
-`guest_rating: float`
+- `booking_id: str | uuid`
+- `guest_name: str`
+- `author_status: bool`
+- `guest_status: bool`
+- `guest_rating: float`
 
 - DetailBookingResponse
 
-`booking_id: str | UUID`
-`announcement_id: str | UUID`
-`movie_title: str`
-`author_name: str`
-`guest_name: str`
-`author_status: bool | None`
-`guest_status: bool`
-`guest_rating: float`
-`author_rating: float`
-`event_time: datetime`
+- `booking_id: str | UUID`
+- `announcement_id: str | UUID`
+- `movie_title: str`
+- `author_name: str`
+- `guest_name: str`
+- `author_status: bool | None`
+- `guest_status: bool`
+- `guest_rating: float`
+- `author_rating: float`
+- `event_time: datetime`
 
 ## API
 
