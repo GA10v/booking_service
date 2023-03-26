@@ -50,7 +50,7 @@
 - За день до события всем участникам приходит уведомление и короткая ссылка на объявление
 - В день события (за час) всем участникам приходит уведомление и короткая ссылка на объявление
 
-### [\*][?] 4. Сценарий Rating
+### [*][?] 4. Сценарий Rating
 
 - после проведения события, всем участникам приходит сообщение "оцените событие" - продумать
 - [1] у каждого пользователя есть оценка "организатор" - продумать
@@ -94,7 +94,7 @@
 - получить всех участников события (получить записи из базы по announcement_id) (применить фильтрацию) (пагинация)
 - запретить отправлять несколько заявок на один анонс
 
-### Rating [?]
+### [*] [?] Rating
 
 - поставить оценку (записать в базу)
 - получить оценку (получить записи из базы по announcement_id, user_id)
@@ -143,7 +143,7 @@
 
 #### Layer DB:
 
-- Announcement
+Announcement
 
 - `id`: uuid [pk]
 - `status`: AnnouncetStatus
@@ -161,7 +161,7 @@
 
 #### Layer API:
 
-- AnnouncementResponse
+AnnouncementResponse
 
 - `id`: str | UUID
 - `status`: EventStatus
@@ -173,7 +173,7 @@
 - `event_time`: datetime
 - `event_location`: str
 
-- DetailAnnouncementResponse
+DetailAnnouncementResponse
 
 - `id`: str | uuid
 - `status`: AnnouncetStatus
@@ -212,9 +212,9 @@
 - guest_rating - рейтинг гостя (для Response)
 
 #### Layer DB:
-\n
-- Booking
-\n
+
+Booking
+
 - `id`: uuid [pk]
 - `announcement_id`: uuid [fk Announcement.id]
 - `author_id`: uuid [_unique]
@@ -227,7 +227,7 @@
 
 #### Layer API:
 
-- BookingResponse
+BookingResponse
 
 - `booking_id`: str | uuid
 - `guest_name`: str
@@ -235,7 +235,7 @@
 - `guest_status`: bool
 - `guest_rating`: float
 
-- DetailBookingResponse
+DetailBookingResponse
 
 - `booking_id`: str | UUID
 - `announcement_id`: str | UUID
@@ -260,7 +260,11 @@
 
 ### Booking
 
-...
+- POST /api/v1/booking/{announcement_id} - отправить запрос [Response: DetailBookingResponse]
+- PUT /api/v1/booking/{booking_id} - изменить статус [Response: DetailBookingResponse]
+- GET /api/v1/booking/{booking_id} - получить подробную информацию о запросе [Response: DetailBookingResponse]
+- GET /api/v1/bookings - получить список заявок по условию [Response: list[BookingResponse]]
+- DELETE /api/v1/booking/{booking_id} - удалить заявку [Response: HTTPStatus.OK]
 
 ## Я.Практика
 
