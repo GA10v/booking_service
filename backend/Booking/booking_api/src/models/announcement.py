@@ -56,6 +56,21 @@ class AnnouncementResponse(BaseModel):
         return _dict
 
 
-class DetailAnnouncementResponse(PGAnnouncement):
+class DetailAnnouncementResponse(DefaultModel):
+    status: EventStatus
+    title: str
+    description: str
+    movie_title: str
+    author_name: str
+    sub_only: bool
+    is_free: bool
+    tickets_count: int
+    event_time: datetime
+    event_location: str
     guest_list: list[str]
     rating: float
+
+    def dict(self, *args, **kwargs) -> dict:
+        _dict: dict = super().dict(*args, **kwargs)
+        _dict['event_time'] = _dict['event_time'].strftime('%Y-%m-%d %H:%M:%S')
+        return _dict
