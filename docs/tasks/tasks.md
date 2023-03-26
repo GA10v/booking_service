@@ -9,7 +9,7 @@
 
 ### 1. Сценарий организатор
 
-- для конкретного фильна создается Announcement:
+- для конкретного фильна создается объявдение (Announcement):
 
   - название Announcement
   - описание Announcement
@@ -42,18 +42,19 @@
 
 ### 3. Сценарий Notifications
 
-- Если организатор изменит событие - все участники события получают уведомление и короткую ссылку на событие
-- Изменения в Booking (запросы, инвайты, подтверждения заявок, отклонения заявок) - организатор и гость получают уведомление и короткую ссылку на событие
-- За день до события всем участникам приходит уведомление и короткая ссылка на событие
-- В день события (за час) всем участникам приходит уведомление и короткая ссылка на событие
+- Если организатор изменит объявление - все участники события получают уведомление и короткую ссылку на новое объявление
+- Изменения в Booking (запросы, инвайты, подтверждения заявок, отклонения заявок) - организатор и гость получают уведомление и короткую ссылку на новое объявление
+- За день до события всем участникам приходит уведомление и короткая ссылка на объявление
+- В день события (за час) всем участникам приходит уведомление и короткая ссылка на объявление
 
-### [*] 4. Сценарий Rating
+### [\*][?] 4. Сценарий Rating
 
 - после проведения события, всем участникам приходит сообщение "оцените событие" - продумать
 - [1] у каждого пользователя есть оценка "организатор" - продумать
 - [1] у каждого пользователя есть оценка "гость" - продумать
 - [2] у каждого пользователя есть общая оценка - продумать
-- Где хранить информацию о рейтинге пользователя? - продумать
+- Где хранить информацию о рейтинге пользователя? - продумать, может хранить в UGC (будет ли дублироваться БД)
+- Какуб БД выбрать? mongoDB|PG (надо ли проводить иследование как в спринте UGC, какой показатель проверять? не пользовался mongo до курса... есть ли пунктик- показать все чему научили)
 - Где хранить информацию о рейтинге Announcement (будет ли оно оцениваться) - продумать
 
 надо выбрать [1] или [2]
@@ -79,7 +80,7 @@
 - [*] посмотреть анонсы пользователя как гостя (получить записи из базы по user_id) (применить фильтрацию) (пагинация)
 - посмотреть актуальные анонсы для фильма (получить записи из базы по movie_id) (применить фильтрацию) (пагинация)
 - посмотреть подробную информацию об анонсе (получить запись из базы по announcement_id)
-- [?] менять статус анонса по его завершению (изменить запись в базе по announcement_id) + [*]оповещение Rating
+- [?] менять статус анонса по его завершению (изменить запись в базе по announcement_id) + [*]оповещение c Rating
 - проверять конфликты анонсов (уже создал свой или подтвердил чужой на это время)
 
 ### Booking
@@ -116,30 +117,88 @@
 
 ### Announcement
 
-class AnnounceStatus(str, enum):
-Created = 0
-Closed = 1
-Done = 2
+#### Поля
 
-- id: str | uuid (announcement_id)
-- status: AnnouncetStatus (статус объявления, необходимо для сортировки + [?]нотификация)
-- title: str (название объявления)
-- description: str (описание, условия, цена)
-- movie_id: str | uuid
-- author_id: str | uuid
-- sub_only: bool (флаг приватности, необходим для фильтрации)
-- is_free: bool (флаг для фильтрации)
-- ticket_count: int (количество участников)
-- event_time: datetime (дата встречи)
-- event_location: str (место встречи)
-- created: datetime
-- modified: datetime
-- [?] guest_list: list[str]
-- [*] rating: float
+id - announcement_id
+status - ['Created', 'Alive', 'Closed', 'Done'] статус объявления, необходимо для сортировки + [?]нотификация (выбор шаблона для события)
+title - название объявления
+description - описание, условия, цена
+movie_id - uuid фильма
+author_id - uuid автора объявления
+sub_only - флаг приватности, если TRUE: объявление будет показываться только списку подписчиков
+is_free - флаг для фильтрации, если событие платое: FALSE
+ticket_count - количество участников
+event_time - дата события
+event_location - место события
+created - дата создания объявления
+modified - дата последнего измененися объявления
+
+movie_title - название фильма (для Response)
+author_name - имя автора объявления (для Response)
+guest_list - список гостей с их статусом и [*]рейтингом (для Response)
+rating - рейтинг автора объявления (для Response)
+
+#### DB Layer:
+
+- Announcement
+
+`id: uuid [pk]`
+`status: AnnouncetStatus`
+`title: str`
+`description: str`
+`movie_id: uuid`
+`author_id: uuid`
+`sub_only: bool`
+`is_free: bool`
+`ticket_count: int`
+`event_time: datetime [unique]`
+`event_location: str`
+`created: datetime`
+`modified: datetime`
+
+#### API Layer:
+
+- AnnouncementResponse
+
+`id: str | UUID`
+`status: EventStatus`
+`title: str`
+`author_id: str | UUID`
+`sub_only: bool`
+`is_free: bool`
+`ticket_count: int`
+`event_time: datetime`
+`event_location: str`
+
+- DetailAnnouncementResponse
+
+`id: str | uuid`
+`status: AnnouncetStatus`
+`title: str`
+`description: str`
+`movie_title: str`
+`author_name: str`
+`sub_only: bool`
+`is_free: bool`
+`ticket_count: int`
+`event_time: datetime`
+`event_location: str`
+`created: datetime`
+`modified: datetime`
+`guest_list: list[str]`
+`rating: float`
 
 ### Booking
 
-...
+- id: str | uuid (booking_id)
+- announcement_id: str | uuid
+- author_id: str | uuid
+- guest_id: str | uuid
+- author_status: bool | None
+- guest_status: bool
+- event_time: datetime
+- created: datetime
+- modified: datetime
 
 ## API
 
@@ -151,6 +210,10 @@ Done = 2
 - GET /api/v1/announcements/{movie_id} - получить список объявлений конкретного фильма
 - GET /api/v1/announcements - получить весь список объявлений
 - DELETE /api/v1/announcement/{announcement_id}
+
+### Booking
+
+...
 
 ## Я.Практика
 
@@ -175,16 +238,16 @@ backward
 - [DOC] Диограма последовательностей
   api
 - [MVP] FastAPI показать /api/openapi (Announcement)
-- [MVP+] FastAPI middleware Logging
-- [MVP+] FastAPI middleware Auth
-- [MVP+] FastAPI docker
-- [MVP+] FastAPI test
+  <!-- - [MVP+] FastAPI middleware Logging -->
+  <!-- - [MVP+] FastAPI middleware Auth -->
+  <!-- - [MVP+] FastAPI docker -->
+  <!-- - [MVP+] FastAPI test -->
   db
 - [MVP] PG написать StorageProtocol(async)
 - [MVP+] PG написать PGStorage(async)
-- [MVP+] PG написать инициализацию BD(sqlalchemy)
-- [MVP+] PG написать модель Announcement(sqlalchemy)
-- [MVP+] PG написать модель Announcement(pydantic)
+  <!-- - [MVP+] PG написать инициализацию BD(sqlalchemy) -->
+  <!-- - [MVP+] PG написать модель Announcement(sqlalchemy) -->
+  <!-- - [MVP+] PG написать модель Announcement(pydantic) -->
 - [MVP+] PG docker
   reviews
 - [Rewievs] Прочитать спринт UGC
