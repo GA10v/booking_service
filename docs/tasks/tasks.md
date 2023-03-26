@@ -145,51 +145,51 @@
 
 - Announcement
 
-- `id: uuid [pk]`
-- `status: AnnouncetStatus`
-- `title: str`
-- `description: str`
-- `movie_id: uuid`
-- `author_id: uuid`
-- `sub_only: bool`
-- `is_free: bool`
-- `ticket_count: int`
-- `event_time: datetime [unique]`
-- `event_location: str`
-- `created: datetime`
-- `modified: datetime`
+- `id`: uuid [pk]
+- `status`: AnnouncetStatus
+- `title`: str
+- `description`: str
+- `movie_id`: uuid
+- `author_id`: uuid
+- `sub_only`: bool
+- `is_free`: bool
+- `ticket_count`: int
+- `event_time`: datetime [unique]
+- `event_location`: str
+- `created`: datetime
+- `modified`: datetime
 
 #### Layer API:
 
 - AnnouncementResponse
 
-- `id: str | UUID`
-- `status: EventStatus`
-- `title: str`
-- `author_id: str | UUID`
-- `sub_only: bool`
-- `is_free: bool`
-- `ticket_count: int`
-- `event_time: datetime`
-- `event_location: str`
+- `id`: str | UUID
+- `status`: EventStatus
+- `title`: str
+- `author_id`: str | UUID
+- `sub_only`: bool
+- `is_free`: bool
+- `ticket_count`: int
+- `event_time`: datetime
+- `event_location`: str
 
 - DetailAnnouncementResponse
 
-- `id: str | uuid`
-- `status: AnnouncetStatus`
-- `title: str`
-- `description: str`
-- `movie_title: str`
-- `author_name: str`
-- `sub_only: bool`
-- `is_free: bool`
-- `ticket_count: int`
-- `event_time: datetime`
-- `event_location: str`
-- `created: datetime`
-- `modified: datetime`
-- `guest_list: list[str]`
-- `author_rating: float`
+- `id`: str | uuid
+- `status`: AnnouncetStatus
+- `title`: str
+- `description`: str
+- `movie_title`: str
+- `author_name`: str
+- `sub_only`: bool
+- `is_free`: bool
+- `ticket_count`: int
+- `event_time`: datetime
+- `event_location`: str
+- `created`: datetime
+- `modified`: datetime
+- `guest_list`: list[str]
+- `author_rating`: float
 
 ### Booking
 
@@ -215,38 +215,38 @@
 
 - Booking
 
-- `id: uuid [pk]`
-- `announcement_id: uuid [fk Announcement.id]`
-- `author_id: uuid [_unique]`
-- `guest_id: uuid`
-- `author_status: bool`
-- `guest_status: bool`
-- `event_time: datetime [_unique]`
-- `created: datetime`
-- `modified: datetime`
+- `id`: uuid [pk]
+- `announcement_id`: uuid [fk Announcement.id]
+- `author_id`: uuid [_unique]
+- `guest_id`: uuid
+- `author_status`: bool
+- `guest_status`: bool
+- `event_time`: datetime [_unique]
+- `created`: datetime
+- `modified`: datetime
 
 #### Layer API:
 
 - BookingResponse
 
-- `booking_id: str | uuid`
-- `guest_name: str`
-- `author_status: bool`
-- `guest_status: bool`
-- `guest_rating: float`
+- `booking_id`: str | uuid
+- `guest_name`: str
+- `author_status`: bool
+- `guest_status`: bool
+- `guest_rating`: float
 
 - DetailBookingResponse
 
-- `booking_id: str | UUID`
-- `announcement_id: str | UUID`
-- `movie_title: str`
-- `author_name: str`
-- `guest_name: str`
-- `author_status: bool | None`
-- `guest_status: bool`
-- `guest_rating: float`
-- `author_rating: float`
-- `event_time: datetime`
+- `booking_id`: str | UUID
+- `announcement_id`: str | UUID
+- `movie_title`: str
+- `author_name`: str
+- `guest_name`: str
+- `author_status`: bool | None
+- `guest_status`: bool
+- `guest_rating`: float
+- `author_rating`: float
+- `event_time`: datetime
 
 ## API
 
