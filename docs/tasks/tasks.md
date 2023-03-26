@@ -212,9 +212,9 @@
 - guest_rating - рейтинг гостя (для Response)
 
 #### Layer DB:
-
+\n
 - Booking
-
+\n
 - `id`: uuid [pk]
 - `announcement_id`: uuid [fk Announcement.id]
 - `author_id`: uuid [_unique]
