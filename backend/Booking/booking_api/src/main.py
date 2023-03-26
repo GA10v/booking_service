@@ -4,7 +4,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
-from api.v1 import announcement, test
+from api.v1 import announcement, booking, test
 from core.config import settings
 from core.logger import LOGGING
 from db.pg_db import init_models
@@ -40,6 +40,7 @@ async def shutdown():
 
 
 app.include_router(announcement.router, prefix=settings.fastapi.API_PREFIX, tags=['announcement'])
+app.include_router(booking.router, prefix=settings.fastapi.API_PREFIX, tags=['booking'])
 app.include_router(test.router, prefix=settings.fastapi.API_PREFIX, tags=['test'])
 
 if __name__ == '__main__':
