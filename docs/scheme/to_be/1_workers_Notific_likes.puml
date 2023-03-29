@@ -11,7 +11,6 @@ title Workers
 participant Client as Client
 participant "Booking API" as API
 participant "Service" as Service
-database "Cache" as Cache_Service
 participant "Service broker" as Broker_Service
 participant "Service broker" as Broker_Service
 queue RabbitMQ
@@ -34,8 +33,6 @@ note right
     - валидация параметров
 end note
 API -> Service: pydantic.BaseModel | dict[str, Any]
-Service -> Cache_Service: get(key: str)
-Service <- Cache_Service: value | None
 Service -> Broker_Service: pydantic.BaseModel
 Broker_Service -> Broker_Service:
 note right
@@ -99,7 +96,6 @@ note right
     - закрываемся
 end note
 Broker_Service -> Service: pydantic.BaseModel | dict[str, Any
-Service -> Cache_Service : set(key: str, value: dict)
 Service -> API: Response
 Service -> Notification: Event
 API -> Client: Response

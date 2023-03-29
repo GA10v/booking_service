@@ -33,13 +33,11 @@ group service_layer
     Service -> Service
     note right
         слой в котором реализован class Service()
-        - вызывает Driver()
+        - вызывает Repo()
     end note
-    Service -> Cache_Service: get(key: str)
-    Service <- Cache_Service: value | None
 end group
 
-group #B1C7E8 driver_layer
+group #B1C7E8 repo_layer
     Service -> Service
     note right
         слой в котором через protocol реализованы драйверы
@@ -66,7 +64,6 @@ group #B1C7E8 driver_layer
     Service <- UGC
 
 end group
-Service -> Cache_Service : set(key: str, value: dict)
 Service -> API: Response
 Service -> Notification: Event
 API -> Client: Response

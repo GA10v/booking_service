@@ -38,7 +38,7 @@ class PGAnnouncement(DefaultModel):
 
 
 class AnnouncementResponse(BaseModel):
-    id: str | UUID
+    announcement_id: str | UUID
     status: EventStatus
     title: str
     author_id: str | UUID
@@ -50,7 +50,7 @@ class AnnouncementResponse(BaseModel):
 
     def dict(self, *args, **kwargs) -> dict:
         _dict: dict = super().dict(*args, **kwargs)
-        _dict['id'] = str(_dict['id'])
+        _dict['announcement_id'] = str(_dict['announcement_id'])
         _dict['author_id'] = str(_dict['author_id'])
         _dict['event_time'] = _dict['event_time'].strftime('%Y-%m-%d %H:%M:%S')
         return _dict
@@ -68,7 +68,7 @@ class DetailAnnouncementResponse(DefaultModel):
     event_time: datetime
     event_location: str
     guest_list: list[str]
-    rating: float
+    author_rating: float
 
     def dict(self, *args, **kwargs) -> dict:
         _dict: dict = super().dict(*args, **kwargs)
