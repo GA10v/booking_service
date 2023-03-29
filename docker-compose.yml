@@ -56,6 +56,17 @@ services:
         gelf-address: udp://127.0.0.1:5044
         tag: booking_api
 
+  mock_movie_api:
+    container_name: mock_movie_api
+    build:
+      context: mock/admin_panel
+      dockerfile: Dockerfile
+    restart: always
+    env_file:
+      - .env
+    networks:
+      - project-network
+
 volumes:
   postgres_data:
 

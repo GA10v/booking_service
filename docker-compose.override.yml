@@ -11,3 +11,7 @@ services:
     expose:
       - 8080
 
+  mock_movie_api:
+    ports:
+      - 8082:8082
+
