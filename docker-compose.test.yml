@@ -50,6 +50,17 @@ services:
     networks:
       - project-network
 
+  mock_auth:
+    container_name: mock_auth
+    build:
+      context: mock/auth
+      dockerfile: Dockerfile
+    restart: always
+    env_file:
+      - .env
+    networks:
+      - project-network
+
   test:
     container_name: test_booking
     build:
