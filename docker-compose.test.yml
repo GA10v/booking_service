@@ -61,6 +61,17 @@ services:
     networks:
       - project-network
 
+  mock_ugc:
+    container_name: mock_ugc
+    build:
+      context: mock/ugc
+      dockerfile: Dockerfile
+    restart: always
+    env_file:
+      - .env
+    networks:
+      - project-network
+
   test:
     container_name: test_booking
     build:

@@ -18,3 +18,7 @@ services:
   mock_auth:
     ports:
       - 8081:8081
+
+  mock_ugc:
+    ports:
+      - 8083:8083
