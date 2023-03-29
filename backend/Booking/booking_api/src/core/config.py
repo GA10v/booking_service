@@ -109,6 +109,23 @@ class JWTSettings(BaseConfig):
         env_prefix = 'JWT_'
 
 
+class URLShortnerSettings(BaseConfig):
+    HOST: str = 'localhost'
+    PORT: int = 3000
+    PREFIX: str = '/api/v1/shortener/'
+    DEBUG: bool = True
+    TESTING: bool = True
+    ID_LENGTH: int = 8
+    REDIRECT_URL: str = ''
+
+    @property
+    def uri(self):
+        return f'http://{self.HOST}:{self.PORT}{self.PREFIX}'
+
+    class Config:
+        env_prefix = 'URLSHORT_'
+
+
 class ProjectSettings(BaseConfig):
     PROJECT_NAME: str = 'Graduate_work'
     BASE_DIR = Path(__file__).parent.parent
@@ -120,6 +137,7 @@ class ProjectSettings(BaseConfig):
     auth: AuthMock = AuthMock()
     movie_api: MovieAPIMock = MovieAPIMock()
     ugc: UGCMock = UGCMock()
+    url_shortner: URLShortnerSettings = URLShortnerSettings()
 
 
 settings = ProjectSettings()

@@ -22,3 +22,7 @@ services:
   mock_ugc:
     ports:
       - 8083:8083
+
+  url_shortener:
+    ports:
+      - "3000:3000"
