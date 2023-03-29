@@ -42,7 +42,7 @@ services:
   mock_movie_api:
     container_name: mock_movie_api
     build:
-      context: mock/admin_panel
+      context: mock/movie_api
       dockerfile: Dockerfile
     restart: always
     env_file:

@@ -22,10 +22,10 @@ class JWTSettings(BaseConfig):
 class FastapiSettings(BaseConfig):
     HOST: str = 'localhost'
     PORT: int = 8082
-    PREFIX: str = '/admin_panel/v1/'
+    PREFIX: str = '/movie_api/v1/'
 
     class Config:
-        env_prefix = 'ADMIN_PANEL_MOCK_'
+        env_prefix = 'MOVIE_API_MOCK_'
 
 
 class NotificSetting(BaseConfig):

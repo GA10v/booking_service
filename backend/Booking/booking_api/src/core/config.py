@@ -54,6 +54,45 @@ class FastapiSetting(BaseConfig):
         env_prefix = 'FASTAPI_'
 
 
+class AuthMock(BaseConfig):
+    HOST: str = 'localhost'
+    PORT: int = 8081
+    PREFIX: str = '/auth/v1/'
+
+    @property
+    def uri(self):
+        return f'http://{self.HOST}:{self.PORT}{self.PREFIX}'
+
+    class Config:
+        env_prefix = 'AUTH_MOCK_'
+
+
+class MovieAPIMock(BaseConfig):
+    HOST: str = 'localhost'
+    PORT: int = 8082
+    PREFIX: str = '/movie_api/v1/'
+
+    @property
+    def uri(self):
+        return f'http://{self.HOST}:{self.PORT}{self.PREFIX}'
+
+    class Config:
+        env_prefix = 'MOVIE_API_MOCK_'
+
+
+class UGCMock(BaseConfig):
+    HOST: str = 'localhost'
+    PORT: int = 8083
+    PREFIX: str = '/ugc/v1/'
+
+    @property
+    def uri(self):
+        return f'http://{self.HOST}:{self.PORT}{self.PREFIX}'
+
+    class Config:
+        env_prefix = 'UGC_MOCK_'
+
+
 class PermissionSettings(Enum):
     User = 0
     Subscriber = 1
@@ -78,6 +117,9 @@ class ProjectSettings(BaseConfig):
     postgres: PostgresSettings = PostgresSettings()
     fastapi: FastapiSetting = FastapiSetting()
     jwt: JWTSettings = JWTSettings()
+    auth: AuthMock = AuthMock()
+    movie_api: MovieAPIMock = MovieAPIMock()
+    ugc: UGCMock = UGCMock()
 
 
 settings = ProjectSettings()
