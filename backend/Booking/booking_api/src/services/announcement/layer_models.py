@@ -11,6 +11,11 @@ class BookingToDetailResponse(BaseModel):
     guest_status: bool
 
 
+class MovieToResponse(BaseModel):
+    movie_title: str
+    duration: int
+
+
 class EventStatus(str, Enum):
     Created = 'Created'
     Alive = 'Alive'
@@ -31,6 +36,7 @@ class AnnouncementResponse(BaseModel):
     ticket_count: int
     event_time: datetime
     event_location: str
+    duration: int
 
     def dict(self, *args, **kwargs) -> dict:
         _dict: dict = super().dict(*args, **kwargs)
@@ -56,6 +62,7 @@ class DetailAnnouncementResponse(BaseModel):
     event_location: str
     guest_list: list[str]
     author_rating: float
+    duration: int
 
     def dict(self, *args, **kwargs) -> dict:
         _dict: dict = super().dict(*args, **kwargs)
@@ -63,4 +70,31 @@ class DetailAnnouncementResponse(BaseModel):
         _dict['created'] = _dict['created'].strftime('%Y-%m-%d %H:%M:%S')
         _dict['modified'] = _dict['modified'].strftime('%Y-%m-%d %H:%M:%S')
         _dict['event_time'] = _dict['event_time'].strftime('%Y-%m-%d %H:%M:%S')
+        return _dict
+
+
+class PGAnnouncement(BaseModel):
+    id: str | UUID
+    created: datetime
+    modified: datetime
+    status: EventStatus
+    title: str
+    description: str
+    movie_id: str | UUID
+    author_id: str | UUID
+    sub_only: bool
+    is_free: bool
+    tickets_count: int
+    event_time: datetime
+    event_location: str
+    duration: int
+
+    def dict(self, *args, **kwargs) -> dict:
+        _dict: dict = super().dict(*args, **kwargs)
+        _dict['id'] = str(_dict['id'])
+        _dict['movie_id'] = str(_dict['movie_id'])
+        _dict['author_id'] = str(_dict['author_id'])
+        _dict['event_time'] = _dict['event_time'].strftime('%Y-%m-%d %H:%M:%S')
+        _dict['created'] = _dict['created'].strftime('%Y-%m-%d %H:%M:%S')
+        _dict['modified'] = _dict['modified'].strftime('%Y-%m-%d %H:%M:%S')
         return _dict

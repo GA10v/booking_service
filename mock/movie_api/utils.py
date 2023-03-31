@@ -1,3 +1,4 @@
+import random
 from uuid import uuid4
 
 from faker import Faker
@@ -20,4 +21,5 @@ def get_fake_movie(movie_id: str | None = None) -> MovieInfo:
         director=fake.name(),
         actors_names=[fake.name(), fake.name()],
         writers_names=[fake.name(), fake.name()],
+        duration=random.randint(45, 180),
     )

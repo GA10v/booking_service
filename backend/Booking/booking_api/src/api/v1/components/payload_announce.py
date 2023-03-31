@@ -23,11 +23,11 @@ class CreatePayload(BaseModel):
     tickets_count: int
     event_time: datetime
     event_location: str
+    duration: int
 
 
 class UpdatePayload(BaseModel):
     status: EventStatus | None
-    movie_id: str | None
     title: str | None
     description: str | None
     sub_only: bool | None

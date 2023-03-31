@@ -33,3 +33,4 @@ class Announcement(Base):
     event_location = Column(String(4096), default='test_location')
     created = Column(TIMESTAMP(timezone=True), nullable=False, default=datetime.utcnow)
     modified = Column(TIMESTAMP(timezone=True), default=datetime.utcnow)
+    duration = Column(Integer, default=60)
