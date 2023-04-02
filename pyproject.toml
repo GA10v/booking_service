@@ -26,6 +26,7 @@ gevent = "^22.10.2"
 flask-api = "^3.0.post1"
 psycopg2-binary = "^2.9.5"
 databases = "^0.7.0"
+aioredis = "^2.0.1"
 
 
 [tool.poetry.dev-dependencies]

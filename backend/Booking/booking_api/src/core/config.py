@@ -109,6 +109,20 @@ class JWTSettings(BaseConfig):
         env_prefix = 'JWT_'
 
 
+class RedisSettings(BaseConfig):
+    HOST: str = 'localhost'
+    PORT: int = 6379
+    INDEX: int = 0
+    EXPIRE_SEC: int = 5 * 60  # 5 minutes
+
+    @property
+    def uri(self):
+        return f'redis://{self.HOST}:{self.PORT}/{self.INDEX}'
+
+    class Config:
+        env_prefix = 'REDIS_'
+
+
 class URLShortnerSettings(BaseConfig):
     HOST: str = 'localhost'
     PORT: int = 3000
@@ -138,6 +152,7 @@ class ProjectSettings(BaseConfig):
     movie_api: MovieAPIMock = MovieAPIMock()
     ugc: UGCMock = UGCMock()
     url_shortner: URLShortnerSettings = URLShortnerSettings()
+    redis: RedisSettings = RedisSettings()
 
 
 settings = ProjectSettings()
