@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import TIMESTAMP, Boolean, Column, ForeignKey, UniqueConstraint
+from sqlalchemy import TIMESTAMP, Boolean, Column, ForeignKey, UniqueConstraint, inspect
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import declarative_base
 
@@ -26,3 +26,6 @@ class Booking(Base):
     event_time = Column(TIMESTAMP(timezone=True), nullable=False)
     created = Column(TIMESTAMP(timezone=True), nullable=False, default=datetime.utcnow)
     modified = Column(TIMESTAMP(timezone=True), default=datetime.utcnow)
+
+    def _asdict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
