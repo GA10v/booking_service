@@ -25,35 +25,50 @@ class AnnounceSqlachemyRepository(_protocols.AnnouncementRepositoryProtocol):
         logger.info('AnnounceSqlachemyRepository init ...')
 
     async def _get(self, announce_id: str | UUID) -> dict:
-        """Служебный метод. Возвращает запист Announcement из БД."""
+        """
+        Служебный метод. Возвращает запист Announcement из БД.
+
+        :param announce_id: id объявления
+        :return: dict данные из БД по id
+        :raises NotFoundError: если указаная запись не был найден в базе
+        """
         data = await self.db.get(Announcement, announce_id)
         if data is None:
+            logger.info(f'[-] Not found <{announce_id}>')
             raise exc.NotFoundError
         return data._asdict()
 
     async def get_by_id(self, announce_id: str | UUID) -> layer_models.DetailAnnouncementResponse:
-        """Получение полной информации о Announcement"""
+        """Получение полной информации о Announcement.
+
+        :param announce_id: id объявления
+        :return: подробная информация о событии
+        :raises NotFoundError: если указаная запись не был найден в базе
+        """
         query = select(Announcement).filter(Announcement.id == announce_id)
         _res = await self.db.execute(query)
         scalar_result = _res.scalars().all()
+
         if len(scalar_result) == 0:
+            logger.info(f'[-] Not found <{announce_id}>')
             raise exc.NotFoundError
+
         _announce = scalar_result[0]._asdict()
-        logger.debug(f'Get _res <{announce_id}>: <{_announce}>')
+        logger.info(f'Get _res <{announce_id}>: <{_announce}>')
 
         _user = await self.user_repo.get_by_id(_announce.get('author_id'))
-        logger.debug(f'Get user <{announce_id}>: <{_user}>')
+        logger.info(f'Get user <{announce_id}>: <{_user}>')
 
         _movie = await self.movie_repo.get_by_id(_announce.get('movie_id'))
-        logger.debug(f'Get movie <{_announce.get("movie_id")}>: <{_movie}>')
+        logger.info(f'Get movie <{_announce.get("movie_id")}>: <{_movie}>')
 
         _guests = await self.booking_repo.get_by_id(announce_id=announce_id)
-        logger.debug(f'Get guest_list <{announce_id}>: <{_guests}>')
+        logger.info(f'Get guest_list <{announce_id}>: <{_guests}>')
         if not _guests:
             _guests = []
 
         _rating = await self.rating_repo.get_by_id(_announce.get('author_id'))
-        logger.debug(f'Get author_rating <{_announce.get("author_id")}>: <{_rating}>')
+        logger.info(f'Get author_rating <{_announce.get("author_id")}>: <{_rating}>')
         if not _rating:
             _rating = 0.0
 
@@ -82,10 +97,17 @@ class AnnounceSqlachemyRepository(_protocols.AnnouncementRepositoryProtocol):
         movie_id: str | UUID,
         author_id: str | UUID,
     ) -> str | UUID:
-        """Создание новой записи в БД."""
+        """Создание новой записи в БД.
+
+        :param author_id: id автора
+        :param movie_id: id контента
+        :param new_announce: данные для создания объявления
+        :return announce_id: id объявления
+        :raises UniqueConstraintError: если запист уже существует в базе
+        """
         _id = str(uuid4())
         _movie = await self.movie_repo.get_by_id(movie_id)
-        logger.debug(f'Get movie <{movie_id}>: <{_movie}>')
+        logger.info(f'Get movie <{movie_id}>: <{_movie}>')
         values = layer_payload.PGCreatePayload(
             id=_id,
             movie_id=movie_id,
@@ -101,7 +123,7 @@ class AnnounceSqlachemyRepository(_protocols.AnnouncementRepositoryProtocol):
 
             return _id
         except sqlalch_exc.IntegrityError as ex:
-            logger.error(f'UniqueConstraintError announcement <{_id}>')
+            logger.info(f'UniqueConstraintError announcement <{_id}>')
             raise exc.UniqueConstraintError from ex
 
     async def get_multy(
@@ -109,7 +131,12 @@ class AnnounceSqlachemyRepository(_protocols.AnnouncementRepositoryProtocol):
         query: layer_payload.APIMultyPayload,
         user_id: str | UUID,
     ) -> list[layer_models.AnnouncementResponse | None]:
-        """Получение объявлений по условию"""
+        """Получение объявлений по условию.
+
+        :param user_id: dict данные пользователя
+        :param query: данные для фильтрации запроса к БД
+        :return: список объявлений
+        """
         _query = select(Announcement)
         if query.sub:
             _sub = await self.user_repo.get_subs(user_id)
@@ -131,6 +158,7 @@ class AnnounceSqlachemyRepository(_protocols.AnnouncementRepositoryProtocol):
         scalar_result = [data._asdict() for data in _res.scalars().all()]
 
         if len(scalar_result) == 0:
+            logger.info(f'[-] Not found <{query}>')
             return []
         return [layer_models.AnnouncementResponse(**data) for data in scalar_result]
 
@@ -139,21 +167,30 @@ class AnnounceSqlachemyRepository(_protocols.AnnouncementRepositoryProtocol):
         announce_id: str | UUID,
         update_announce: layer_payload.APIUpdatePayload,
     ) -> None:
-        """Изменить данные в объявлении"""
+        """Изменить данные в объявлении.
+
+        :param announce_id: id объявления
+        :param update_announce: данные для изменения объявления
+        :return: подробная информация об измененном событии
+        :raises NotFoundError: если указанный пользователь не был найден в базе
+        :raises UniqueConstraintError: если запист уже существует в базе
+        """
         query = (
             update(Announcement).where(Announcement.id == announce_id).values(update_announce.dict(exclude_none=True))
         )
         try:
             await self.db.execute(query)
             await self.db.commit()
+            logger.info(f'Update announcement <{announce_id}>')
         except sqlalch_exc.IntegrityError as ex:
-            logger.error(f'UniqueConstraintError announcement <{announce_id}>')
+            logger.info(f'UniqueConstraintError announcement <{announce_id}>')
             raise exc.UniqueConstraintError from ex
 
     async def delete(self, announce_id: str | UUID) -> None:
         _data: Announcement = await self.db.get(Announcement, announce_id)
         await self.db.delete(_data)
         await self.db.commit()
+        logger.info(f'Delete announcement <{announce_id}>')
 
 
 @lru_cache()
