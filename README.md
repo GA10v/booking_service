@@ -41,6 +41,9 @@
 3. Запустить контейнер командой
    `$ docker-compose up`
 4. Перейти к документации API по url: `http://localhost:8080/api/openapi`
+5. Перейти к документации Mock_Auth по url: `http://localhost:8081/api/openapi`
+6. Перейти к документации Mock_Admin_panel по url: `http://localhost:8082/api/openapi`
+7. Перейти к документации Mock_ugc по url: `http://localhost:8083/api/openapi`
 
 ### Запуск тестов
 
