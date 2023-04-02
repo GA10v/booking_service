@@ -56,10 +56,196 @@ services:
         gelf-address: udp://127.0.0.1:5044
         tag: booking_api
 
+  mongors1n1:
+    container_name: mongors1n1
+    image: mongo:6.0.5-jammy
+    command: mongod --shardsvr --replSet mongors1 --dbpath /data/db --port 27017
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /tmp/mongo_cluster/data1:/data/db
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+  
+  mongors1n2:
+    container_name: mongors1n2
+    image: mongo:6.0.5-jammy
+    command: mongod --shardsvr --replSet mongors1 --dbpath /data/db --port 27017
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /tmp/mongo_cluster/data2:/data/db
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+  mongors1n3:
+    container_name: mongors1n3
+    image: mongo:6.0.5-jammy
+    command: mongod --shardsvr --replSet mongors1 --dbpath /data/db --port 27017
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /tmp/mongo_cluster/data3:/data/db
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+  mongors2n1:
+    container_name: mongors2n1
+    image: mongo:6.0.5-jammy
+    command: mongod --shardsvr --replSet mongors2 --dbpath /data/db --port 27017
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /tmp/mongo_cluster/data4:/data/db
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+  
+  mongors2n2:
+    container_name: mongors2n2
+    image: mongo:6.0.5-jammy
+    command: mongod --shardsvr --replSet mongors2 --dbpath /data/db --port 27017
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /tmp/mongo_cluster/data5:/data/db
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+  mongors2n3:
+    container_name: mongors2n3
+    image: mongo:6.0.5-jammy
+    command: mongod --shardsvr --replSet mongors2 --dbpath /data/db --port 27017
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /tmp/mongo_cluster/data6:/data/db
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+  
+  mongocfg1:
+    container_name: mongocfg1
+    image: mongo:6.0.5-jammy
+    command: mongod --configsvr --replSet mongors1conf --dbpath /data/db --bind_ip_all --port 27017
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /tmp/mongo_cluster/config1:/data/db
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+  mongocfg2:
+    container_name: mongocfg2
+    image: mongo:6.0.5-jammy
+    command: mongod --configsvr --replSet mongors1conf --dbpath /data/db --bind_ip_all --port 27017
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /tmp/mongo_cluster/config2:/data/db
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+  mongocfg3:
+    container_name: mongocfg3
+    image: mongo:6.0.5-jammy
+    command: mongod --configsvr --replSet mongors1conf --dbpath /data/db --bind_ip_all --port 27017
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /tmp/mongo_cluster/config3:/data/db
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+  mongos1:
+    container_name: mongos1
+    image: mongo:6.0.5-jammy
+    depends_on:
+      - mongocfg1
+      - mongocfg2
+    command: mongos --configdb mongors1conf/mongocfg1:27071,mongocfg2:27017,mongocfg3:27017 --bind_ip 0.0.0.0 --port 27019
+    ports:
+      - "27019:27019"
+    expose:
+      - "27019"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+  mongos2:
+    container_name: mongos2
+    image: mongo:6.0.5-jammy
+    depends_on:
+      - mongocfg1
+      - mongocfg2
+    command: mongos --configdb mongors1conf/mongocfg1:27071,mongocfg2:27017,mongocfg3:27017 --bind_ip 0.0.0.0 --port 27019
+    ports:
+      - "27020:27019"
+    expose:
+      - "27019"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+  # mongosetup:
+  #   container_name: mongosetup
+  #   image: mongo:6.0.3-focal
+  #   depends_on:
+  #     - mongocfg1
+  #     - mongocfg2
+  #     - mongocfg3
+  #     - mongors1n1
+  #     - mongors1n2
+  #     - mongors1n3
+  #     - mongors2n1
+  #     - mongors2n2
+  #     - mongors2n3
+  #     - mongos1
+  #     - mongos2
+  #   env_file:
+  #     - .env
+
+  #   restart: "no"
+  #   volumes:
+  #     - ./scripts:/scripts
+  #   entrypoint: [ "bash", "-c", "sh ./scripts/setup.sh" ]
+
+
 volumes:
   postgres_data:
 
 
 networks:
   project-network:
-    external: true
+    # external: true
