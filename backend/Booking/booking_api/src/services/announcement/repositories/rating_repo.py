@@ -13,7 +13,7 @@ class RatingMockRepository(_protocols.RatingRepositoryProtocol):
         logger.info('RatingMockRepository init ...')
 
     async def get_by_id(self, user_id: str | UUID) -> float:
-        return random.uniform(0.0, 10.0)
+        return round(random.uniform(0.0, 10.0), 1)
 
 
 @lru_cache()
