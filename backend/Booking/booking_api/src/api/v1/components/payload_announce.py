@@ -23,7 +23,6 @@ class CreatePayload(BaseModel):
     tickets_count: int
     event_time: datetime
     event_location: str
-    duration: int
 
 
 class UpdatePayload(BaseModel):
@@ -35,3 +34,13 @@ class UpdatePayload(BaseModel):
     tickets_count: int | None
     event_time: datetime | None
     event_location: str | None
+
+
+class MultyPayload(BaseModel):
+    author: str | None
+    movie: str | None
+    free: bool | None
+    sub: bool | None
+    ticket: int | None
+    date: datetime | None
+    location: str | None

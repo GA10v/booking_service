@@ -11,11 +11,6 @@ class BookingToDetailResponse(BaseModel):
     guest_status: bool
 
 
-class MovieToResponse(BaseModel):
-    movie_title: str
-    duration: int
-
-
 class EventStatus(str, Enum):
     Created = 'Created'
     Alive = 'Alive'
@@ -54,21 +49,4 @@ class DetailAnnouncementResponse(BaseModel):
     event_location: str
     guest_list: list[BookingToDetailResponse]
     author_rating: float
-    duration: int
-
-
-class PGAnnouncement(BaseModel):
-    id: str | UUID
-    created: datetime
-    modified: datetime
-    status: EventStatus
-    title: str
-    description: str
-    movie_id: str | UUID
-    author_id: str | UUID
-    sub_only: bool
-    is_free: bool
-    tickets_count: int
-    event_time: datetime
-    event_location: str
     duration: int

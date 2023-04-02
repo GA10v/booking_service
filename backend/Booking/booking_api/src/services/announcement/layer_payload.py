@@ -40,14 +40,6 @@ class PGCreatePayload(BaseModel):
     event_location: str
     duration: int
 
-    def dict(self, *args, **kwargs) -> dict:
-        _dict: dict = super().dict(*args, **kwargs)
-        _dict['id'] = str(_dict['id'])
-        _dict['movie_id'] = str(_dict['movie_id'])
-        _dict['author_id'] = str(_dict['author_id'])
-        _dict['event_time'] = _dict['event_time'].strftime('%Y-%m-%d %H:%M:%S')
-        return _dict
-
 
 class APIUpdatePayload(BaseModel):
     status: EventStatus | None
@@ -61,10 +53,10 @@ class APIUpdatePayload(BaseModel):
 
 
 class APIMultyPayload(BaseModel):
-    author_filter: str | None
-    movie_filter: str | None
-    is_free_filter: bool | None
-    sub_filter: bool | None
-    ticket_filter: int | None
-    date_filter: datetime | None
-    location_filter: str | None
+    author: str | None
+    movie: str | None
+    free: bool | None
+    sub: bool | None
+    ticket: int | None
+    date: datetime | None
+    location: str | None
