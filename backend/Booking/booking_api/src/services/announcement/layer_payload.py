@@ -1,5 +1,6 @@
 import enum
 from datetime import datetime
+from uuid import UUID
 
 from pydantic import BaseModel
 
@@ -14,7 +15,7 @@ class EventStatus(str, enum.Enum):
         return f'{self.value}'
 
 
-class CreatePayload(BaseModel):
+class APICreatePayload(BaseModel):
     status: EventStatus
     title: str
     description: str
@@ -25,7 +26,22 @@ class CreatePayload(BaseModel):
     event_location: str
 
 
-class UpdatePayload(BaseModel):
+class PGCreatePayload(BaseModel):
+    id: str | UUID
+    status: EventStatus
+    title: str
+    description: str
+    movie_id: str | UUID
+    author_id: str | UUID
+    sub_only: bool
+    is_free: bool
+    tickets_count: int
+    event_time: datetime
+    event_location: str
+    duration: int
+
+
+class APIUpdatePayload(BaseModel):
     status: EventStatus | None
     title: str | None
     description: str | None
@@ -36,7 +52,7 @@ class UpdatePayload(BaseModel):
     event_location: str | None
 
 
-class MultyPayload(BaseModel):
+class APIMultyPayload(BaseModel):
     author: str | None
     movie: str | None
     free: bool | None
