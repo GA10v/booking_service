@@ -1,3 +1,4 @@
+from functools import lru_cache
 from uuid import UUID
 
 import aiohttp
@@ -52,5 +53,6 @@ class UserMockRepository(_protocols.UserRepositoryProtocol):
         return _subs
 
 
+@lru_cache()
 def get_user_repo() -> _protocols.UserRepositoryProtocol:
     return UserMockRepository()

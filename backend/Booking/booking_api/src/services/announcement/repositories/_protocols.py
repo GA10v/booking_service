@@ -22,7 +22,7 @@ class AnnouncementRepositoryProtocol(ABC):
         new_announce: layer_payload.APICreatePayload,
         movie_id: str | UUID,
         author_id: str | UUID,
-    ) -> layer_models.DetailAnnouncementResponse:
+    ) -> str | UUID:
         """
         :raises UniqueConstraintError
         """
@@ -31,10 +31,9 @@ class AnnouncementRepositoryProtocol(ABC):
     @abstractmethod
     async def update(
         self,
-        author_id: str | UUID,
         announce_id: str | UUID,
         update_announce: layer_payload.APIUpdatePayload,
-    ) -> layer_models.DetailAnnouncementResponse:
+    ) -> None:
         """
         :raises NotFoundError:
         :raises UniqueConstraintError
@@ -44,7 +43,6 @@ class AnnouncementRepositoryProtocol(ABC):
     @abstractmethod
     async def delete(
         self,
-        author_id: str | UUID,
         announce_id: str | UUID,
     ) -> None:
         """
@@ -63,12 +61,18 @@ class UserRepositoryProtocol(ABC):
 
     @abstractmethod
     async def get_subs(self, user_id: str | UUID) -> list[str | UUID]:
+        """
+        :raises NotFoundError
+        """
         ...
 
 
 class BookingRepositoryProtocol(ABC):
     @abstractmethod
     async def get_by_id(self, announce_id: str | UUID) -> list[layer_models.BookingToDetailResponse]:
+        """
+        :raises NotFoundError
+        """
         ...
 
 
@@ -81,4 +85,7 @@ class RatingRepositoryProtocol(ABC):
 class MovieRepositoryProtocol(ABC):
     @abstractmethod
     async def get_by_id(self, movie_id: str | UUID) -> layer_models.MovieToResponse:
+        """
+        :raises NotFoundError
+        """
         ...

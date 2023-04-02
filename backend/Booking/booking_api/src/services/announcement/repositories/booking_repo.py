@@ -1,3 +1,4 @@
+from functools import lru_cache
 from uuid import UUID
 
 from core.logger import get_logger
@@ -21,7 +22,7 @@ class BookingMockRepository(_protocols.BookingRepositoryProtocol):
         )
 
     async def get_by_id(self, announce_id: str | UUID) -> list[layer_models.BookingToDetailResponse]:
-        return [await self._fake_boking() for _ in 5]
+        return [await self._fake_boking() for _ in range(5)]
 
 
 class BookingSqlachemyRepository(_protocols.BookingRepositoryProtocol):
@@ -32,5 +33,6 @@ class BookingSqlachemyRepository(_protocols.BookingRepositoryProtocol):
         ...
 
 
+@lru_cache()
 def get_booking_repo() -> _protocols.BookingRepositoryProtocol:
-    return BookingMockRepository
+    return BookingMockRepository()

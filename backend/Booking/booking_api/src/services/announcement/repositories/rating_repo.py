@@ -1,4 +1,5 @@
 import random
+from functools import lru_cache
 from uuid import UUID
 
 from core.logger import get_logger
@@ -15,5 +16,6 @@ class RatingMockRepository(_protocols.RatingRepositoryProtocol):
         return random.uniform(0.0, 10.0)
 
 
+@lru_cache()
 def get_rating_repo() -> _protocols.RatingRepositoryProtocol:
     return RatingMockRepository()

@@ -1,3 +1,4 @@
+from functools import lru_cache
 from uuid import UUID
 
 import aiohttp
@@ -39,5 +40,6 @@ class MovieMockRepository(_protocols.MovieRepositoryProtocol):
         )
 
 
+@lru_cache()
 def get_movie_repo() -> _protocols.MovieRepositoryProtocol:
     return MovieMockRepository()
