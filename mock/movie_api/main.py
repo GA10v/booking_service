@@ -13,7 +13,7 @@ app = FastAPI(
 )
 
 
-@app.post('/admin_panel/v1/movie/{uuid}')
+@app.post('/movie_api/v1/movie/{uuid}')
 async def user_info(uuid: str):
     return get_fake_movie(uuid)
 
