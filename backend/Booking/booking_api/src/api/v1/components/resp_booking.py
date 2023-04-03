@@ -8,7 +8,7 @@ class BookingResponse(BaseModel):
     id: str | UUID
     author_name: str
     guest_name: str
-    author_status: bool
+    author_status: bool | None
     guest_status: bool
 
 

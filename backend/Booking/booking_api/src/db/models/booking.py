@@ -13,7 +13,7 @@ Base = declarative_base()
 class Booking(Base):
     __tablename__ = 'booking'
     __table_args__ = (
-        UniqueConstraint('author_id', 'event_time', name='_bk_author_event_time'),
+        # UniqueConstraint('author_id', 'event_time', name='_bk_author_event_time'),  #noqa: E800
         UniqueConstraint('guest_id', 'event_time', name='_bk_guest_event_time'),
     )
 

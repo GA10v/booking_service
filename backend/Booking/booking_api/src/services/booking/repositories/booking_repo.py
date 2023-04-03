@@ -22,7 +22,7 @@ class BookingSqlachemyRepository(_protocols.BookingRepositoryProtocol):
         self.user_repo = user_repo.get_user_repo()
         self.movie_repo = movie_repo.get_movie_repo()
         self.rating_repo = rating_repo.get_rating_repo()
-        self.announce_repo = announce_repo.get_announcement_repo()
+        self.announce_repo = announce_repo.get_announcement_repo(db_session=db_session)
         self.db = db_session
         self.redis = cache
         logger.info('BookingSqlachemyRepository init ...')
@@ -47,7 +47,7 @@ class BookingSqlachemyRepository(_protocols.BookingRepositoryProtocol):
             raise exc.NotFoundError
         return layer_models.PGBooking(**data._asdict())
 
-    async def _get_booking_resp(self, data: dict[str, Any]) -> layer_models.BookingResponse:
+    async def _get_booking_resp(self, data: dict) -> layer_models.BookingResponse:
         """
         Служебный метод. Возвращает BookingResponse.
 
@@ -110,6 +110,7 @@ class BookingSqlachemyRepository(_protocols.BookingRepositoryProtocol):
             guest_status=_booking.guest_status,
             author_rating=_author_rating.user_raring,
             event_time=_booking.event_time,
+            guest_rating=_guest_rating.user_raring,
         )
 
     async def create(self, announce_id: str | UUID, user_id: str | UUID) -> str | UUID:
@@ -122,7 +123,7 @@ class BookingSqlachemyRepository(_protocols.BookingRepositoryProtocol):
         """
         booking_id = str(uuid4())
 
-        _announce: layer_models.AnnounceToResponse = self.announce_repo.get_by_id(announce_id)
+        _announce: layer_models.AnnounceToResponse = await self.announce_repo.get_by_id(announce_id)
         logger.info(f'Get announcement <{announce_id}>: <{_announce}>')
 
         values = layer_payload.PGCreatePayload(
@@ -132,8 +133,10 @@ class BookingSqlachemyRepository(_protocols.BookingRepositoryProtocol):
             author_id=_announce.author_id,
             guest_id=user_id,
             event_time=_announce.event_time,
-        ).dict()
-        query = insert(Booking).values(**values)
+        )
+        if str(values.author_id) == str(values.guest_id):
+            raise exc.NoAccessError
+        query = insert(Booking).values(**values.dict())
         try:
             await self.db.execute(query)
             await self.db.commit()
@@ -144,20 +147,18 @@ class BookingSqlachemyRepository(_protocols.BookingRepositoryProtocol):
             logger.info(f'UniqueConstraintError booking <{booking_id}>')
             raise exc.UniqueConstraintError from ex
 
-    async def get_multy(
+    async def sudo_get_multy(
         self,
-        query: layer_payload.APIMultyPayload,
+        query: layer_payload.SudoAPIMultyPayload,
         user_id: str | UUID,
     ) -> list[layer_models.BookingResponse]:
-        """Получение заявок по условию.
+        """Служебный метод. Получение заявок по условию.
 
         :param user_id: id пользователя
         :param query: данные для фильтрации запроса к БД
         :return: список заявок
         """
         _query = select(Booking)
-        if query.is_self:
-            _query = _query.filter(Booking.author_id == user_id)
         if query.author:
             _query = _query.filter(Booking.author_id == query.author)
         if query.movie:
@@ -171,7 +172,38 @@ class BookingSqlachemyRepository(_protocols.BookingRepositoryProtocol):
         if len(scalar_result) == 0:
             logger.info(f'[-] Not found <{query}>')
             return []
-        return [self._get_booking_resp(**data) for data in scalar_result]
+        return [await self._get_booking_resp(data) for data in scalar_result]
+
+    async def get_multy(
+        self,
+        query: layer_payload.APIMultyPayload,
+        user_id: str | UUID,
+    ) -> list[layer_models.BookingResponse]:
+        """Получение заявок по условию.
+
+        :param user_id: id пользователя
+        :param query: данные для фильтрации запроса к БД
+        :return: список заявок
+        """
+        _query = select(Booking)
+        if query.role.value == 'guest':
+            _query = _query.filter(Booking.guest_id == user_id)
+        elif query.role.value == 'author':
+            _query = _query.filter(Booking.author_id == user_id)
+        else:
+            raise exc.ValueMissingError
+        if query.movie:
+            _query = _query.filter(Booking.movie_id == query.movie)
+        if query.date:
+            _query = _query.filter(Booking.event_time == query.date)
+
+        _res = await self.db.execute(_query)
+        scalar_result = [data._asdict() for data in _res.scalars().all()]
+
+        if len(scalar_result) == 0:
+            logger.info(f'[-] Not found <{query}>')
+            return []
+        return [await self._get_booking_resp(data) for data in scalar_result]
 
     async def delete(self, booking_id: str | UUID) -> None:
         """
