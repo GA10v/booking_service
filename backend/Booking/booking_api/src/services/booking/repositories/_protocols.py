@@ -13,13 +13,18 @@ class BookingRepositoryProtocol(ABC):
         ...
 
     @abstractmethod
-    async def get_multy(self, query: layer_payload.APIMultyPayload) -> list[layer_models.BookingResponse]:
+    async def get_multy(
+        self,
+        query: layer_payload.APIMultyPayload,
+        user_id: str | UUID,
+    ) -> list[layer_models.BookingResponse]:
         ...
 
     @abstractmethod
     async def create(
         self,
         announce_id: str | UUID,
+        user_id: str | UUID,
     ) -> str | UUID:
         """
         :raises UniqueConstraintError
