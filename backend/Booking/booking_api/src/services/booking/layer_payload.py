@@ -18,6 +18,7 @@ class APIMultyPayload(BaseModel):
 class PGCreatePayload(BaseModel):
     id: str | UUID
     announcement_id: str | UUID
+    movie_id: str | UUID
     author_id: str | UUID
     guest_id: str | UUID
     event_time: datetime

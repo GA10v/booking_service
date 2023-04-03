@@ -6,10 +6,10 @@ from pydantic import BaseModel
 
 class BookingResponse(BaseModel):
     id: str | UUID
+    author_name: str
     guest_name: str
     author_status: bool
     guest_status: bool
-    guest_rating: float
 
 
 class DetailBookingResponse(BaseModel):

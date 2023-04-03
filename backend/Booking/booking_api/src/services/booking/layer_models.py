@@ -18,15 +18,16 @@ class UserToResponse(BaseModel):
 
 class AnnounceToResponse(BaseModel):
     author_id: str | UUID
+    movie_id: str | UUID
     event_time: datetime
 
 
 class BookingResponse(BaseModel):
     id: str | UUID
+    author_name: str
     guest_name: str
     author_status: bool
     guest_status: bool
-    guest_rating: float
 
 
 class DetailBookingResponse(BaseModel):
@@ -47,6 +48,7 @@ class PGBooking(BaseModel):
     created: datetime
     modified: datetime
     announcement_id: str | UUID
+    movie_id: str | UUID
     author_id: str | UUID
     guest_id: str | UUID
     author_status: bool | None
