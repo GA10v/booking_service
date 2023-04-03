@@ -23,6 +23,7 @@ class MovieInfo(BaseModel):
     director: str | None
     actors_names: list[str] | None
     writers_names: list[str] | None
+    duration: int
 
     def dict(self, *args, **kwargs) -> dict:
         _dict: dict = super().dict(*args, **kwargs)

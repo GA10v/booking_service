@@ -28,6 +28,7 @@ class PGAnnouncement(DefaultModel):
     tickets_count: int
     event_time: datetime
     event_location: str
+    duration: int
 
     def dict(self, *args, **kwargs) -> dict:
         _dict: dict = super().dict(*args, **kwargs)
@@ -47,6 +48,7 @@ class AnnouncementResponse(BaseModel):
     ticket_count: int
     event_time: datetime
     event_location: str
+    duration: int
 
     def dict(self, *args, **kwargs) -> dict:
         _dict: dict = super().dict(*args, **kwargs)
@@ -69,6 +71,7 @@ class DetailAnnouncementResponse(DefaultModel):
     event_location: str
     guest_list: list[str]
     author_rating: float
+    duration: int
 
     def dict(self, *args, **kwargs) -> dict:
         _dict: dict = super().dict(*args, **kwargs)
