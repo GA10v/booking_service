@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, status
 
-from models.reviews import Review
+from models.reviews import Review, ReviewIncoming
 from utils import auth
 
 
@@ -14,12 +14,14 @@ auth_handler = auth.AuthHandler()
     description='Создание отзыва',
     response_model=Review,
     response_description='Полное ревью события',
+    status_code=status.HTTP_201_CREATED,
 )
 async def create_review(
     event_id: str,
+    review: ReviewIncoming,
     _user: dict = Depends(auth_handler.auth_wrapper),
 ) -> Review:
-    return status.HTTP_201_CREATED
+    return Review(**review.dict(), event_id=event_id, guest_id=_user['sub'])
 
 
 @router.put(

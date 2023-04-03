@@ -22,3 +22,10 @@ class Review(ReviewBase):
 
     review_text: str
     score: int
+
+
+class ReviewIncoming(DefaultModel):
+    """Class to collect data from guest."""
+
+    review_text: str
+    score: int
