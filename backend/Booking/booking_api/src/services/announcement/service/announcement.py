@@ -1,10 +1,12 @@
 from functools import lru_cache
+from typing import Any
 from uuid import UUID
 
 from fastapi import Depends
 
 import utils.exceptions as exc
 from core.logger import get_logger
+from db.redis import CacheProtocol, RedisCache, get_cache
 from services.announcement import layer_models, layer_payload
 from services.announcement.repositories.announce_repo import AnnounceSqlachemyRepository, get_announcement_repo
 
@@ -12,9 +14,16 @@ logger = get_logger(__name__)
 
 
 class AnnouncementService:
-    def __init__(self, repo: AnnounceSqlachemyRepository):
+    def __init__(self, repo: AnnounceSqlachemyRepository, cache: RedisCache):
         self.repo = repo
+        self.redis = cache
         logger.info('AnnouncementService init ...')
+
+    async def _get_from_cache(self, key: str) -> Any:
+        return await self.redis.get(key)
+
+    async def _set_to_cache(self, key: str, data: Any) -> None:
+        await self.redis.set(key, data)
 
     async def _check_permissions(
         self,
@@ -86,5 +95,6 @@ class AnnouncementService:
 @lru_cache()
 def get_announcement_service(
     repo: AnnounceSqlachemyRepository = Depends(get_announcement_repo),
+    cache: CacheProtocol = Depends(get_cache),
 ) -> AnnouncementService:
-    return AnnouncementService(repo)
+    return AnnouncementService(repo, cache)

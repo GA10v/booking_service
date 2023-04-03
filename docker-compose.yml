@@ -48,6 +48,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
       url_shortener:
         condition: service_started
     networks:
@@ -57,6 +59,19 @@ services:
       options:
         gelf-address: udp://127.0.0.1:5044
         tag: booking_api
+
+  redis:
+    container_name: redis
+    image: redis:7.0.4-alpine
+    restart: always
+    expose:
+      - 6379
+    volumes:
+      - cache:/data
+    networks:
+      - project-network
+    healthcheck:
+      test: redis-cli ping
 
   mock_movie_api:
     container_name: mock_movie_api
@@ -107,6 +122,7 @@ services:
 
 volumes:
   postgres_data:
+  cache:
 
 
 networks:
