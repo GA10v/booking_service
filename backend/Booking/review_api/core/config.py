@@ -55,10 +55,12 @@ class MongoSettings(BaseConfig):
     HOST: str = 'localhost'
     PORT: int = 27017
     DB: str = 'booking_reviews'
+    COLLECTION: str = 'reviews'
 
     class Config:
         env_prefix = 'MONGO_'
 
+    @property
     def uri(self) -> MongoDsn:
         return f'mongodb://{self.HOST}:{self.PORT}'
 

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, status
 
 from models.reviews import Review, ReviewIncoming
+from service.mongo_driver import MongoService
 from utils import auth
 
 
@@ -20,8 +21,11 @@ async def create_review(
     event_id: str,
     review: ReviewIncoming,
     _user: dict = Depends(auth_handler.auth_wrapper),
+    mongo_service: MongoService = Depends(),
 ) -> Review:
-    return Review(**review.dict(), event_id=event_id, guest_id=_user['sub'])
+    review = Review(**review.dict(), event_id=event_id, guest_id=_user['sub'])
+    await mongo_service.insert_document(review)
+    return review
 
 
 @router.put(
