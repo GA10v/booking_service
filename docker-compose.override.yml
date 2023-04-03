@@ -11,3 +11,18 @@ services:
     expose:
       - 8080
 
+  mock_movie_api:
+    ports:
+      - 8082:8082
+
+  mock_auth:
+    ports:
+      - 8081:8081
+
+  mock_ugc:
+    ports:
+      - 8083:8083
+
+  url_shortener:
+    ports:
+      - "3000:3000"

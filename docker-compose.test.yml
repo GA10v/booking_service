@@ -39,6 +39,39 @@ services:
         gelf-address: udp://127.0.0.1:5044
         tag: BOOKING_API
 
+  mock_movie_api:
+    container_name: mock_movie_api
+    build:
+      context: mock/movie_api
+      dockerfile: Dockerfile
+    restart: always
+    env_file:
+      - .env
+    networks:
+      - project-network
+
+  mock_auth:
+    container_name: mock_auth
+    build:
+      context: mock/auth
+      dockerfile: Dockerfile
+    restart: always
+    env_file:
+      - .env
+    networks:
+      - project-network
+
+  mock_ugc:
+    container_name: mock_ugc
+    build:
+      context: mock/ugc
+      dockerfile: Dockerfile
+    restart: always
+    env_file:
+      - .env
+    networks:
+      - project-network
+
   test:
     container_name: test_booking
     build:

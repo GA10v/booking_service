@@ -54,6 +54,45 @@ class FastapiSetting(BaseConfig):
         env_prefix = 'FASTAPI_'
 
 
+class AuthMock(BaseConfig):
+    HOST: str = 'localhost'
+    PORT: int = 8081
+    PREFIX: str = '/auth/v1/'
+
+    @property
+    def uri(self):
+        return f'http://{self.HOST}:{self.PORT}{self.PREFIX}'
+
+    class Config:
+        env_prefix = 'AUTH_MOCK_'
+
+
+class MovieAPIMock(BaseConfig):
+    HOST: str = 'localhost'
+    PORT: int = 8082
+    PREFIX: str = '/movie_api/v1/'
+
+    @property
+    def uri(self):
+        return f'http://{self.HOST}:{self.PORT}{self.PREFIX}'
+
+    class Config:
+        env_prefix = 'MOVIE_API_MOCK_'
+
+
+class UGCMock(BaseConfig):
+    HOST: str = 'localhost'
+    PORT: int = 8083
+    PREFIX: str = '/ugc/v1/'
+
+    @property
+    def uri(self):
+        return f'http://{self.HOST}:{self.PORT}{self.PREFIX}'
+
+    class Config:
+        env_prefix = 'UGC_MOCK_'
+
+
 class PermissionSettings(Enum):
     User = 0
     Subscriber = 1
@@ -70,6 +109,23 @@ class JWTSettings(BaseConfig):
         env_prefix = 'JWT_'
 
 
+class URLShortnerSettings(BaseConfig):
+    HOST: str = 'localhost'
+    PORT: int = 3000
+    PREFIX: str = '/api/v1/shortener/'
+    DEBUG: bool = True
+    TESTING: bool = True
+    ID_LENGTH: int = 8
+    REDIRECT_URL: str = ''
+
+    @property
+    def uri(self):
+        return f'http://{self.HOST}:{self.PORT}{self.PREFIX}'
+
+    class Config:
+        env_prefix = 'URLSHORT_'
+
+
 class ProjectSettings(BaseConfig):
     PROJECT_NAME: str = 'Graduate_work'
     BASE_DIR = Path(__file__).parent.parent
@@ -78,6 +134,10 @@ class ProjectSettings(BaseConfig):
     postgres: PostgresSettings = PostgresSettings()
     fastapi: FastapiSetting = FastapiSetting()
     jwt: JWTSettings = JWTSettings()
+    auth: AuthMock = AuthMock()
+    movie_api: MovieAPIMock = MovieAPIMock()
+    ugc: UGCMock = UGCMock()
+    url_shortner: URLShortnerSettings = URLShortnerSettings()
 
 
 settings = ProjectSettings()
