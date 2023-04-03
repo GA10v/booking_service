@@ -18,6 +18,9 @@ class BookingRepositoryProtocol(ABC):
         query: layer_payload.APIMultyPayload,
         user_id: str | UUID,
     ) -> list[layer_models.BookingResponse]:
+        """
+        :raises ValueMissingError
+        """
         ...
 
     @abstractmethod
