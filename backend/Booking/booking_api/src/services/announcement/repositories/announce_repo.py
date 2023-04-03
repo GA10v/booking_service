@@ -39,7 +39,7 @@ class AnnounceSqlachemyRepository(_protocols.AnnouncementRepositoryProtocol):
 
         :param announce_id: id объявления
         :return: dict данные из БД по id
-        :raises NotFoundError: если указаная запись не была найдена в базе
+        :raises NotFoundError: если указаная запись не был найден в базе
         """
         data = await self.db.get(Announcement, announce_id)
         if data is None:
@@ -48,12 +48,11 @@ class AnnounceSqlachemyRepository(_protocols.AnnouncementRepositoryProtocol):
         return data._asdict()
 
     async def get_by_id(self, announce_id: str | UUID) -> layer_models.DetailAnnouncementResponse:
-        """
-        Получение полной информации о Announcement.
+        """Получение полной информации о Announcement.
 
         :param announce_id: id объявления
         :return: подробная информация о событии
-        :raises NotFoundError: если указаная запись не была найдена в базе
+        :raises NotFoundError: если указаная запись не был найден в базе
         """
         query = select(Announcement).filter(Announcement.id == announce_id)
         _res = await self.db.execute(query)
@@ -111,8 +110,7 @@ class AnnounceSqlachemyRepository(_protocols.AnnouncementRepositoryProtocol):
         movie_id: str | UUID,
         author_id: str | UUID,
     ) -> str | UUID:
-        """
-        Создание новой записи в БД.
+        """Создание новой записи в БД.
 
         :param author_id: id автора
         :param movie_id: id контента
@@ -146,10 +144,9 @@ class AnnounceSqlachemyRepository(_protocols.AnnouncementRepositoryProtocol):
         query: layer_payload.APIMultyPayload,
         user_id: str | UUID,
     ) -> list[layer_models.AnnouncementResponse | None]:
-        """
-        Получение объявлений по условию.
+        """Получение объявлений по условию.
 
-        :param user_id: id пользователя
+        :param user_id: dict данные пользователя
         :param query: данные для фильтрации запроса к БД
         :return: список объявлений
         """
@@ -183,12 +180,12 @@ class AnnounceSqlachemyRepository(_protocols.AnnouncementRepositoryProtocol):
         announce_id: str | UUID,
         update_announce: layer_payload.APIUpdatePayload,
     ) -> None:
-        """
-        Изменить данные в объявлении.
+        """Изменить данные в объявлении.
 
         :param announce_id: id объявления
         :param update_announce: данные для изменения объявления
-        :raises NotFoundError: если указаная запись не была найдена в базе
+        :return: подробная информация об измененном событии
+        :raises NotFoundError: если указанный пользователь не был найден в базе
         :raises UniqueConstraintError: если запист уже существует в базе
         """
         query = (
