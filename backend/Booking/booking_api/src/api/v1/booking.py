@@ -65,8 +65,8 @@ async def get_one(
     response_description='Список объявлений по условию',
 )
 async def get_multy(
-    _announcement_filter: datetime | None = Query(default=None, alias='filter[announcement]'),
     _self_filter: bool | None = Query(default=None, alias='filter[self]'),
+    _author: str | None = Query(default=None, alias='filter[author]'),
     _movie_filter: str | None = Query(default=None, alias='filter[movie]'),
     _date_filter: datetime | None = Query(default=None, alias='filter[date]'),
     # announcement_service: Any = '',  # noqa: E800

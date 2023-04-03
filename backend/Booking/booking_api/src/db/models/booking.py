@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import TIMESTAMP, Boolean, Column, ForeignKey, UniqueConstraint
+from sqlalchemy import TIMESTAMP, Boolean, Column, ForeignKey, UniqueConstraint, inspect
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import declarative_base
 
@@ -19,6 +19,7 @@ class Booking(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     announcement_id = Column(UUID(as_uuid=True), ForeignKey(Announcement.id), nullable=False)
+    movie_id = Column(UUID(as_uuid=True), default=uuid.uuid4, index=True)
     author_id = Column(UUID(as_uuid=True), default=uuid.uuid4, index=True)
     guest_id = Column(UUID(as_uuid=True), default=uuid.uuid4, index=True)
     author_status = Column(Boolean, nullable=True, default=None)
@@ -26,3 +27,6 @@ class Booking(Base):
     event_time = Column(TIMESTAMP(timezone=True), nullable=False)
     created = Column(TIMESTAMP(timezone=True), nullable=False, default=datetime.utcnow)
     modified = Column(TIMESTAMP(timezone=True), default=datetime.utcnow)
+
+    def _asdict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
