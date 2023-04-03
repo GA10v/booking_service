@@ -80,6 +80,8 @@ class AnnounceSqlachemyRepository(_protocols.AnnouncementRepositoryProtocol):
         if not _guests:
             _guests = []
 
+        _tickets_left = _announce.get('tickets_count') - len(_guests)
+
         _rating = await self._get_from_cache(f'rating_info:{_announce.get("author_id")}')
         if not _rating:
             _rating = await self.rating_repo.get_by_id(_announce.get('author_id'))
@@ -96,6 +98,7 @@ class AnnounceSqlachemyRepository(_protocols.AnnouncementRepositoryProtocol):
             sub_only=_announce.get('sub_only'),
             is_free=_announce.get('is_free'),
             tickets_count=_announce.get('tickets_count'),
+            tickets_left=_tickets_left,
             event_time=_announce.get('event_time'),
             event_location=_announce.get('event_location'),
             author_name=_user,

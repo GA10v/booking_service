@@ -30,6 +30,7 @@ class BookingMockRepository(_protocols.BookingRepositoryProtocol):
             guest_name=await self.user_repo.get_by_id('fake_uuid'),
             guest_rating=await self.rating_repo.get_by_id('fake_uuid'),
             guest_status=True,
+            author_status=True,
         )
 
     async def get_by_id(self, announce_id: str | UUID) -> list[layer_models.BookingToDetailResponse]:
