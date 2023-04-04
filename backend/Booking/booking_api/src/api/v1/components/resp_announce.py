@@ -9,6 +9,7 @@ class BookingToDetailResponse(BaseModel):
     guest_name: str
     guest_rating: float
     guest_status: bool
+    author_status: bool | None
 
 
 class EventStatus(str, Enum):
@@ -45,6 +46,7 @@ class DetailAnnouncementResponse(BaseModel):
     sub_only: bool
     is_free: bool
     tickets_count: int
+    tickets_left: int
     event_time: datetime
     event_location: str
     guest_list: list[BookingToDetailResponse]

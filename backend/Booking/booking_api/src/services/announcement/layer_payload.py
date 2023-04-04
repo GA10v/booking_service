@@ -11,9 +11,6 @@ class EventStatus(str, enum.Enum):
     Closed = 'Closed'
     Done = 'Done'
 
-    def __repr__(self) -> str:
-        return f'{self.value}'
-
 
 class APICreatePayload(BaseModel):
     status: EventStatus
