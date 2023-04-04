@@ -84,7 +84,7 @@
 
 ### PG
 
-![](docs/tasks/pg_models.png)
+![](./pg_models.png)
 
 ### Announcement service [layer_models]
 
