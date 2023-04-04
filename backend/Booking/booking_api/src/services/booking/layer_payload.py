@@ -9,6 +9,9 @@ class Role(str, Enum):
     guest = 'guest'
     author = 'author'
 
+    def __repr__(self) -> str:
+        return f'{self.value}'
+
 
 class APIUpdatePayload(BaseModel):
     my_status: bool

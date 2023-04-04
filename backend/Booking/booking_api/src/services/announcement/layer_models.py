@@ -5,11 +5,19 @@ from uuid import UUID
 from pydantic import BaseModel
 
 
+class RatingToResponse(BaseModel):
+    user_raring: float
+
+
+class UserToResponse(BaseModel):
+    user_name: str
+
+
 class BookingToDetailResponse(BaseModel):
     guest_name: str
     guest_rating: float
     guest_status: bool
-    author_status: bool
+    author_status: bool | None
 
 
 class MovieToResponse(BaseModel):
@@ -74,3 +82,16 @@ class PGAnnouncement(BaseModel):
     event_time: datetime
     event_location: str
     duration: int
+
+
+class PGBooking(BaseModel):
+    id: str | UUID
+    created: datetime
+    modified: datetime
+    announcement_id: str | UUID
+    movie_id: str | UUID
+    author_id: str | UUID
+    guest_id: str | UUID
+    author_status: bool | None
+    guest_status: bool | None
+    event_time: datetime

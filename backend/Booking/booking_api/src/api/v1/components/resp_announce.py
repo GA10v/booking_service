@@ -9,7 +9,7 @@ class BookingToDetailResponse(BaseModel):
     guest_name: str
     guest_rating: float
     guest_status: bool
-    author_status: bool
+    author_status: bool | None
 
 
 class EventStatus(str, Enum):
