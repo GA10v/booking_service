@@ -22,7 +22,7 @@ class AnnounceSqlachemyRepository(_protocols.AnnouncementRepositoryProtocol):
         self.user_repo = user_repo.get_user_repo()
         self.movie_repo = movie_repo.get_movie_repo()
         self.rating_repo = rating_repo.get_rating_repo()
-        self.booking_repo = booking_repo.get_booking_repo()
+        self.booking_repo = booking_repo.get_booking_repo(db_session=db_session)
         self.db = db_session
         self.redis = cache
         logger.info('AnnounceSqlachemyRepository init ...')
@@ -41,11 +41,26 @@ class AnnounceSqlachemyRepository(_protocols.AnnouncementRepositoryProtocol):
         :return: dict данные из БД по id
         :raises NotFoundError: если указаная запись не была найдена в базе
         """
-        data = await self.db.get(Announcement, announce_id)
+        data: layer_models.PGAnnouncement = await self.db.get(Announcement, announce_id)
         if data is None:
             logger.info(f'[-] Not found <{announce_id}>')
             raise exc.NotFoundError
-        return data._asdict()
+        return layer_models.PGAnnouncement(
+            id=data.id,
+            created=data.created,
+            modified=data.modified,
+            status=data.status.value,
+            title=data.title,
+            description=data.description,
+            movie_id=data.movie_id,
+            author_id=data.author_id,
+            sub_only=data.sub_only,
+            is_free=data.is_free,
+            tickets_count=data.tickets_count,
+            event_time=data.event_time,
+            event_location=data.event_location,
+            duration=data.duration,
+        )
 
     async def get_by_id(self, announce_id: str | UUID) -> layer_models.DetailAnnouncementResponse:
         """
@@ -55,55 +70,45 @@ class AnnounceSqlachemyRepository(_protocols.AnnouncementRepositoryProtocol):
         :return: подробная информация о событии
         :raises NotFoundError: если указаная запись не была найдена в базе
         """
-        query = select(Announcement).filter(Announcement.id == announce_id)
-        _res = await self.db.execute(query)
-        scalar_result = _res.scalars().all()
+        try:
+            _announce: layer_models.PGAnnouncement = await self._get(announce_id)
+        except exc.NotFoundError:
+            raise
 
-        if len(scalar_result) == 0:
-            logger.info(f'[-] Not found <{announce_id}>')
-            raise exc.NotFoundError
+        _user = await self.user_repo.get_by_id(_announce.author_id)
+        logger.info(f'Get user <{announce_id}>: <{_user}>')
 
-        _announce = scalar_result[0]._asdict()
-        logger.info(f'Get _res <{announce_id}>: <{_announce}>')
-
-        _user = await self._get_from_cache(f'user_info:{_announce.get("author_id")}')
-        if not _user:
-            _user = await self.user_repo.get_by_id(_announce.get('author_id'))
-            await self._set_to_cache(f'user_info:{_announce.get("author_id")}', _user)
-            logger.info(f'Get user <{announce_id}>: <{_user}>')
-
-        _movie = await self.movie_repo.get_by_id(_announce.get('movie_id'))
-        logger.info(f'Get movie <{_announce.get("movie_id")}>: <{_movie}>')
+        _movie = await self.movie_repo.get_by_id(_announce.movie_id)
+        logger.info(f'Get movie <{_announce.movie_id}>: <{_movie}>')
 
         _guests = await self.booking_repo.get_by_id(announce_id=announce_id)
         logger.info(f'Get guest_list <{announce_id}>: <{_guests}>')
         if not _guests:
             _guests = []
 
-        _tickets_left = _announce.get('tickets_count') - len(_guests)
+        _confirmed_list = await self.booking_repo.get_confirmed_list(announce_id=announce_id)
 
-        _rating = await self._get_from_cache(f'rating_info:{_announce.get("author_id")}')
-        if not _rating:
-            _rating = await self.rating_repo.get_by_id(_announce.get('author_id'))
-            await self._set_to_cache(f'rating_info:{_announce.get("author_id")}', _rating)
-            logger.info(f'Get author_rating <{_announce.get("author_id")}>: <{_rating}>')
+        _rating = await self.rating_repo.get_by_id(_announce.author_id)
+        logger.info(f'Get author_rating <{_announce.author_id}>: <{_rating}>')
+
+        _tickets_left = _announce.tickets_count - len(_confirmed_list)
 
         return layer_models.DetailAnnouncementResponse(
-            id=_announce.get('id'),
-            created=_announce.get('created'),
-            modified=_announce.get('modified'),
-            status=_announce.get('status').value,
-            title=_announce.get('title'),
-            description=_announce.get('description'),
-            sub_only=_announce.get('sub_only'),
-            is_free=_announce.get('is_free'),
-            tickets_count=_announce.get('tickets_count'),
+            id=_announce.id,
+            created=_announce.created,
+            modified=_announce.modified,
+            status=_announce.status.value,
+            title=_announce.title,
+            description=_announce.description,
+            sub_only=_announce.sub_only,
+            is_free=_announce.is_free,
+            tickets_count=_announce.tickets_count,
             tickets_left=_tickets_left,
-            event_time=_announce.get('event_time'),
-            event_location=_announce.get('event_location'),
-            author_name=_user,
+            event_time=_announce.event_time,
+            event_location=_announce.event_location,
+            author_name=_user.user_name,
             guest_list=_guests,
-            author_rating=_rating,
+            author_rating=_rating.user_raring,
             movie_title=_movie.movie_title,
             duration=_movie.duration,
         )

@@ -10,6 +10,7 @@ from core.config import settings
 from core.logger import get_logger
 from db.redis import CacheProtocol, RedisCache, get_cache
 from services.announcement.repositories import _protocols
+from services.booking import layer_models
 from utils.auth import _headers
 
 logger = get_logger(__name__)
@@ -30,7 +31,7 @@ class UserMockRepository(_protocols.UserRepositoryProtocol):
     async def _set_to_cache(self, key: str, data: Any) -> None:
         await self.redis.set(key, data)
 
-    async def get_by_id(self, user_id: str | UUID) -> str:
+    async def get_by_id(self, user_id: str | UUID) -> layer_models.UserToResponse:
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.post(
@@ -44,7 +45,9 @@ class UserMockRepository(_protocols.UserRepositoryProtocol):
             logger.debug(f'Except <{ex}>')
             return None
 
-        return f"{_user.get('name')} {_user.get('last_name')}"
+        return layer_models.UserToResponse(
+            user_name=f"{_user.get('name')} {_user.get('last_name')}",
+        )
 
     async def get_subs(self, user_id: str | UUID) -> list[str | UUID]:
         try:

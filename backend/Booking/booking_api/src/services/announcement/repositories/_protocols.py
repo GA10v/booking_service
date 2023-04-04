@@ -53,7 +53,7 @@ class AnnouncementRepositoryProtocol(ABC):
 
 class UserRepositoryProtocol(ABC):
     @abstractmethod
-    async def get_by_id(self, user_id: str | UUID) -> str:
+    async def get_by_id(self, user_id: str | UUID) -> layer_models.UserToResponse:
         """
         :raises NotFoundError
         """
@@ -70,15 +70,16 @@ class UserRepositoryProtocol(ABC):
 class BookingRepositoryProtocol(ABC):
     @abstractmethod
     async def get_by_id(self, announce_id: str | UUID) -> list[layer_models.BookingToDetailResponse]:
-        """
-        :raises NotFoundError
-        """
+        ...
+
+    @abstractmethod
+    async def get_confirmed_list(self, announce_id: str | UUID) -> list[layer_models.BookingToDetailResponse]:
         ...
 
 
 class RatingRepositoryProtocol(ABC):
     @abstractmethod
-    async def get_by_id(self, user_id: str | UUID) -> float:
+    async def get_by_id(self, user_id: str | UUID) -> layer_models.RatingToResponse:
         ...
 
 
