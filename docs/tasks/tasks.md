@@ -1,8 +1,5 @@
 ## Сервис бронирования билетов
 
-- [*] - задание со звездочкой
-- [?] - что-то не понятно
-
 ## Легенда
 
 Хочется посмотреть фильм/сериал, но не хочется тупить в одного или ты в новом городе и здесь нет знакомых...
@@ -12,259 +9,98 @@
 
 ### 1. Сценарий организатор
 
-- для конкретного фильна создается объявдение (Announcement):
+- Автор создает объявление [Announcement], "Собираюсь посмотреть фильм завтра вечером, ищу компанию"
+- Другие пользователи могут подать заявку на участие в событии. Создают запись [Booking]
+- Автор может вносить изменения в объявление
+- При внесении изменений в объявление - всем участникам и потенциальным гостям приходит уведомление и ссылка на [Announcement]
+- За 24 часа до события - всем участникам приходит уведомление и ссылка на [Announcement]
+- За 1 час до события - всем участникам приходит уведомление и ссылка на [Announcement]
 
-  - название Announcement
-  - описание Announcement
-  - дата Announcement
-  - место Announcement
-  - приватность Announcement
-  - цена Announcement (можно bool)
-  - [*] указать гостей (отправить им инвайты)
-
-- для Announcement создаются Booking (one_to_many):
-
-  - автору приходит заявка на участие в Announcement от гостя (в Booking {'author' : None, 'guest' : True})
-  - автор может посмотреть статус всех записей в Booking для своего Announcement и редактировать их (отклонить уже принятую заявку)
-  - как только запись в Booking {'author' : True, 'guest' : True}, в Announcement можно посмотреть список участников
-  - [*] автор отправляет инвайт гостю на участие в Announcement ( в Booking {'author' : True, 'guest' : None} )
+  - автору приходят заявки на участие в событии от гостей
+  - автору приходит уведомление и ссылка на подробную информацию о состоянии [Booking]
+  - автор может принять или отклонить заявку на участие в событии
+  - если состояние [Booking] изменяется - автору и гостю приходит уведомление и ссылка на подробную информацию о состоянии [Booking]
+  - когда заявка одобрена - сведения о госте появляются в информации о событии
 
 ### 2. Сценарий гость
 
-- для конкретного фильма есть несколько Announcement:
-
-  - посмотреть список всех доступных Announcements
-  - посмотреть информацию по конкретному Announcements
-  - отправить заявку на участие (нужна проверка на уникальность, гость не может быть на нескольких событиях одновременно)
-  - [*] пришел инвайт гостю на участие в Announcement ( в Booking {'author' : True, 'guest' : None} )
-
-- для Announcement создается Booking:
-  - гость отправляет заявку на участие в Announcement (в Booking {'author' : None, 'guest' : True})
-  - как только запись в Booking {'author' : True, 'guest' : True}, в Announcement можно посмотреть список участников
-  - [*] от автора пришел инвайт гостю на участие в Announcement ( в Booking {'author' : True, 'guest' : None} )
-
-### 3. Сценарий Notifications
-
-- Если организатор изменит объявление - все участники события получают уведомление и короткую ссылку на новое объявление
-- Изменения в Booking (запросы, инвайты, подтверждения заявок, отклонения заявок) - организатор и гость получают уведомление и короткую ссылку на новое объявление
-- За день до события всем участникам приходит уведомление и короткая ссылка на объявление
-- В день события (за час) всем участникам приходит уведомление и короткая ссылка на объявление
-
-### [*][?] 4. Сценарий Rating
-
-- после проведения события, всем участникам приходит сообщение "оцените событие" - продумать
-- [1] у каждого пользователя есть оценка "организатор" - продумать
-- [1] у каждого пользователя есть оценка "гость" - продумать
-- [2] у каждого пользователя есть общая оценка - продумать
-- Где хранить информацию о рейтинге пользователя? - продумать, может хранить в UGC (будет ли дублироваться БД)
-- Какуб БД выбрать? mongoDB|PG (надо ли проводить иследование как в спринте UGC, какой показатель проверять? не пользовался mongo до курса... есть ли пунктик- показать все чему научили)
-- Где хранить информацию о рейтинге Announcement (будет ли оно оцениваться) - продумать
-
-надо выбрать [1] или [2]
-
-### [*] 5. Сценарий Chat
-
-- если ты участник события, появляется возможность общаться в чате
-
-### [*] 6. Сценарий соц.сети
-
-- при регистрации события есть возможность опубликовать пост в своих соц.сетях
+- Пользователь может посмотреть подробную информацию о событии [Announcement]
+- Для поиска подходящего события, пользователь использует фильтры и получает список объявлений
+- Пользователь отправляет заявку на участие в событии. Создается запись [Booking]
+- Автору приходит уведомление и ссылка на подробную информацию о состоянии [Booking]
+- Если информация о событии изменилась - пользователю приходит уведомление и ссылка на [Announcement]
+- Когда статус заявки меняется - пользователю приходит уведомление и ссылка на [Booking]
 
 ## Требования
 
-### Announcement
-
-Использовать access_token для определения user_id и прав доступа к информации
-
-- создать анонс (записать в базу) + оповещение
-- изменить анонс (изменить запись в базе по announcement_id) + оповещение
-- удалить анонс (удалить/изменить статус записи в базе по announcement_id) + оповещение
-- посмотреть анонсы пользователя как организатора (получить записи из базы по user_id) (применить фильтрацию) (пагинация)
-- [*] посмотреть анонсы пользователя как гостя (получить записи из базы по user_id) (применить фильтрацию) (пагинация)
-- посмотреть актуальные анонсы для фильма (получить записи из базы по movie_id) (применить фильтрацию) (пагинация)
-- посмотреть подробную информацию об анонсе (получить запись из базы по announcement_id)
-- [?] менять статус анонса по его завершению (изменить запись в базе по announcement_id) + [*]оповещение c Rating
-- проверять конфликты анонсов (уже создал свой или подтвердил чужой на это время)
-
-### Booking
-
-- отправить заявку на участие (записать в базу) + оповещение
-- подтвердить участие в событии/подтвердить заявку на участии (изменить запись в базе по announcement_id, user_id) + оповещение
-- посмотреть статус заявки (получить запись из базы по announcement_id, user_id)
-- получить всех участников события (получить записи из базы по announcement_id) (применить фильтрацию) (пагинация)
-- запретить отправлять несколько заявок на один анонс
-
-### [*] [?] Rating
-
-- поставить оценку (записать в базу)
-- получить оценку (получить записи из базы по announcement_id, user_id)
-- изменить оценку (изменить запись в базе по rewiev_id)
-- удалить оценку (удалить/изменить запись в базе по rewiev_id)
-
-### [*] Chat
-
-- написать пост
-- изменить пост
-- удалить пост
-- получить посты
-
 ### Внешние сервисы
 
-- Auth (user_info, access_token)
-- Movie_API (информация о фильме)
-- UGC (подписчики, !!хранение отзывов!!) - !ВОПРОС!
-- Notification (отправлять уведомления, создавать и модерировать отложенные уведомления)
-- Url_shortner (генерировать ссылки на события)
+- Auth - регистрация пользователя
+- User - информация о пользователе и список его друзей [layer_models.UserToResponse]
+- Movie_API - информация о контенте [layer_models.MovieToResponse]
+- RatingService - информацию о пользователе [layer_models.RatingToResponse]
+- Notification - создание уведомлений [layer_models.EventToNotific]
+- Url_shortner - генерация коротких ссылок
+- Watcher - воркер для присваивания статуса [Done] записям в [Announcement]
 
-## Модели
+### [Announcement]
 
-### Announcement
+- Нельзя создавать дубликаты объявлений от одного пользователя [Index_author_event_time]
+- Проверять права пользователя перед изменением записи [HTTPStatus.FORBIDDEN]
 
-#### Поля
+### [Booking]
 
-- id - announcement_id
-- status - ['Created', 'Alive', 'Closed', 'Done'] статус объявления, необходимо для сортировки + [?]нотификация (выбор шаблона для события)
-- title - название объявления
-- description - описание, условия, цена
-- movie_id - uuid фильма
-- author_id - uuid автора объявления
-- sub_only - флаг приватности, если TRUE: объявление будет показываться только списку подписчиков
-- is_free - флаг для фильтрации, если событие платое: FALSE
-- ticket_count - количество участников
-- event_time - дата события
-- event_location - место события
-- created - дата создания объявления
-- modified - дата последнего изменения объявления
+- Нельзя быть гостем на своем событии [HTTPStatus.FORBIDDEN]
+- Нельзя регистрироваться на события с одним временем начала [Index_bk_guest_event_time]
 
-- movie_title - название фильма (для Response)
-- author_name - имя автора объявления (для Response)
-- guest_list - список гостей с их статусом и [*]рейтингом (для Response)
-- author_rating - рейтинг автора объявления (для Response)
+### [layer_models.UserToResponse]
 
-#### Layer DB:
+- Имя пользователя
 
-Announcement
+### [layer_models.MovieToResponse]
 
-- `id`: uuid [pk]
-- `status`: AnnouncetStatus
-- `title`: str
-- `description`: str
-- `movie_id`: uuid
-- `author_id`: uuid
-- `sub_only`: bool
-- `is_free`: bool
-- `ticket_count`: int
-- `event_time`: datetime [unique]
-- `event_location`: str
-- `created`: datetime
-- `modified`: datetime
+- Название фильма
+- Продолжительность фильма
 
-#### Layer API:
+### [layer_models.RatingToResponse]
 
-AnnouncementResponse
+- Рейтинг пользователя
 
-- `id`: str | UUID
-- `status`: EventStatus
-- `title`: str
-- `author_id`: str | UUID
-- `sub_only`: bool
-- `is_free`: bool
-- `ticket_count`: int
-- `event_time`: datetime
-- `event_location`: str
+### [layer_models.EventToNotific]
 
-DetailAnnouncementResponse
-
-- `id`: str | uuid
-- `status`: AnnouncetStatus
-- `title`: str
-- `description`: str
-- `movie_title`: str
-- `author_name`: str
-- `sub_only`: bool
-- `is_free`: bool
-- `ticket_count`: int
-- `event_time`: datetime
-- `event_location`: str
-- `created`: datetime
-- `modified`: datetime
-- `guest_list`: list[str]
-- `author_rating`: float
-
-### Booking
-
-#### Поля
-
-- id - booking_id
-- announcement_id - uuid объявления
-- author_id - uuid автора объявления
-- guest_id - uuid гостя
-- author_status - по дефолту None, если заявка одобрена TRUE, отклонена - FALSE
-- guest_status - по дефолту TRUE, если гость передумал FALSE
-- event_time - дата события [учавствует в индексе уникальности]
-- created - дата создания записи
-- modified - дата последнего изменения записи
-
-- movie_title - название фильма (для Response)
-- author_name - имя автора объявления (для Response)
-- guest_name - имя гостя (для Response)
-- author_rating - рейтинг автора объявления (для Response)
-- guest_rating - рейтинг гостя (для Response)
-
-#### Layer DB:
-
-Booking
-
-- `id`: uuid [pk]
-- `announcement_id`: uuid [fk Announcement.id]
-- `author_id`: uuid [_unique]
-- `guest_id`: uuid
-- `author_status`: bool
-- `guest_status`: bool
-- `event_time`: datetime [_unique]
-- `created`: datetime
-- `modified`: datetime
-
-#### Layer API:
-
-BookingResponse
-
-- `booking_id`: str | uuid
-- `guest_name`: str
-- `author_status`: bool
-- `guest_status`: bool
-- `guest_rating`: float
-
-DetailBookingResponse
-
-- `booking_id`: str | UUID
-- `announcement_id`: str | UUID
-- `movie_title`: str
-- `author_name`: str
-- `guest_name`: str
-- `author_status`: bool | None
-- `guest_status`: bool
-- `guest_rating`: float
-- `author_rating`: float
-- `event_time`: datetime
+- ...
 
 ## API
 
 ### Announcement
 
-- POST /api/v1/announcement/{movie_id} - создание объявления [Response: DetailAnnouncementResponse]
-- PUT /api/v1/announcement/{announcement_id} - изменение объявления [Response: DetailAnnouncementResponse]
-- GET /api/v1/announcement/{announcement_id} - получить подробную информацию из объявления [Response: DetailAnnouncementResponse]
-- GET /api/v1/announcements - получить весь список объявлений по условию [Response: list[AnnouncementResponse]]
-- DELETE /api/v1/announcement/{announcement_id} [Response: HTTPStatus.OK]
+![](docs/tasks/api_announce.png)
 
 ### Booking
 
-- POST /api/v1/booking/{announcement_id} - отправить запрос [Response: DetailBookingResponse]
-- PUT /api/v1/booking/{booking_id} - изменить статус [Response: DetailBookingResponse]
-- GET /api/v1/booking/{booking_id} - получить подробную информацию о запросе [Response: DetailBookingResponse]
-- GET /api/v1/bookings - получить список заявок по условию [Response: list[BookingResponse]]
-- DELETE /api/v1/booking/{booking_id} - удалить заявку [Response: HTTPStatus.OK]
+![](docs/tasks/api_booking.png)
+
+## Модели
+
+### PG
+
+![](docs/tasks/pg_models.png)
+
+### Announcement service [layer_models]
+
+![](docs/tasks/announce_models.png)
+
+### Announcement service [layer_payload]
+
+![](docs/tasks/announce_payloads.png)
+
+### Booking service [layer_models]
+
+![](docs/tasks/booking_models.png)
+
+### Booking service [layer_payload]
+
+![](docs/tasks/booking_payloads.png)
 
 ## Я.Практика
 
@@ -272,39 +108,3 @@ DetailBookingResponse
 Для добавления такой возможности реализуйте кнопку покупки билета в кино для определенной группы фильмов. Система должна дать пользователю возможность составлять свои расписания, выбирать фильмы и место сбора. Также она должна показывать возможное количество зрителей и позволять пользователю выбирать дату и время просмотра и хоста — того, кто предлагает фильм и место.
 Для данной задачи реализовывать оплату не нужно: достаточно бронировать билеты и не давать забронировать их больше, чем есть мест у конкретного человека.
 В качестве задания «со звёздочкой» придумайте систему оценки пользователя-хоста и пользователя-гостя.
-
-## задачи на [22.03.2023 ]
-
-backward
-
-- [Notific] Fix (или писать мок)
-- [Notific] Тянуть в проект или docker (если кто-то из нас умеет)
-- [Notific] Добавить функционал Event.booking (не в приоритете)
-  doc
-- [DOC] Требования к Announcement
-- [DOC] Требования к Booking
-- [DOC] Требования к Rewievs
-- [DOC] Требования к сервисам из прошлых спринтов
-- [DOC] Модели
-- [DOC] Диограма последовательностей
-  api
-- [MVP] FastAPI показать /api/openapi (Announcement)
-  <!-- - [MVP+] FastAPI middleware Logging -->
-  <!-- - [MVP+] FastAPI middleware Auth -->
-  <!-- - [MVP+] FastAPI docker -->
-  <!-- - [MVP+] FastAPI test -->
-  db
-- [MVP] PG написать StorageProtocol(async)
-- [MVP+] PG написать PGStorage(async)
-  <!-- - [MVP+] PG написать инициализацию BD(sqlalchemy) -->
-  <!-- - [MVP+] PG написать модель Announcement(sqlalchemy) -->
-  <!-- - [MVP+] PG написать модель Announcement(pydantic) -->
-- [MVP+] PG docker
-  reviews
-- [Rewievs] Прочитать спринт UGC
-- [Rewievs] Написать требования к сервису
-- [Rewievs] Выбрать технологию (Mongo/PG)
-- [Rewievs] Модели
-- [Rewievs] Требования к стороним сервисам
-- [Rewievs][mvp] DB написать StorageProtocol(async)
-- [Rewievs][mvp] DB написать DBStorage(async)

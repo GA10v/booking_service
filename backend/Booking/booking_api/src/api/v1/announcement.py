@@ -14,7 +14,7 @@ auth_handler = auth.AuthHandler()
 
 @router.post(
     '/announcement/{movie_id}',
-    summary='Создание объявления',
+    summary='Создать объявление',
     description='Создание записи в DB',
     response_model=resp_announce.DetailAnnouncementResponse,
     response_description='Подробная информация из объявления',
@@ -47,7 +47,7 @@ async def create(
 
 @router.put(
     '/announcement/{announcement_id}',
-    summary='Изменение объявления',
+    summary='Изменить объявление',
     description='Изменение записи в DB',
     response_model=resp_announce.DetailAnnouncementResponse,
     response_description='Подробная информация после изменения',
@@ -122,7 +122,7 @@ async def get_multy(
 
 @router.delete(
     '/announcement/{announcement_id}',
-    summary='Удаление объявления',
+    summary='Удалить свое объявление',
     description='Удаление записи из DB',
     response_description='HTTPStatus',
 )
