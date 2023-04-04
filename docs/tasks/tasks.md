@@ -74,11 +74,11 @@
 
 ### Announcement
 
-![](docs/tasks/api_announce.png)
+![](./api_announce.png)
 
 ### Booking
 
-![](docs/tasks/api_booking.png)
+![](./api_booking.png)
 
 ## Модели
 
@@ -88,19 +88,19 @@
 
 ### Announcement service [layer_models]
 
-![](docs/tasks/announce_models.png)
+![](./announce_models.png)
 
 ### Announcement service [layer_payload]
 
-![](docs/tasks/announce_payloads.png)
+![](./announce_payloads.png)
 
 ### Booking service [layer_models]
 
-![](docs/tasks/booking_models.png)
+![](./booking_models.png)
 
 ### Booking service [layer_payload]
 
-![](docs/tasks/booking_payloads.png)
+![](./booking_payloads.png)
 
 ## Я.Практика
 
