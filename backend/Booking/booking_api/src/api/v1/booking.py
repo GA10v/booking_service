@@ -14,7 +14,7 @@ auth_handler = auth.AuthHandler()
 
 @router.post(
     '/booking/{announcement_id}',
-    summary='Создание заявки',
+    summary='Создать заявку',
     description='Создание записи в DB',
     response_model=resp_booking.DetailBookingResponse,
     response_description='Подробная информация из заявки',
@@ -34,7 +34,7 @@ async def create(
 
 @router.put(
     '/booking/{booking_id}',
-    summary='Изменение статуса заявки',
+    summary='Изменить свой статус в заявке',
     description='Изменение записи в DB',
     response_model=resp_booking.DetailBookingResponse,
     response_description='Подробная информация после изменения',
@@ -61,7 +61,7 @@ async def update(
 
 @router.get(
     '/booking/{booking_id}',
-    summary='Получить заявки по id',
+    summary='Получить заявку по id',
     description='Получение всей информации по заявке, сервис идет за информацией в db, Auth, Movie_api',
     response_model=resp_booking.DetailBookingResponse,
     response_description='Подробная информация из объявления',
@@ -106,7 +106,7 @@ async def get_multy(
 
 @router.get(
     '/_bookings',
-    summary='Получить список всех объявлений',
+    summary='Служебный метод. Получить список всех заявок',
     description='Получение списка объявлений, сервис идет за информацией в db',
     response_model=list[resp_booking.BookingResponse],
     response_description='Список объявлений по условию',
@@ -130,7 +130,7 @@ async def sudo_get_multy(
 
 @router.delete(
     '/booking/{booking_id}',
-    summary='Удаление заявки',
+    summary='Удалить заявку',
     description='Удаление записи из DB',
     response_description='HTTPStatus',
 )
