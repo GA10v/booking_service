@@ -70,37 +70,41 @@
 
 - ...
 
+## TO_BE
+
+![](./components/to_be.png)
+
 ## API
 
 ### Announcement
 
-![](./api_announce.png)
+![](./components/api_announce.png)
 
 ### Booking
 
-![](./api_booking.png)
+![](./components/api_booking.png)
 
 ## Модели
 
 ### PG
 
-![](./pg_models.png)
+![](./components/pg_models.png)
 
 ### Announcement service [layer_models]
 
-![](./announce_models.png)
+![](./components/announce_models.png)
 
 ### Announcement service [layer_payload]
 
-![](./announce_payloads.png)
+![](./components/announce_payloads.png)
 
 ### Booking service [layer_models]
 
-![](./booking_models.png)
+![](./components/booking_models.png)
 
 ### Booking service [layer_payload]
 
-![](./booking_payloads.png)
+![](./components/booking_payloads.png)
 
 ## Я.Практика
 
