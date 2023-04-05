@@ -33,7 +33,7 @@ class AnnounceSqlachemyRepository(_protocols.AnnouncementRepositoryProtocol):
     async def _set_to_cache(self, key: str, data: Any) -> None:
         await self.redis.set(key, data)
 
-    async def _get(self, announce_id: str | UUID) -> dict:
+    async def _get(self, announce_id: str | UUID) -> layer_models.PGAnnouncement:
         """
         Служебный метод. Возвращает запист Announcement из БД.
 

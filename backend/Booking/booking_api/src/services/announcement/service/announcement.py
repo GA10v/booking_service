@@ -31,13 +31,13 @@ class AnnouncementService:
         user: dict,
     ) -> bool:
         try:
-            _data = await self.repo._get(announce_id)
+            _data: layer_models.PGAnnouncement = await self.repo._get(announce_id)
         except exc.NotFoundError:
             raise
         if user.get('claims').get('is_super'):
             logger.info(f'Sudo make changes <{announce_id}>')
             return True
-        elif str(user.get('user_id')) == str(_data.get('author_id')):
+        elif str(user.get('user_id')) == str(_data.author_id):
             logger.info(f'Author make changes <{announce_id}>')
             return True
 
