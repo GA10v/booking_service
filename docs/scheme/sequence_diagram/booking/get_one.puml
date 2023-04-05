@@ -1,0 +1,128 @@
+@startuml layers
+' !theme materia
+autonumber
+skinparam sequence {
+    ParticipantPadding 20
+    MessageAlign center
+}
+
+title GET '/booking/{booking_id}'
+
+participant Client as Client
+participant "Booking API" as API
+participant "BookingService" as Service
+participant "BookingRepository" as BookingRepo
+participant "AnnounceRepository" as AnnounceRepo
+participant "UserRepository" as UserRepo
+participant "MovieRepository" as MovieRepo
+participant "RatingRepository" as RatingRepo
+database "Cache" as Cache_Service
+database "Booking DB" as DB_Booking
+participant DB_Booking
+participant Auth
+participant Notification
+participant Movie_API
+participant Rating
+participant Url_shortner
+participant UGC
+
+Client -> API: - Booking_id
+API -> API:
+note right
+    - проверка access_headers
+end note
+API -> Service: - user\n - Booking_id
+
+group Booking Service
+
+    group #C9B2E9 layer_service
+
+        Service -> Service
+        note right
+            - self._check_permissions()
+        end note
+        Service -> Service
+        note right
+            - self.repo.get_bi_id()
+        end note
+
+        end group
+
+        Service --> BookingRepo: - Booking_id
+
+        group #C9B2E9 layer_repo
+            BookingRepo -> BookingRepo
+            note right
+                - create query
+            end note
+
+            BookingRepo -> BookingRepo
+            note right
+                - self.db.execute()
+            end note
+
+            BookingRepo --> DB_Booking: Select Booking(id)
+            DB_Booking -> BookingRepo: - layer_models.PGBooking
+
+            BookingRepo -> BookingRepo
+            note right
+                - self.announce_repo.get_by_id()
+            end note
+            BookingRepo --> AnnounceRepo: - Announcement_id
+
+            AnnounceRepo -> AnnounceRepo
+            note right
+                - create query
+            end note
+
+            AnnounceRepo -> AnnounceRepo
+            note right
+                - self.db.execute()
+            end note
+
+            AnnounceRepo -> DB_Booking: Select Announcement(id)
+            DB_Booking -> AnnounceRepo: - layer_models.PGAnnouncement
+
+            AnnounceRepo -> BookingRepo: layer_models.AnnounceToResponse
+
+            BookingRepo -> BookingRepo
+            note right
+                - self.user_repo.get_by_id()
+            end note
+            BookingRepo --> UserRepo: - user_id
+            UserRepo -> Auth: - user_id
+            Auth -> UserRepo: - layer_models.UserToResponse
+            UserRepo -> BookingRepo: - layer_models.UserToResponse
+
+            BookingRepo -> BookingRepo
+            note right
+                - self.movie_repo.get_by_id()
+            end note
+            BookingRepo --> MovieRepo: - movie_id
+            MovieRepo -> Movie_API: - movie_id
+            Movie_API -> MovieRepo: - layer_models.MovieToResponse
+            MovieRepo -> BookingRepo: - layer_models.MovieToResponse
+
+            BookingRepo -> BookingRepo
+            note right
+                - self.rating_repo.get_by_id()
+            end note
+            BookingRepo --> RatingRepo: - user_id
+            RatingRepo -> Rating: - user_id
+            Rating -> RatingRepo: - layer_models.RatingToResponse
+            RatingRepo -> BookingRepo: - layer_models.RatingToResponse
+
+            BookingRepo -> BookingRepo
+            note right
+                - create Response
+            end note
+
+            end group
+
+            BookingRepo -> Service: - layer_models.DetailBookingResponse
+            end group
+
+            Service -> API: - layer_models.DetailBookingResponse
+
+            API -> Client: - layer_models.DetailBookingResponse
+            @enduml
