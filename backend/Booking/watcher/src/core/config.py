@@ -28,6 +28,10 @@ class DebugSettings(BaseConfig):
 class WatcherSettings(BaseConfig):
     SLEEP_MINUTES: int = 15
 
+    @property
+    def sleep(self):
+        return self.SLEEP_MINUTES * 60
+
     class Config:
         env_prefix = 'WATCHER_'
 
