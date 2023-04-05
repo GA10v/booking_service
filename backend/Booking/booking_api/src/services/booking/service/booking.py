@@ -24,7 +24,7 @@ class BookingService:
     def __init__(self, repo: BookingSqlachemyRepository, cache: RedisCache) -> None:
         self.repo = repo
         self.redis = cache
-        logger.info('ABookingServic init ...')
+        logger.info('BookingServic init ...')
 
     async def _get_from_cache(self, key: str) -> Any:
         return await self.redis.get(key)
