@@ -31,9 +31,11 @@
 2. Создать файл конфигурации `.env` в корне проекта и заполнить его согласно `example.env`
 3. Запустить API командой:
    `$ python3 backend/Booking/booking_api/src/main.py`
-4. Полученить access_jwt_token командой:
+4. Запустить Watcher командой:
+   `$ python3 backend/Booking/watcher/src/main.py`
+5. Полученить access_jwt_token командой:
    `$ python3 jwt_token.py`
-5. Перейти к документации API по url: `http://localhost:8080/api/openapi`
+6. Перейти к документации API по url: `http://localhost:8080/api/openapi`
 
 ## Запуск в docker
 

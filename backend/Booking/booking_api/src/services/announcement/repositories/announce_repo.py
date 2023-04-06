@@ -33,7 +33,7 @@ class AnnounceSqlachemyRepository(_protocols.AnnouncementRepositoryProtocol):
     async def _set_to_cache(self, key: str, data: Any) -> None:
         await self.redis.set(key, data)
 
-    async def _get(self, announce_id: str | UUID) -> dict:
+    async def _get(self, announce_id: str | UUID) -> layer_models.PGAnnouncement:
         """
         Служебный метод. Возвращает запист Announcement из БД.
 
@@ -45,22 +45,7 @@ class AnnounceSqlachemyRepository(_protocols.AnnouncementRepositoryProtocol):
         if data is None:
             logger.info(f'[-] Not found <{announce_id}>')
             raise exc.NotFoundError
-        return layer_models.PGAnnouncement(
-            id=data.id,
-            created=data.created,
-            modified=data.modified,
-            status=data.status.value,
-            title=data.title,
-            description=data.description,
-            movie_id=data.movie_id,
-            author_id=data.author_id,
-            sub_only=data.sub_only,
-            is_free=data.is_free,
-            tickets_count=data.tickets_count,
-            event_time=data.event_time,
-            event_location=data.event_location,
-            duration=data.duration,
-        )
+        return data
 
     async def get_by_id(self, announce_id: str | UUID) -> layer_models.DetailAnnouncementResponse:
         """

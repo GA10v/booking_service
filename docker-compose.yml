@@ -60,6 +60,29 @@ services:
         gelf-address: udp://127.0.0.1:5044
         tag: booking_api
 
+  watcher:
+    container_name: watcher
+    build:
+      context: backend/Booking/watcher
+      dockerfile: Dockerfile
+    restart: always
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      booking_api:
+        condition: service_started
+    networks:
+      - project-network
+    logging:
+      driver: gelf
+      options:
+        gelf-address: udp://127.0.0.1:5044
+        tag: watcher
+
   redis:
     container_name: redis
     image: redis:7.0.4-alpine

@@ -39,6 +39,9 @@ class MovieMockRepository(_protocols.MovieRepositoryProtocol):
                 ) as resp:
                     _movie = await resp.json()
                     logger.debug(f'Get movie <{movie_id}>: <{_movie}>')
+                    _duration = _movie.get('duration')
+                    if settings.debug.DEBUG:
+                        _duration = 0
 
         except ClientError as ex:  # noqa: F841
             logger.debug(f'Except <{ex}>')
@@ -46,7 +49,7 @@ class MovieMockRepository(_protocols.MovieRepositoryProtocol):
 
         return layer_models.MovieToResponse(
             movie_title=_movie.get('title'),
-            duration=_movie.get('duration'),
+            duration=_duration,
         )
 
 

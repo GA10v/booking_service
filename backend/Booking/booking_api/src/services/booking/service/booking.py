@@ -24,7 +24,7 @@ class BookingService:
     def __init__(self, repo: BookingSqlachemyRepository, cache: RedisCache) -> None:
         self.repo = repo
         self.redis = cache
-        logger.info('ABookingServic init ...')
+        logger.info('BookingServic init ...')
 
     async def _get_from_cache(self, key: str) -> Any:
         return await self.redis.get(key)
@@ -92,7 +92,7 @@ class BookingService:
     ) -> None:
         try:
             prem: Permission = await self._check_permissions(user, booking_id)
-            if prem.value in [0, 1]:
+            if prem.value in [0, 1, 2]:
                 await self.repo.delete(booking_id=booking_id)
         except (exc.NoAccessError, exc.NotFoundError):
             raise
