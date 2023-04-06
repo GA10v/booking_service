@@ -99,7 +99,7 @@ services:
   mock_movie_api:
     container_name: mock_movie_api
     build:
-      context: mock/movie_api
+      context: backend/Movie_API/mock
       dockerfile: Dockerfile
     restart: always
     env_file:
@@ -110,7 +110,7 @@ services:
   mock_auth:
     container_name: mock_auth
     build:
-      context: mock/auth
+      context: backend/Auth/mock
       dockerfile: Dockerfile
     restart: always
     env_file:
@@ -121,7 +121,7 @@ services:
   mock_ugc:
     container_name: mock_ugc
     build:
-      context: mock/ugc
+      context: backend/UGC/mock
       dockerfile: Dockerfile
     restart: always
     env_file:

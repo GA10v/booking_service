@@ -6,7 +6,7 @@ from pydantic import BaseSettings
 
 class BaseConfig(BaseSettings):
     class Config:
-        env_file = Path(Path(__file__).parent.parent.parent, '.env')
+        env_file = Path(Path(__file__).parent.parent.parent.parent, '.env')
         env_file_encoding = 'utf-8'
 
 
@@ -21,11 +21,11 @@ class JWTSettings(BaseConfig):
 
 class FastapiSettings(BaseConfig):
     HOST: str = 'localhost'
-    PORT: int = 8082
-    PREFIX: str = '/movie_api/v1/'
+    PORT: int = 8081
+    PREFIX: str = '/auth/v1/'
 
     class Config:
-        env_prefix = 'MOVIE_API_MOCK_'
+        env_prefix = 'AUTH_MOCK_'
 
 
 class NotificSetting(BaseConfig):
@@ -44,13 +44,22 @@ class PermissionSettings(Enum):
     Moderator = 3
 
 
+class DebugSettings(BaseConfig):
+    DEBUG: bool = True
+    TEST_EMAIL: list[str]
+
+    class Config:
+        env_prefix = 'DEBUG_'
+
+
 class ProjectSettings(BaseConfig):
-    PROJECT_NAME: str = 'ADMIN_PANEL_MOCK'
+    PROJECT_NAME: str = 'AUTH_MOCK'
     BASE_DIR = Path(__file__).parent
     notific: NotificSetting = NotificSetting()
     fastapi: FastapiSettings = FastapiSettings()
     jwt: JWTSettings = JWTSettings()
     permission = PermissionSettings
+    debug: DebugSettings = DebugSettings()
 
 
 settings = ProjectSettings()
