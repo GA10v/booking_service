@@ -21,7 +21,6 @@ services:
     command: >
       bash -c "python3 main.py"
 
-
   # websocket_worker:
   #   container_name: websocket_worker
   #   build:
@@ -49,7 +48,7 @@ services:
     volumes:
       - static:/opt/app/static/
       - media:/opt/app/media/
-    # depends_on:
+      # depends_on:
       # postgres:
       #   condition: service_healthy
     env_file:
@@ -153,8 +152,27 @@ services:
         gelf-address: udp://127.0.0.1:5044
         tag: API
 
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBIT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBIT_PASSWORD}
+    restart: always
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq/
+    env_file:
+      - .env
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "5672" ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    networks:
+      - project-network
+
 volumes:
-  # rabbitmq_data:
+  rabbitmq_data:
   # postgres_data:
   static:
   media:
@@ -164,26 +182,6 @@ volumes:
 networks:
   project-network:
     external: true
-
-  # rabbitmq:
-  #   image: rabbitmq:3-management-alpine
-  #   container_name: rabbitmq
-  #   environment:
-  #     RABBITMQ_DEFAULT_USER: ${RABBIT_USER}
-  #     RABBITMQ_DEFAULT_PASS: ${RABBIT_PASSWORD}
-  #   restart: always
-  #   volumes:
-  #     - rabbitmq_data:/var/lib/rabbitmq/
-  #   env_file:
-  #     - .env
-  #   healthcheck:
-  #       test: ["CMD", "nc", "-z", "localhost", "5672" ]
-  #       interval: 10s
-  #       timeout: 10s
-  #       retries: 5
-  #   networks:
-  #     - notification-network
-
   # mock_admin:
   #   container_name: mock_admin
   #   build:
@@ -204,7 +202,7 @@ networks:
   #   env_file:
   #     - .env
   #   networks:
-  #     - notification-network
+  #     - project-network
 
   # mock_ugc:
   #   container_name: mock_ugc
@@ -215,7 +213,7 @@ networks:
   #   env_file:
   #     - .env
   #   networks:
-  #     - notification-network
+  #     - project-network
 
   # redis:
   #   container_name: redis
@@ -226,7 +224,7 @@ networks:
   #   volumes:
   #     - cache:/data
   #   networks:
-  #     - notification-network
+  #     - project-network
   #   healthcheck:
   #     test: redis-cli ping
 
@@ -247,21 +245,21 @@ networks:
   #     - 443:443
   #   restart: always
   #   networks:
-  #     - notification-network
+  #     - project-network
   #   logging:
   #     driver: gelf
   #     options:
   #       gelf-address: udp://127.0.0.1:5044
   #       tag: nginx
 
-# volumes:
-#   # rabbitmq_data:
-#   # postgres_data:
-#   static:
-#   media:
-#   cache:
+  # volumes:
+  #   rabbitmq_data:
+  #   postgres_data:
+  #   static:
+  #   media:
+  #   cache:
 
 
-# networks:
-#   project-network:
-#     external: true
+  # networks:
+  #   project-network:
+  #     external: true

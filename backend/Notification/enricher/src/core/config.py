@@ -5,7 +5,7 @@ from pydantic import BaseSettings
 
 class BaseConfig(BaseSettings):
     class Config:
-        env_file = Path(Path(__file__).parent.parent.parent.parent.parent, 'env')
+        env_file = Path(Path(__file__).parent.parent.parent.parent, 'env')
         env_file_encoding = 'utf-8'
 
 
@@ -22,10 +22,10 @@ class FastapiSetting(BaseConfig):
         env_prefix = 'FASTAPI_'
 
 
-class LogingSettings(BaseConfig):
+class LoggingSettings(BaseConfig):
     SENTRY_DSN: str = ''
-    LOGSTAH_HOST: str = 'logstash'
-    LOGSTAH_PORT: int = 5046
+    LOGSTASH_HOST: str = 'logstash'
+    LOGSTASH_PORT: int = 5046
 
     class Config:
         env_prefix = 'LOGGING_'
@@ -80,7 +80,7 @@ class AuthMock(BaseConfig):
 class AdminPanelMock(BaseConfig):
     HOST: str = 'localhost'
     PORT: int = 8082
-    PREFIX: str = '/admin_panel/v1/'
+    PREFIX: str = '/movie_api/v1/'
 
     @property
     def uri(self):
@@ -166,7 +166,7 @@ class ProjectSettings(BaseConfig):
     auth: AuthMock = AuthMock()
     admin_panel: AdminPanelMock = AdminPanelMock()
     ugc: UGCMock = UGCMock()
-    logging: LogingSettings = LogingSettings()
+    logging: LoggingSettings = LoggingSettings()
     postgres: PostgresSettings = PostgresSettings()
     redis: RedisSettings = RedisSettings()
     url_shortner: URLShortnerSettings = URLShortnerSettings()

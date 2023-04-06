@@ -6,7 +6,7 @@ from pydantic import BaseSettings
 
 class BaseConfig(BaseSettings):
     class Config:
-        env_file = Path(Path(__file__).parent.parent.parent.parent.parent, 'env')
+        env_file = Path(Path(__file__).parent.parent.parent, 'env')
         env_file_encoding = 'utf-8'
 
 

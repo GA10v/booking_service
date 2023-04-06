@@ -5,7 +5,7 @@ from pydantic import BaseSettings
 
 class BaseConfig(BaseSettings):
     class Config:
-        env_file = Path(Path(__file__).parent.parent.parent.parent.parent, 'env')
+        env_file = Path(Path(__file__).parent.parent.parent.parent, 'env')
         env_file_encoding = 'utf-8'
 
 
@@ -18,10 +18,10 @@ class FastapiSetting(BaseConfig):
         env_prefix = 'FASTAPI_'
 
 
-class LogingSettings(BaseConfig):
+class LoggingSettings(BaseConfig):
     SENTRY_DSN: str = ''
-    LOGSTAH_HOST: str = 'logstash'
-    LOGSTAH_PORT: int = 5044
+    LOGSTASH_HOST: str = 'logstash'
+    LOGSTASH_PORT: int = 5044
 
     class Config:
         env_prefix = 'LOGGING_'
@@ -72,7 +72,7 @@ class ProjectSettings(BaseConfig):
     BASE_DIR = Path(__file__).parent.parent
     fastapi: FastapiSetting = FastapiSetting()
     rabbit: RabbitMQSetting = RabbitMQSetting()
-    logging: LogingSettings = LogingSettings()
+    logging: LoggingSettings = LoggingSettings()
     jwt: JWTSettings = JWTSettings()
     debug: DebugSettings = DebugSettings()
 

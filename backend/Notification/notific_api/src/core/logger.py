@@ -43,8 +43,8 @@ LOGGING = {
         'logstah': {
             'class': 'logstash.LogstashHandler',
             'level': 'INFO',
-            'host': settings.logging.LOGSTAH_HOST,
-            'port': settings.logging.LOGSTAH_PORT,
+            'host': settings.logging.LOGSTASH_HOST,
+            'port': settings.logging.LOGSTASH_PORT,
         },
     },
     'loggers': {

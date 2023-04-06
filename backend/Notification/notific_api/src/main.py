@@ -51,4 +51,4 @@ app.include_router(notific.router, prefix=settings.fastapi.NOTIFIC_PREFIX, tags=
 app.include_router(_notific.router, prefix=settings.fastapi.NOTIFIC_PREFIX, tags=['test'])
 
 if __name__ == '__main__':
-    uvicorn.run('main:app', host='0.0.0.0', port=8080, log_config=LOGGING, log_level=logging.DEBUG)
+    uvicorn.run('main:app', host='0.0.0.0', port=8070, log_config=LOGGING, log_level=logging.DEBUG)
