@@ -10,7 +10,9 @@ class RatingToResponse(BaseModel):
 
 
 class UserToResponse(BaseModel):
+    user_id: str | UUID
     user_name: str
+    subs: list[str | UUID]
 
 
 class BookingToDetailResponse(BaseModel):
@@ -21,6 +23,7 @@ class BookingToDetailResponse(BaseModel):
 
 
 class MovieToResponse(BaseModel):
+    movie_id: str | UUID
     movie_title: str
     duration: int
 

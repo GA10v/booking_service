@@ -6,21 +6,25 @@ from services.announcement import layer_models, layer_payload
 
 class AnnouncementRepositoryProtocol(ABC):
     @abstractmethod
-    async def get_by_id(self, announce_id: str | UUID) -> layer_models.DetailAnnouncementResponse:
+    async def get_by_id(self, announce_id: str | UUID) -> layer_models.PGAnnouncement:
         """
         :raises NotFoundError
         """
         ...
 
     @abstractmethod
-    async def get_multy(self, query: layer_payload.APIMultyPayload) -> list[layer_models.AnnouncementResponse]:
+    async def get_multy(
+        self,
+        query: layer_payload.APIMultyPayload,
+        user: layer_models.UserToResponse,
+    ) -> list[layer_models.AnnouncementResponse]:
         ...
 
     @abstractmethod
     async def create(
         self,
-        new_announce: layer_payload.APICreatePayload,
-        movie_id: str | UUID,
+        new_announce: layer_payload.PGCreatePayload,
+        movie: layer_models.MovieToResponse,
         author_id: str | UUID,
     ) -> str | UUID:
         """
@@ -54,13 +58,6 @@ class AnnouncementRepositoryProtocol(ABC):
 class UserRepositoryProtocol(ABC):
     @abstractmethod
     async def get_by_id(self, user_id: str | UUID) -> layer_models.UserToResponse:
-        """
-        :raises NotFoundError
-        """
-        ...
-
-    @abstractmethod
-    async def get_subs(self, user_id: str | UUID) -> list[str | UUID]:
         """
         :raises NotFoundError
         """

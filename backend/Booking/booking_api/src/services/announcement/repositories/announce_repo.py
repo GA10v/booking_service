@@ -12,17 +12,13 @@ from db.models.announcement import Announcement
 from db.pg_db import AsyncSession, get_session
 from db.redis import CacheProtocol, RedisCache, get_cache
 from services.announcement import layer_models, layer_payload
-from services.announcement.repositories import _protocols, booking_repo, movie_repo, rating_repo, user_repo
+from services.announcement.repositories import _protocols
 
 logger = get_logger(__name__)
 
 
 class AnnounceSqlachemyRepository(_protocols.AnnouncementRepositoryProtocol):
     def __init__(self, db_session: AsyncSession, cache: RedisCache) -> None:
-        self.user_repo = user_repo.get_user_repo()
-        self.movie_repo = movie_repo.get_movie_repo()
-        self.rating_repo = rating_repo.get_rating_repo()
-        self.booking_repo = booking_repo.get_booking_repo(db_session=db_session)
         self.db = db_session
         self.redis = cache
         logger.info('AnnounceSqlachemyRepository init ...')
@@ -33,94 +29,44 @@ class AnnounceSqlachemyRepository(_protocols.AnnouncementRepositoryProtocol):
     async def _set_to_cache(self, key: str, data: Any) -> None:
         await self.redis.set(key, data)
 
-    async def _get(self, announce_id: str | UUID) -> layer_models.PGAnnouncement:
+    async def get_by_id(self, announce_id: str | UUID) -> layer_models.PGAnnouncement:
         """
-        Служебный метод. Возвращает запист Announcement из БД.
+        Получение записи Announcement из БД.
 
         :param announce_id: id объявления
-        :return: dict данные из БД по id
-        :raises NotFoundError: если указаная запись не была найдена в базе
-        """
-        data: layer_models.PGAnnouncement = await self.db.get(Announcement, announce_id)
-        if data is None:
-            logger.info(f'[-] Not found <{announce_id}>')
-            raise exc.NotFoundError
-        return data
-
-    async def get_by_id(self, announce_id: str | UUID) -> layer_models.DetailAnnouncementResponse:
-        """
-        Получение полной информации о Announcement.
-
-        :param announce_id: id объявления
-        :return: подробная информация о событии
+        :return: layer_models.PGAnnouncement
         :raises NotFoundError: если указаная запись не была найдена в базе
         """
         try:
-            _announce: layer_models.PGAnnouncement = await self._get(announce_id)
+            data = await self.db.get(Announcement, announce_id)
+            if data is None:
+                logger.info(f'[-] Not found <{announce_id}>')
+                raise exc.NotFoundError
+            return data
         except exc.NotFoundError:
             raise
 
-        _user = await self.user_repo.get_by_id(_announce.author_id)
-        logger.info(f'Get user <{announce_id}>: <{_user}>')
-
-        _movie = await self.movie_repo.get_by_id(_announce.movie_id)
-        logger.info(f'Get movie <{_announce.movie_id}>: <{_movie}>')
-
-        _guests = await self.booking_repo.get_by_id(announce_id=announce_id)
-        logger.info(f'Get guest_list <{announce_id}>: <{_guests}>')
-        if not _guests:
-            _guests = []
-
-        _confirmed_list = await self.booking_repo.get_confirmed_list(announce_id=announce_id)
-
-        _rating = await self.rating_repo.get_by_id(_announce.author_id)
-        logger.info(f'Get author_rating <{_announce.author_id}>: <{_rating}>')
-
-        _tickets_left = _announce.tickets_count - len(_confirmed_list)
-
-        return layer_models.DetailAnnouncementResponse(
-            id=_announce.id,
-            created=_announce.created,
-            modified=_announce.modified,
-            status=_announce.status.value,
-            title=_announce.title,
-            description=_announce.description,
-            sub_only=_announce.sub_only,
-            is_free=_announce.is_free,
-            tickets_count=_announce.tickets_count,
-            tickets_left=_tickets_left,
-            event_time=_announce.event_time,
-            event_location=_announce.event_location,
-            author_name=_user.user_name,
-            guest_list=_guests,
-            author_rating=_rating.user_raring,
-            movie_title=_movie.movie_title,
-            duration=_movie.duration,
-        )
-
     async def create(
         self,
-        new_announce: layer_payload.APICreatePayload,
-        movie_id: str | UUID,
+        new_announce: layer_payload.PGCreatePayload,
+        movie: layer_models.MovieToResponse,
         author_id: str | UUID,
     ) -> str | UUID:
         """
         Создание новой записи в БД.
 
         :param author_id: id автора
-        :param movie_id: id контента
+        :param movie: информация о фильме
         :param new_announce: данные для создания объявления
         :return announce_id: id объявления
         :raises UniqueConstraintError: если запист уже существует в базе
         """
         _id = str(uuid4())
-        _movie = await self.movie_repo.get_by_id(movie_id)
-        logger.info(f'Get movie <{movie_id}>: <{_movie}>')
         values = layer_payload.PGCreatePayload(
             id=_id,
-            movie_id=movie_id,
+            movie_id=movie.movie_id,
             author_id=author_id,
-            duration=_movie.duration,
+            duration=movie.duration,
             **new_announce.dict(),
         ).dict()
         query = insert(Announcement).values(**values)
@@ -137,25 +83,25 @@ class AnnounceSqlachemyRepository(_protocols.AnnouncementRepositoryProtocol):
     async def get_multy(
         self,
         query: layer_payload.APIMultyPayload,
-        user_id: str | UUID,
+        user: layer_models.UserToResponse,
     ) -> list[layer_models.AnnouncementResponse | None]:
         """
         Получение объявлений по условию.
 
-        :param user_id: id пользователя
+        :param user: информация о пользователе
         :param query: данные для фильтрации запроса к БД
         :return: список объявлений
         """
-        _query = select(Announcement)
+        _query = select(Announcement).filter(Announcement.status == layer_models.EventStatus.Alive.value)
         if query.sub:
-            _sub = await self.user_repo.get_subs(user_id)
+            _sub = user.subs
             _query = _query.where(Announcement.author_id.in_(_sub))
         if query.author:
             _query = _query.filter(Announcement.author_id == query.author)
         if query.movie:
             _query = _query.filter(Announcement.movie_id == query.movie)
         if query.free:
-            _query = _query.filter(Announcement.is_free == query.free)
+            _query = _query.filter(Announcement.is_free is query.free)
         if query.ticket:
             _query = _query.filter(Announcement.tickets_count == query.ticket)
         if query.date:
