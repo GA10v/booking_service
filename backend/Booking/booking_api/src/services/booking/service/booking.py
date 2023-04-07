@@ -210,7 +210,8 @@ class BookingService:
 
         try:
             prem: Permission = await self._check_permissions(user, booking_id)
-            if prem.value in [0, 1, 2]:
+            # только sudo и гость могут удалить заявку
+            if prem.value in [0, 2]:
                 await self.repo.delete(booking_id=booking_id)
         except (exc.NoAccessError, exc.NotFoundError):
             raise

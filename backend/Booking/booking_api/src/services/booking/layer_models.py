@@ -14,7 +14,9 @@ class RatingToResponse(BaseModel):
 
 
 class UserToResponse(BaseModel):
+    user_id: str | UUID
     user_name: str
+    subs: list[str | UUID]
 
 
 class EventStatus(str, Enum):
