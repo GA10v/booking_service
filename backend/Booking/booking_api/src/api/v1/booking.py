@@ -46,7 +46,7 @@ async def update(
     _user: dict = Depends(auth_handler.auth_wrapper),
 ) -> resp_booking.DetailBookingResponse:
     try:
-        return await booking_service.update(
+        await booking_service.update(
             user=_user,
             booking_id=booking_id,
             new_status=payload,
@@ -57,6 +57,7 @@ async def update(
         raise HTTPException(status_code=HTTPStatus.UNPROCESSABLE_ENTITY)
     except exc.NoAccessError:
         raise HTTPException(status_code=HTTPStatus.FORBIDDEN)
+    return await booking_service.get_one(booking_id=booking_id, user=_user)
 
 
 @router.get(

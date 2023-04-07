@@ -28,6 +28,13 @@ class AnnounceSqlachemyRepository(_protocols.AnnouncementRepositoryProtocol):
         await self.redis.set(key, data)
 
     async def get_by_id(self, announce_id: str | UUID) -> layer_models.AnnounceToResponse:
+        """
+        Возвращает данные из БД для layer_models.DetailBookingResponse.
+
+        :param announce_id: lid объявления
+        :return: данные для layer_models.DetailBookingResponse
+        :raises NotFoundError: если указаная запись не была найдена в базе
+        """
         _data = await self.db.get(Announcement, announce_id)
         if _data is None:
             logger.info(f'[-] Not found <{announce_id}>')
@@ -35,6 +42,8 @@ class AnnounceSqlachemyRepository(_protocols.AnnouncementRepositoryProtocol):
         _data = _data._asdict()
 
         return layer_models.AnnounceToResponse(
+            status=_data.get('status').value,
+            announce_id=_data.get('id'),
             author_id=_data.get('author_id'),
             event_time=_data.get('event_time'),
             movie_id=_data.get('movie_id'),

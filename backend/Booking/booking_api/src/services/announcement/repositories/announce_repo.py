@@ -7,6 +7,7 @@ from fastapi import Depends
 from sqlalchemy import insert, select, update
 
 import utils.exceptions as exc
+from core.config import settings
 from core.logger import get_logger
 from db.models.announcement import Announcement
 from db.pg_db import AsyncSession, get_session
@@ -92,7 +93,11 @@ class AnnounceSqlachemyRepository(_protocols.AnnouncementRepositoryProtocol):
         :param query: данные для фильтрации запроса к БД
         :return: список объявлений
         """
-        _query = select(Announcement).filter(Announcement.status == layer_models.EventStatus.Alive.value)
+        _query = select(Announcement)
+
+        if not settings.debug.DEBUG:
+            _query = _query.filter(Announcement.status == layer_models.EventStatus.Alive.value)
+
         if query.sub:
             _sub = user.subs
             _query = _query.where(Announcement.author_id.in_(_sub))

@@ -83,7 +83,4 @@ class RatingRepositoryProtocol(ABC):
 class MovieRepositoryProtocol(ABC):
     @abstractmethod
     async def get_by_id(self, movie_id: str | UUID) -> layer_models.MovieToResponse:
-        """
-        :raises NotFoundError
-        """
         ...

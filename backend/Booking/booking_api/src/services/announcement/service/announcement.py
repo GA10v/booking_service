@@ -53,6 +53,14 @@ class AnnouncementService:
         announce_id: str | UUID,
         user: dict,
     ) -> bool:
+        """
+        Служебный метод. Проверка прав пользователя.
+
+        :param announce_id: id объявления
+        :param user: информация о пользователе
+        :return: bool флаг
+        :raises NoAccessError: если пользователь не sudo, author или guest
+        """
         try:
             _data: layer_models.PGAnnouncement = await self.repo.get_by_id(announce_id)
         except exc.NotFoundError:
@@ -80,11 +88,17 @@ class AnnouncementService:
         except exc.NotFoundError:
             raise
 
+        # TODO: CACHE
+
         _user = await self.user_repo.get_by_id(_announce.author_id)
         logger.info(f'Get user <{announce_id}>: <{_user}>')
 
+        # TODO: CACHE
+
         _movie = await self.movie_repo.get_by_id(_announce.movie_id)
         logger.info(f'Get movie <{_announce.movie_id}>: <{_movie}>')
+
+        # TODO: CACHE
 
         _rating = await self.rating_repo.get_by_id(_announce.author_id)
         logger.info(f'Get author_rating <{_announce.author_id}>: <{_rating}>')
@@ -134,6 +148,9 @@ class AnnouncementService:
         :raises UniqueConstraintError: если запист уже существует в базе
         """
         try:
+
+            # TODO: CACHE
+
             _movie = await self.movie_repo.get_by_id(movie_id)
             logger.info(f'Get movie <{movie_id}>: <{_movie}>')
             _id = await self.repo.create(new_announce=new_announce, movie=_movie, author_id=author_id)
@@ -151,6 +168,7 @@ class AnnouncementService:
         """
         Изменить данные в объявлении.
 
+        :param user: информация о пользователе
         :param announce_id: id объявления
         :param payload: данные из API для изменения объявления
         :raises NotFoundError: если указаная запись не была найдена в базе
@@ -192,6 +210,7 @@ class AnnouncementService:
         Удаление объявления.
 
         :param announce_id: id объявления
+        :param user: информация о пользователе
         :raises NotFoundError: если указаная запись не была найдена в базе
         :raises NoAccessError: Если у пользователя нет прав на изменение объявления
         """
@@ -218,6 +237,8 @@ class AnnouncementService:
         :param query: данные для поиска
         :return: список объявлений
         """
+
+        # TODO: CACHE
 
         _user: layer_models.UserToResponse = await self.user_repo.get_by_id(user_id)
         logger.info(f'Get user <{user_id}>: <{_user}>')
