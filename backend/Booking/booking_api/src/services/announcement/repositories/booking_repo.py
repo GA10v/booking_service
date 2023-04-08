@@ -56,6 +56,14 @@ class BookingSqlachemyRepository(_protocols.BookingRepositoryProtocol):
         await self.redis.set(key, data)
 
     async def _get_booking_resp(self, data: dict) -> layer_models.BookingToDetailResponse:
+        """
+        Служебный метод. Возвращает данные для layer_models.DetailBookingResponse.
+
+        :param data: layer_models.PGBookin.dict()
+        :param user: информация о пользователе
+        :return: данные для layer_models.DetailBookingResponse
+        """
+
         _booking = layer_models.PGBooking(**data)
 
         _guest = await self.user_repo.get_by_id(_booking.guest_id)
@@ -64,6 +72,7 @@ class BookingSqlachemyRepository(_protocols.BookingRepositoryProtocol):
         _guest_rating = await self.rating_repo.get_by_id(_booking.guest_id)
 
         return layer_models.BookingToDetailResponse(
+            booking_id=_booking.id,
             guest_name=_guest.user_name,
             guest_rating=_guest_rating.user_raring,
             guest_status=_booking.guest_status,
@@ -71,6 +80,12 @@ class BookingSqlachemyRepository(_protocols.BookingRepositoryProtocol):
         )
 
     async def get_by_id(self, announce_id: str | UUID) -> list[layer_models.BookingToDetailResponse]:
+        """
+        Возвращает данные для layer_models.DetailBookingResponse.
+
+        :param announce_id: lid объявления
+        :return: список данных для layer_models.DetailBookingResponse
+        """
         _query = select(Booking).filter(Booking.announcement_id == announce_id)
         _res = await self.db.execute(_query)
         scalar_result = [data._asdict() for data in _res.scalars().all()]
@@ -80,6 +95,11 @@ class BookingSqlachemyRepository(_protocols.BookingRepositoryProtocol):
         return [await self._get_booking_resp(data) for data in scalar_result]
 
     async def get_confirmed_list(self, announce_id: str | UUID) -> list[layer_models.BookingToDetailResponse]:
+        """Получение подтвержденных заявок.
+
+        :param announce_id: id объявления
+        :return список подтвержденных заявок
+        """
         _query = (
             select(Booking)
             .where(Booking.announcement_id == announce_id)

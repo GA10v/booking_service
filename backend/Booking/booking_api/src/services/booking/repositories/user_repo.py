@@ -19,6 +19,7 @@ logger = get_logger(__name__)
 class UserMockRepository(_protocols.UserRepositoryProtocol):
     def __init__(self, cache: RedisCache) -> None:
         self.auth_endpoint = f'{settings.auth.uri}user_info/'
+        self.ugc_endpoint = f'{settings.ugc.uri}subscribers/'
         self._headers = _headers()
         self.redis = cache
 
@@ -39,12 +40,20 @@ class UserMockRepository(_protocols.UserRepositoryProtocol):
                 ) as resp:
                     _user = await resp.json()
                     logger.debug(f'Get user <{user_id}>: <{_user}>')
+                async with session.post(
+                    f'{self.ugc_endpoint}{user_id}',
+                    headers=self._headers,
+                ) as resp:
+                    _subs = await resp.json()
+                    logger.debug(f'Get subs for user <{user_id}>: <{_subs}>')
 
         except ClientError as ex:  # noqa: F841
             logger.debug(f'Except <{ex}>')
             return None
         return layer_models.UserToResponse(
+            user_id=user_id,
             user_name=f"{_user.get('name')} {_user.get('last_name')}",
+            subs=_subs,
         )
 
 

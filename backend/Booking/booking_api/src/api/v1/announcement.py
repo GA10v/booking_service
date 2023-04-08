@@ -61,11 +61,12 @@ async def update(
     _user: dict = Depends(auth_handler.auth_wrapper),
 ) -> resp_announce.DetailAnnouncementResponse:
     try:
-        return await announcement_service.update(
+        await announcement_service.update(
             user=_user,
             announce_id=announcement_id,
             payload=payload,
         )
+        return await announcement_service.get_one(announcement_id)
     except exc.NotFoundError:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
     except exc.UniqueConstraintError:

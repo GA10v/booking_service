@@ -1,0 +1,173 @@
+version: '3.9'
+
+volumes:
+  rabbitmq_data:
+
+  static:
+  media:
+  cache:
+
+
+networks:
+  project-network:
+    external: true
+
+services:
+  nginx:
+    container_name: notific_nginx
+    image: nginx:1.23
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/configs:/etc/nginx/conf.d:ro
+    depends_on:
+      admin-panel:
+        condition: service_started
+      notification_api:
+        condition: service_started
+    ports:
+      - 80:80
+      - 8070:8070
+      - 443:443
+    restart: always
+    networks:
+      - project-network
+    logging:
+      driver: gelf
+      options:
+        gelf-address: udp://127.0.0.1:5044
+        tag: nginx
+
+  rabbit_worker:
+    container_name: rabbit_worker
+    build:
+      context: ./sender
+      dockerfile: Dockerfile
+    restart: always
+    env_file:
+      - .env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      enricher:
+        condition: service_started
+      notification_api:
+        condition: service_started
+    networks:
+      - project-network
+    command: >
+      bash -c "python3 main.py"
+
+  admin-panel:
+    container_name: admin_panel
+    build:
+      context: ./admin_panel
+      dockerfile: Dockerfile
+    restart: always
+    volumes:
+      - static:/opt/app/static/
+      - media:/opt/app/media/
+    env_file:
+      - .env
+    networks:
+      - project-network
+    command: [ "sh", "shell_scripts/entrypoint_admin_panel.sh" ]
+    logging:
+      driver: gelf
+      options:
+        gelf-address: udp://127.0.0.1:5044
+        tag: admin-panel
+
+  celery:
+    container_name: celery
+    build:
+      context: ./admin_panel
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      admin-panel:
+        condition: service_started
+    env_file:
+      - .env
+    networks:
+      - project-network
+    command: [ "sh", "shell_scripts/entrypoint_worker.sh" ]
+
+  celery-beat:
+    container_name: celery_beat
+    build:
+      context: ./admin_panel
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      admin-panel:
+        condition: service_started
+    env_file:
+      - .env
+    networks:
+      - project-network
+    command: [ "sh", "shell_scripts/entrypoint_beat.sh" ]
+
+  enricher:
+    container_name: enricher
+    build:
+      context: ./enricher
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      admin-panel:
+        condition: service_started
+      celery:
+        condition: service_started
+    env_file:
+      - .env
+    networks:
+      - project-network
+    logging:
+      driver: gelf
+      options:
+        gelf-address: udp://127.0.0.1:5044
+        tag: enricher
+
+  notification_api:
+    container_name: notification_api
+    build:
+      context: ./notific_api
+      dockerfile: Dockerfile
+    restart: always
+    env_file:
+      - .env
+    depends_on:
+      celery:
+        condition: service_started
+      admin-panel:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - project-network
+    logging:
+      driver: gelf
+      options:
+        gelf-address: udp://127.0.0.1:5044
+        tag: API
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBIT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBIT_PASSWORD}
+    restart: always
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq/
+    env_file:
+      - .env
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "5672" ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    networks:
+      - project-network

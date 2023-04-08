@@ -1,0 +1,43 @@
+version: '3.9'
+
+services:
+  admin-panel:
+    ports:
+      - 8000:8000
+    expose:
+      - 8000
+
+  rabbitmq:
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+
+  # postgres:
+  #   ports:
+  #     - 5432:5432
+
+  # mock_admin:
+  #   ports:
+  #     - 8082:8082
+
+  # mock_auth:
+  #   ports:
+  #     - 8081:8081
+
+  # mock_ugc:
+  #   ports:
+  #     - 8083:8083
+
+  # redis:
+  #   ports:
+  #     - 6379:6379
+
+  # url_shortener:
+  #   ports:
+  #     - "3000:3000"
+
+  notification_api:
+    # ports:
+    #   - 8070:8070
+    expose:
+      - 8070

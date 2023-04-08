@@ -38,49 +38,29 @@ group Announcement Service
     group #B2C7E8 layer_service
         Service -> Service
         note right
-            - self.repo.create()
+            - self.movie_repo.get_by_id()
         end note
         end group
 
-        Service --> AnnounceRepo: - user_id\n - movie_id\n -layer_payload.APICreatePayload
+        Service --> MovieRepo: - movie_id
+
         group #B1C7E8 layer_repo
-
-            AnnounceRepo -> AnnounceRepo
-            note right
-                - self.movie_repo.get_by_id()
-            end note
-
-            AnnounceRepo --> MovieRepo: - movie_id
-
             MovieRepo -> Movie_API: - movie_id
             Movie_API -> MovieRepo: - layer_models.MovieToResponse
-            MovieRepo -> AnnounceRepo: - layer_models.MovieToResponse
-
-            AnnounceRepo -> AnnounceRepo
-            note right
-                - create query
-            end note
-
-            AnnounceRepo -> AnnounceRepo
-            note right
-                - self.db.execute()
-            end note
-
-            AnnounceRepo --> DB_Booking: Insert layer_payload.PGCreatePayload
             end group
-
-            AnnounceRepo -> Service: - Announcement_id
+            MovieRepo -> Service: - layer_models.MovieToResponse
 
             group #B2C7E8 layer_service
                 Service -> Service
                 note right
-                    - self.repo.get_bi_id()
+                    - self.repo.create()
                 end note
                 end group
 
-                Service --> AnnounceRepo: - Announcement_id
-
+                Service --> AnnounceRepo: - user_id\n - layer_models.MovieToResponse\n -layer_payload.APICreatePayload
                 group #B1C7E8 layer_repo
+
+
                     AnnounceRepo -> AnnounceRepo
                     note right
                         - create query
@@ -91,84 +71,138 @@ group Announcement Service
                         - self.db.execute()
                     end note
 
-                    AnnounceRepo -> DB_Booking: Select Announcement(id)
-                    DB_Booking -> AnnounceRepo: - layer_models.PGAnnouncement
+                    AnnounceRepo --> DB_Booking: Insert layer_payload.PGCreatePayload
+                    end group
 
-                    AnnounceRepo -> AnnounceRepo
-                    note right
-                        - self.user_repo.get_by_id()
-                    end note
-                    AnnounceRepo --> UserRepo: - author_id
-                    UserRepo -> Auth: - author_id
-                    Auth -> UserRepo: - layer_models.UserToResponse
-                    UserRepo -> AnnounceRepo: - layer_models.UserToResponse
+                    AnnounceRepo -> Service: - Announcement_id
 
-                    AnnounceRepo -> AnnounceRepo
-                    note right
-                        - self.movie_repo.get_by_id()
-                    end note
-                    AnnounceRepo --> MovieRepo: - movie_id
-                    MovieRepo -> Movie_API: - movie_id
-                    Movie_API -> MovieRepo: - layer_models.MovieToResponse
-                    MovieRepo -> AnnounceRepo: - layer_models.MovieToResponse
-
-                    AnnounceRepo -> AnnounceRepo
-                    note right
-                        - self.rating_repo.get_by_id()
-                    end note
-                    AnnounceRepo --> RatingRepo: - author_id
-                    RatingRepo -> Rating: - author_id
-                    Rating -> RatingRepo: - layer_models.RatingToResponse
-                    RatingRepo -> AnnounceRepo: - layer_models.RatingToResponse
-
-                    AnnounceRepo -> AnnounceRepo
-                    note right
-                        - self.booking_repo.get_by_id()
-                    end note
-                    AnnounceRepo -> BookingRepo: - Announcement_id
-
-                    BookingRepo -> BookingRepo
-                    note right
-                        - create query
-                    end note
-
-                    BookingRepo -> BookingRepo
-                    note right
-                        - self.db.execute()
-                    end note
-
-                    BookingRepo -> DB_Booking: Select Booking(id)
-                    DB_Booking -> BookingRepo: - layer_models.PGBooking
-
-                    BookingRepo -> BookingRepo
-                    note right
-                        - self._get_booking_resp()
-                    end note
-
-                    group loop for guests
-                        BookingRepo -> UserRepo: - user_id
-                        UserRepo -> Auth: - author_id
-                        Auth -> UserRepo: - layer_models.UserToResponse
-                        UserRepo -> BookingRepo: - layer_models.UserToResponse
-
-                        BookingRepo -> RatingRepo: - user_id
-                        RatingRepo -> Rating: - author_id
-                        Rating -> RatingRepo: - layer_models.RatingToResponse
-                        RatingRepo -> BookingRepo: - layer_models.RatingToResponse
-                        end group
-
-                        BookingRepo -> AnnounceRepo: list[layer_models.BookingToDetailResponse]
-                        AnnounceRepo -> AnnounceRepo
+                    group #B2C7E8 layer_service
+                        Service -> Service
                         note right
-                            - create Response
+                            - self.repo.get_bi_id()
                         end note
-
                         end group
 
-                        AnnounceRepo --> Service: - layer_models.DetailAnnouncementResponse
-                        end group
+                        Service --> AnnounceRepo: - Announcement_id
 
-                        Service -> API: - layer_models.DetailAnnouncementResponse
+                        group #B1C7E8 layer_repo
+                            AnnounceRepo -> AnnounceRepo
+                            note right
+                                - create query
+                            end note
 
-                        API -> Client: - layer_models.DetailAnnouncementResponse
-                        @enduml
+                            AnnounceRepo -> AnnounceRepo
+                            note right
+                                - self.db.execute()
+                            end note
+
+                            AnnounceRepo -> DB_Booking: Select Announcement(id)
+                            DB_Booking -> AnnounceRepo: - layer_models.PGAnnouncement
+                            end group
+                            AnnounceRepo -> Service: - layer_models.PGAnnouncement
+                            ' User
+                            group #B2C7E8 layer_service
+                                Service -> Service
+                                note right
+                                    - self.user_repo.get_by_id()
+                                end note
+                                end group
+
+                                Service --> UserRepo: - author_id
+
+                                group #B1C7E8 layer_repo
+                                    UserRepo -> Auth: - author_id
+                                    Auth -> UserRepo: - layer_models.UserToResponse
+                                    end group
+
+                                    UserRepo -> Service: - layer_models.UserToResponse
+
+                                    group #B2C7E8 layer_service
+                                        Service -> Service
+                                        note right
+                                            - self.movie_repo.get_by_id()
+                                        end note
+                                        end group
+
+                                        Service --> MovieRepo: - movie_id
+
+                                        group #B1C7E8 layer_repo
+                                            MovieRepo -> Movie_API: - movie_id
+                                            Movie_API -> MovieRepo: - layer_models.MovieToResponse
+                                            end group
+                                            MovieRepo -> Service: - layer_models.MovieToResponse
+
+                                            group #B2C7E8 layer_service
+                                                Service -> Service
+                                                note right
+                                                    - self.rating_repo.get_by_id()
+                                                end note
+                                                end group
+
+                                                Service --> RatingRepo: - author_id
+
+                                                group #B1C7E8 layer_repo
+                                                    RatingRepo -> Rating: - author_id
+                                                    Rating -> RatingRepo: - layer_models.RatingToResponse
+                                                    end group
+
+
+
+                                                    RatingRepo -> Service: - layer_models.RatingToResponse
+
+                                                    group #B2C7E8 layer_service
+                                                        Service -> Service
+                                                        note right
+                                                            - self.booking_repo.get_by_id()
+                                                        end note
+                                                        end group
+
+                                                        Service -> BookingRepo: - Announcement_id
+
+                                                        group #B1C7E8 layer_repo
+                                                            BookingRepo -> BookingRepo
+                                                            note right
+                                                                - create query
+                                                            end note
+
+                                                            BookingRepo -> BookingRepo
+                                                            note right
+                                                                - self.db.execute()
+                                                            end note
+
+                                                            BookingRepo -> DB_Booking: Select Booking(id)
+                                                            DB_Booking -> BookingRepo: - layer_models.PGBooking
+
+                                                            BookingRepo -> BookingRepo
+                                                            note right
+                                                                - self._get_booking_resp()
+                                                            end note
+
+                                                            group loop for guests
+                                                                BookingRepo -> UserRepo: - user_id
+                                                                UserRepo -> Auth: - author_id
+                                                                Auth -> UserRepo: - layer_models.UserToResponse
+                                                                UserRepo -> BookingRepo: - layer_models.UserToResponse
+
+                                                                BookingRepo -> RatingRepo: - user_id
+                                                                RatingRepo -> Rating: - author_id
+                                                                Rating -> RatingRepo: - layer_models.RatingToResponse
+                                                                RatingRepo -> BookingRepo: - layer_models.RatingToResponse
+                                                                end group
+                                                                end group
+
+                                                                BookingRepo -> Service: list[layer_models.BookingToDetailResponse]
+
+                                                                group #B2C7E8 layer_service
+                                                                    Service -> Service
+                                                                    note right
+                                                                        - create Response
+                                                                    end note
+
+                                                                    end group
+                                                                    end group
+
+                                                                    Service -> API: - layer_models.DetailAnnouncementResponse
+
+                                                                    API -> Client: - layer_models.DetailAnnouncementResponse
+                                                                    @enduml

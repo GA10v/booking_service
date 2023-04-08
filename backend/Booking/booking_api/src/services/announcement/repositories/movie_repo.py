@@ -48,6 +48,7 @@ class MovieMockRepository(_protocols.MovieRepositoryProtocol):
             return None
 
         return layer_models.MovieToResponse(
+            movie_id=movie_id,
             movie_title=_movie.get('title'),
             duration=_duration,
         )

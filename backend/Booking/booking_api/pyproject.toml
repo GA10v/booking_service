@@ -20,6 +20,7 @@ asyncpg = "^0.27.0"
 faker = "^17.6.0"
 databases = "^0.7.0"
 aioredis = "^2.0.1"
+pytz = "^2023.3"
 
 
 [tool.poetry.dev-dependencies]

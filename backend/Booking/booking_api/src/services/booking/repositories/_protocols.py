@@ -6,7 +6,7 @@ from services.booking import layer_models, layer_payload
 
 class BookingRepositoryProtocol(ABC):
     @abstractmethod
-    async def get_by_id(self, booking_id: str | UUID) -> layer_models.DetailBookingResponse:
+    async def get_by_id(self, booking_id: str | UUID) -> layer_models.PGBooking:
         """
         :raises NotFoundError
         """
@@ -26,7 +26,7 @@ class BookingRepositoryProtocol(ABC):
     @abstractmethod
     async def create(
         self,
-        announce_id: str | UUID,
+        announce: layer_payload.AnnounceToCreate,
         user_id: str | UUID,
     ) -> str | UUID:
         """
@@ -43,6 +43,7 @@ class BookingRepositoryProtocol(ABC):
     ) -> None:
         """
         :raises NotFoundError:
+        :raises UniqueConstraintError:
         """
         ...
 
@@ -60,9 +61,6 @@ class BookingRepositoryProtocol(ABC):
 class UserRepositoryProtocol(ABC):
     @abstractmethod
     async def get_by_id(self, user_id: str | UUID) -> layer_models.UserToResponse:
-        """
-        :raises NotFoundError
-        """
         ...
 
 
@@ -75,9 +73,6 @@ class RatingRepositoryProtocol(ABC):
 class MovieRepositoryProtocol(ABC):
     @abstractmethod
     async def get_by_id(self, movie_id: str | UUID) -> layer_models.MovieToResponse:
-        """
-        :raises NotFoundError
-        """
         ...
 
 

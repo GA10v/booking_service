@@ -30,6 +30,24 @@ class APIMultyPayload(BaseModel):
     date: datetime | None
 
 
+class EventStatus(str, Enum):
+    Created = 'Created'
+    Alive = 'Alive'
+    Closed = 'Closed'
+    Done = 'Done'
+
+    def __repr__(self) -> str:
+        return f'{self.value}'
+
+
+class AnnounceToCreate(BaseModel):
+    status: EventStatus
+    announce_id: str | UUID
+    author_id: str | UUID
+    movie_id: str | UUID
+    event_time: datetime
+
+
 class PGCreatePayload(BaseModel):
     id: str | UUID
     announcement_id: str | UUID

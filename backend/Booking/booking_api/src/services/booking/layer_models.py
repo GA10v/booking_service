@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import Enum
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -13,10 +14,24 @@ class RatingToResponse(BaseModel):
 
 
 class UserToResponse(BaseModel):
+    user_id: str | UUID
     user_name: str
+    subs: list[str | UUID]
+
+
+class EventStatus(str, Enum):
+    Created = 'Created'
+    Alive = 'Alive'
+    Closed = 'Closed'
+    Done = 'Done'
+
+    def __repr__(self) -> str:
+        return f'{self.value}'
 
 
 class AnnounceToResponse(BaseModel):
+    status: EventStatus
+    announce_id: str | UUID
     author_id: str | UUID
     movie_id: str | UUID
     event_time: datetime

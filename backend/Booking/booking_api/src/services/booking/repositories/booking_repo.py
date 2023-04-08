@@ -12,7 +12,7 @@ from db.models.booking import Booking
 from db.pg_db import AsyncSession, get_session
 from db.redis import CacheProtocol, RedisCache, get_cache
 from services.booking import layer_models, layer_payload
-from services.booking.repositories import _protocols, announce_repo, movie_repo, rating_repo, user_repo
+from services.booking.repositories import _protocols, rating_repo, user_repo
 
 logger = get_logger(__name__)
 
@@ -20,9 +20,7 @@ logger = get_logger(__name__)
 class BookingSqlachemyRepository(_protocols.BookingRepositoryProtocol):
     def __init__(self, db_session: AsyncSession, cache: RedisCache) -> None:
         self.user_repo = user_repo.get_user_repo()
-        self.movie_repo = movie_repo.get_movie_repo()
         self.rating_repo = rating_repo.get_rating_repo()
-        self.announce_repo = announce_repo.get_announcement_repo(db_session=db_session)
         self.db = db_session
         self.redis = cache
         logger.info('BookingSqlachemyRepository init ...')
@@ -33,25 +31,11 @@ class BookingSqlachemyRepository(_protocols.BookingRepositoryProtocol):
     async def _set_to_cache(self, key: str, data: Any) -> None:
         await self.redis.set(key, data)
 
-    async def _get(self, booking_id: str | UUID) -> layer_models.PGBooking:
-        """
-        Служебный метод. Возвращает запись Booking из БД.
-
-        :param booking_id: id заявки
-        :return: dict данные из БД по id
-        :raises NotFoundError: если указаная запись не была найдена в базе
-        """
-        data = await self.db.get(Booking, booking_id)
-        if data is None:
-            logger.info(f'[-] Not found <{booking_id}>')
-            raise exc.NotFoundError
-        return layer_models.PGBooking(**data._asdict())
-
     async def _get_booking_resp(self, data: dict) -> layer_models.BookingResponse:
         """
-        Служебный метод. Возвращает BookingResponse.
+        Служебный метод. Подготавливает данные и возвращает BookingResponse.
 
-        :param data: сырые данные из БД
+        :param data: layer_models.PGBooking.dict()
         :return: BookingResponse
         """
         _booking = layer_models.PGBooking(**data)
@@ -70,72 +54,36 @@ class BookingSqlachemyRepository(_protocols.BookingRepositoryProtocol):
             guest_status=_booking.guest_status,
         )
 
-    async def get_by_id(self, booking_id: str | UUID) -> layer_models.DetailBookingResponse:
+    async def get_by_id(self, booking_id: str | UUID) -> layer_models.PGBooking:
         """Получение полной информации о Booking.
 
         :param booking_id: id заявки
-        :return: подробная информация о заявке
+        :return: layer_models.PGBooking
         :raises NotFoundError: если указаная запись не была найдена в базе
         """
-        try:
-            _booking = await self._get(booking_id)
-        except exc.NotFoundError:
-            raise
+        data = await self.db.get(Booking, booking_id)
+        if data is None:
+            logger.info(f'[-] Not found <{booking_id}>')
+            raise exc.NotFoundError
+        return layer_models.PGBooking(**data._asdict())
 
-        _author = await self.user_repo.get_by_id(_booking.author_id)
-        logger.info(f'Get user <{_booking.author_id}>: <{_author}>')
-
-        _guest = await self.user_repo.get_by_id(_booking.guest_id)
-        logger.info(f'Get user <{_booking.guest_id}>: <{_guest}>')
-
-        _announce = await self.announce_repo.get_by_id(_booking.announcement_id)
-        logger.info(f'Get announce <{_booking.announcement_id}>: <{_announce}>')
-
-        _movie = await self.movie_repo.get_by_id(_announce.movie_id)
-        logger.info(f'Get movie <{_announce.movie_id}>: <{_movie}>')
-
-        _author_rating = await self.rating_repo.get_by_id(_booking.author_id)
-        logger.info(f'Get rating <{_booking.author_id}>: <{_author_rating}>')
-
-        _guest_rating = await self.rating_repo.get_by_id(_booking.guest_id)
-        logger.info(f'Get rating <{_booking.guest_id}>: <{_guest_rating}>')
-
-        return layer_models.DetailBookingResponse(
-            id=_booking.id,
-            announcement_id=_booking.announcement_id,
-            movie_title=_movie.movie_title,
-            author_name=_author.user_name,
-            guest_name=_guest.user_name,
-            author_status=_booking.author_status,
-            guest_status=_booking.guest_status,
-            author_rating=_author_rating.user_raring,
-            event_time=_booking.event_time,
-            guest_rating=_guest_rating.user_raring,
-        )
-
-    async def create(self, announce_id: str | UUID, user_id: str | UUID) -> str | UUID:
+    async def create(self, announce: layer_payload.AnnounceToCreate, user_id: str | UUID) -> str | UUID:
         """Создание новой записи в БД.
 
-        :param announce_id: id объявления
+        :param announce: layer_payload.AnnounceToCreate
         :param user_id: id гостя
         :return booking_id: id заявки
         :raises UniqueConstraintError: если запист уже существует в базе
         """
         booking_id = str(uuid4())
-
-        _announce: layer_models.AnnounceToResponse = await self.announce_repo.get_by_id(announce_id)
-        logger.info(f'Get announcement <{announce_id}>: <{_announce}>')
-
         values = layer_payload.PGCreatePayload(
             id=booking_id,
-            announcement_id=announce_id,
-            movie_id=_announce.movie_id,
-            author_id=_announce.author_id,
+            announcement_id=announce.announce_id,
+            movie_id=announce.movie_id,
+            author_id=announce.author_id,
             guest_id=user_id,
-            event_time=_announce.event_time,
+            event_time=announce.event_time,
         )
-        if str(values.author_id) == str(values.guest_id):
-            raise exc.NoAccessError
         query = insert(Booking).values(**values.dict())
         try:
             await self.db.execute(query)
@@ -150,11 +98,9 @@ class BookingSqlachemyRepository(_protocols.BookingRepositoryProtocol):
     async def sudo_get_multy(
         self,
         query: layer_payload.SudoAPIMultyPayload,
-        user_id: str | UUID,
     ) -> list[layer_models.BookingResponse]:
         """Служебный метод. Получение заявок по условию.
 
-        :param user_id: id пользователя
         :param query: данные для фильтрации запроса к БД
         :return: список заявок
         """
@@ -187,13 +133,15 @@ class BookingSqlachemyRepository(_protocols.BookingRepositoryProtocol):
         """
         _query = select(Booking)
         if query.role.value == 'guest':
-            _query = _query.filter(Booking.guest_id == user_id)
+            _query = _query.where(Booking.guest_id == user_id)
         elif query.role.value == 'author':
-            _query = _query.filter(Booking.author_id == user_id)
+            _query = _query.where(Booking.author_id == user_id)
         else:
             raise exc.ValueMissingError
+
         if query.movie:
             _query = _query.filter(Booking.movie_id == query.movie)
+
         if query.date:
             _query = _query.filter(Booking.event_time == query.date)
 
@@ -224,7 +172,7 @@ class BookingSqlachemyRepository(_protocols.BookingRepositoryProtocol):
         new_status: layer_payload.APIUpdatePayload,
     ) -> None:
         """
-        Изменить свой статус в заявке.
+        Изменить статус в заявке.
 
         :param booking_id: id заявки
         :param new_status: новый статус
@@ -232,7 +180,7 @@ class BookingSqlachemyRepository(_protocols.BookingRepositoryProtocol):
         :raises UniqueConstraintError: если запист уже существует в базе
         """
         query = update(Booking).where(Booking.id == booking_id)
-        booking: layer_models.PGBooking = await self._get(booking_id)
+        booking: layer_models.PGBooking = await self.get_by_id(booking_id)
         if user_id == str(booking.author_id):
             if new_status.my_status == booking.author_status:
                 return
