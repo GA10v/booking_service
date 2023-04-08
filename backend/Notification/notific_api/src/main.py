@@ -1,16 +1,16 @@
 import logging
 
 import uvicorn
-from api.v1 import _notific, notific
-from broker.rabbit import producer
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
+
+from api.v1 import _announce, _booking, _notific, notific
+from broker.rabbit import producer
+from core.config import settings
+from core.logger import LOGGING
 from middleware.auth import auth_middleware
 from middleware.logger import logging_middleware
 from utils.sentry import init_sentry
-
-from core.config import settings
-from core.logger import LOGGING
 
 init_sentry()
 
@@ -49,6 +49,8 @@ async def shutdown():
 
 app.include_router(notific.router, prefix=settings.fastapi.NOTIFIC_PREFIX, tags=['notification'])
 app.include_router(_notific.router, prefix=settings.fastapi.NOTIFIC_PREFIX, tags=['test'])
+app.include_router(_announce.router, prefix=settings.fastapi.NOTIFIC_PREFIX, tags=['test_announce'])
+app.include_router(_booking.router, prefix=settings.fastapi.NOTIFIC_PREFIX, tags=['test_announce'])
 
 if __name__ == '__main__':
     uvicorn.run('main:app', host='0.0.0.0', port=8070, log_config=LOGGING, log_level=logging.DEBUG)

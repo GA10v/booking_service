@@ -10,13 +10,13 @@ router = APIRouter()
 
 
 @router.post(
-    '/test_new_content',
-    summary='Test new_content',
-    description='Тест уведомления о новом контенте',
+    '/test_new_announce',
+    summary='Test new_announce',
+    description='Тест уведомления о создании объявления',
 )
-async def test_new_content(
+async def test_new_announce(
     request: Request,
-    payload: Event = Depends(fake_data.get_content_event),
+    payload: Event = Depends(fake_data.get_new_announce_event),
     service: RabbitMQProducerService = Depends(get_producer_service),
 ) -> HTTPStatus:
 
@@ -25,13 +25,13 @@ async def test_new_content(
 
 
 @router.post(
-    '/test_likes',
-    summary='Test new_likes',
-    description='Тест уведомления о новых лайках на обзор',
+    '/test_put_announce',
+    summary='Test put_announce',
+    description='Тест уведомления об изменении объявления',
 )
-async def test_new_likes(
+async def test_put_announce(
     request: Request,
-    payload: Event = Depends(fake_data.get_likes_event),
+    payload: Event = Depends(fake_data.get_put_announce_event),
     service: RabbitMQProducerService = Depends(get_producer_service),
 ) -> HTTPStatus:
 
@@ -40,13 +40,13 @@ async def test_new_likes(
 
 
 @router.post(
-    '/test_welcome',
-    summary='Test welcome',
-    description='Тест приветственного письма',
+    '/test_delete_announce',
+    summary='Test delete_announce',
+    description='Тест уведомления об удалении объявления',
 )
-async def test_welcome(
+async def test_delete_announce(
     request: Request,
-    payload: Event = Depends(fake_data.get_user_event),
+    payload: Event = Depends(fake_data.get_delete_announce_event),
     service: RabbitMQProducerService = Depends(get_producer_service),
 ) -> HTTPStatus:
 
@@ -55,13 +55,13 @@ async def test_welcome(
 
 
 @router.post(
-    '/test_promo',
-    summary='Test new_promo',
-    description='Тест кастомного уведомления',
+    '/test_done_announce',
+    summary='Test done_announce',
+    description='Тест уведомления завершении события',
 )
-async def test_promo(
+async def test_done_announce(
     request: Request,
-    payload: Event = Depends(fake_data.get_promo_event),
+    payload: Event = Depends(fake_data.get_done_announce_event),
     service: RabbitMQProducerService = Depends(get_producer_service),
 ) -> HTTPStatus:
 
