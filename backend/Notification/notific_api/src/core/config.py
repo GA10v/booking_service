@@ -61,10 +61,28 @@ class JWTSettings(BaseConfig):
 
 class DebugSettings(BaseConfig):
     DEBUG: bool = True
-    TEST_EMAIL: list[str] = ''
+    TEST_EMAIL: list[str] = ['admin@admin.ru']
 
     class Config:
         env_prefix = 'DEBUG_'
+
+
+class BookingSettings(BaseConfig):
+    HOST: str = 'localhost'
+    PORT: int = 8080
+    API_PREFIX: str = '/app/v1'
+    FAKE_ANNOUNCE: str = 'eca370e7-c65d-44f3-b390-5c2733df02e6'
+    FAKE_BOOKING: str = 'c1fb843b-de80-46c5-b0e7-95e15a88b407'
+
+    @property
+    def uri(self):
+        return f'http://{self.HOST}:{self.PORT}{self.API_PREFIX}'
+
+    def announce_uri(self):
+        return f'{self.uri}/announcement/'
+
+    class Config:
+        env_prefix = 'BOOKING_'
 
 
 class ProjectSettings(BaseConfig):
@@ -75,6 +93,7 @@ class ProjectSettings(BaseConfig):
     logging: LoggingSettings = LoggingSettings()
     jwt: JWTSettings = JWTSettings()
     debug: DebugSettings = DebugSettings()
+    booking: BookingSettings = BookingSettings()
 
 
 settings = ProjectSettings()

@@ -11,7 +11,7 @@ class BaseConfig(BaseSettings):
 
 class FastapiSetting(BaseConfig):
     HOST: str = 'localhost'
-    PORT: int = 8080
+    PORT: int = 8070
     NOTIFIC_PREFIX: str = '/app/v1/notification'
 
     @property
@@ -136,6 +136,31 @@ class RedisSettings(BaseConfig):
         env_prefix = 'REDIS_'
 
 
+class BookingSettings(BaseConfig):
+    HOST: str = 'localhost'
+    PORT: int = 8080
+    API_PREFIX: str = '/app/v1'
+
+    @property
+    def uri(self):
+        return f'http://{self.HOST}:{self.PORT}{self.API_PREFIX}'
+
+    @property
+    def announce_uri(self):
+        return f'{self.uri}/announcement/'
+
+    @property
+    def all_announce_uri(self):
+        return f'{self.uri}/announcements/'
+
+    @property
+    def booking_uri(self):
+        return f'{self.uri}/booking/'
+
+    class Config:
+        env_prefix = 'BOOKING_'
+
+
 class URLShortnerSettings(BaseConfig):
     HOST: str = 'localhost'
     PORT: int = 3000
@@ -144,6 +169,10 @@ class URLShortnerSettings(BaseConfig):
     TESTING: bool = True
     ID_LENGTH: int = 8
     REDIRECT_URL: str = FastapiSetting().uri
+    ANNOUNCE_URL: str = BookingSettings().announce_uri
+    ALL_ANNOUNCE_URL: str = BookingSettings().all_announce_uri
+    BOOKING_URL: str = BookingSettings().booking_uri
+    RATING_URL: str = '123'  # TODO: Информация от Павла
 
     @property
     def uri(self):
@@ -170,6 +199,7 @@ class ProjectSettings(BaseConfig):
     postgres: PostgresSettings = PostgresSettings()
     redis: RedisSettings = RedisSettings()
     url_shortner: URLShortnerSettings = URLShortnerSettings()
+    booking: BookingSettings = BookingSettings()
     debug: DebugSettings = DebugSettings()
 
 

@@ -37,6 +37,9 @@ class JWTSettings(BaseConfig):
 
 class TestDataSettings(BaseConfig):
     USER: str = '6c162475-c7ed-4461-9184-001ef3d9f264'
+    AUTHOR: str = '50760ee6-2073-445d-ad25-f665937f3b33'
+    GUEST_1: str = '39e60237-83ea-4c65-9bc9-f6b47d109738'
+    GUEST_2: str = 'd0c5635c-3211-4cf8-94ab-cbe6800771c4'
     MODERATOR: str = 'a5a8f573-3cee-4ccc-8a2b-91cb9f55250a'
 
 
