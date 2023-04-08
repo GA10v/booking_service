@@ -1,0 +1,64 @@
+@startuml layers
+' !theme materia
+autonumber
+skinparam sequence {
+    ParticipantPadding 20
+    MessageAlign center
+}
+
+title DELETE '/announcement/{announcement_id}'
+
+participant Client as Client
+participant "Booking API" as API
+participant "AnnouncementService" as Service
+participant "AnnounceRepository" as AnnounceRepo
+participant "BookingRepository" as BookingRepo
+participant "UserRepository" as UserRepo
+participant "MovieRepository" as MovieRepo
+participant "RatingRepository" as RatingRepo
+database "Cache" as Cache_Service
+database "Booking DB" as DB_Booking
+
+
+Client -> API: - announce_id
+API -> API:
+note right
+    - проверка access_headers
+end note
+API -> Service: - user\n - announce_id
+
+group Announcement Service
+
+    group #B2C7E8 layer_service
+
+        Service -> Service
+        note right
+            - self._check_permissions()
+        end note
+
+        Service -> Service
+        note right
+            - self.repo.delete()
+        end note
+        end group
+
+        Service --> AnnounceRepo: - announce_id
+        group #B1C7E8 layer_repo
+
+            AnnounceRepo -> AnnounceRepo
+            note right
+                - create query
+            end note
+
+            AnnounceRepo -> AnnounceRepo
+            note right
+                - self.db.execute()
+            end note
+
+            AnnounceRepo --> DB_Booking: Delete announce_id
+            end group
+
+            Service -> API: - HTTPStatus
+
+            API -> Client: - HTTPStatus
+            @enduml

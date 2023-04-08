@@ -15,8 +15,12 @@ orjson = "^3.8.8"
 gunicorn = "^20.1.0"
 asyncio = "^3.4.3"
 pyjwt = "^2.6.0"
-sqlalchemy = "^2.0.7"
+sqlalchemy = "1.4.45"
 asyncpg = "^0.27.0"
+faker = "^17.6.0"
+databases = "^0.7.0"
+aioredis = "^2.0.1"
+pytz = "^2023.3"
 
 
 [tool.poetry.dev-dependencies]

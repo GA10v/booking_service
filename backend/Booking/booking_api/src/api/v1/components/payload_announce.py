@@ -27,7 +27,6 @@ class CreatePayload(BaseModel):
 
 class UpdatePayload(BaseModel):
     status: EventStatus | None
-    movie_id: str | None
     title: str | None
     description: str | None
     sub_only: bool | None
@@ -35,3 +34,13 @@ class UpdatePayload(BaseModel):
     tickets_count: int | None
     event_time: datetime | None
     event_location: str | None
+
+
+class MultyPayload(BaseModel):
+    author: str | None
+    movie: str | None
+    free: bool | None
+    sub: bool | None
+    ticket: int | None
+    date: datetime | None
+    location: str | None

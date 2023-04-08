@@ -26,6 +26,7 @@ services:
     image: postgres:15.2-alpine3.17
     restart: always
     volumes:
+      - ./dump.sql:/docker-entrypoint-initdb.d/init.sql
       - postgres_data:/var/lib/postgresql/data/
     env_file:
       - .env
@@ -48,6 +49,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
       url_shortener:
         condition: service_started
     networks:
@@ -58,10 +61,46 @@ services:
         gelf-address: udp://127.0.0.1:5044
         tag: booking_api
 
+  watcher:
+    container_name: watcher
+    build:
+      context: backend/Booking/watcher
+      dockerfile: Dockerfile
+    restart: always
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      booking_api:
+        condition: service_started
+    networks:
+      - project-network
+    logging:
+      driver: gelf
+      options:
+        gelf-address: udp://127.0.0.1:5044
+        tag: watcher
+
+  redis:
+    container_name: redis
+    image: redis:7.0.4-alpine
+    restart: always
+    expose:
+      - 6379
+    volumes:
+      - cache:/data
+    networks:
+      - project-network
+    healthcheck:
+      test: redis-cli ping
+
   mock_movie_api:
     container_name: mock_movie_api
     build:
-      context: mock/movie_api
+      context: backend/Movie_API/mock
       dockerfile: Dockerfile
     restart: always
     env_file:
@@ -72,7 +111,7 @@ services:
   mock_auth:
     container_name: mock_auth
     build:
-      context: mock/auth
+      context: backend/Auth/mock
       dockerfile: Dockerfile
     restart: always
     env_file:
@@ -83,7 +122,7 @@ services:
   mock_ugc:
     container_name: mock_ugc
     build:
-      context: mock/ugc
+      context: backend/UGC/mock
       dockerfile: Dockerfile
     restart: always
     env_file:
@@ -293,6 +332,7 @@ services:
 
 volumes:
   postgres_data:
+  cache:
 
 
 networks:

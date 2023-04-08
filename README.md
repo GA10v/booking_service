@@ -31,19 +31,29 @@
 2. Создать файл конфигурации `.env` в корне проекта и заполнить его согласно `example.env`
 3. Запустить API командой:
    `$ python3 backend/Booking/booking_api/src/main.py`
-4. Перейти к документации API по url: `http://localhost:8080/api/openapi`
+4. Запустить Watcher командой:
+   `$ python3 backend/Booking/watcher/src/main.py`
+5. Полученить access_jwt_token командой:
+   `$ python3 jwt_token.py`
+6. Перейти к документации API по url: `http://localhost:8080/api/openapi`
 
 ## Запуск в docker
 
 1. Создать файл конфигурации `.env` в корне проекта и заполнить его согласно `example.env`
 2. Создать внешнюю сеть "project-network" командой:
    `$ docker network create 'project-network'`
-3. Запустить контейнер командой
+3. Запустить контейнер сервиса Booking командой
    `$ docker-compose up`
-4. Перейти к документации API по url: `http://localhost:8080/api/openapi`
-5. Перейти к документации Mock_Auth по url: `http://localhost:8081/api/openapi`
-6. Перейти к документации Mock_Admin_panel по url: `http://localhost:8082/api/openapi`
-7. Перейти к документации Mock_ugc по url: `http://localhost:8083/api/openapi`
+4. Запустить контейнер сервиса Notification командой
+   `$ cd backend/Notification && docker-compose up`
+5. Полученить access_jwt_token командой:
+   `$ python3 jwt_token.py`
+6. Перейти к документации Booking API по url: `http://localhost:8080/api/openapi`
+7. Перейти к документации Notification Admin_panel по url: `http://localhost:80/admin/`(USER='admin', PASSWORD='admin')
+8. Перейти к документации Notification API по url: `http://localhost:8070/api/openapi`
+9. Перейти к документации Mock_Auth по url: `http://localhost:8081/api/openapi`
+10. Перейти к документации Mock_Admin_panel по url: `http://localhost:8082/api/openapi`
+11. Перейти к документации Mock_ugc по url: `http://localhost:8083/api/openapi`
 
 ### Запуск тестов
 
