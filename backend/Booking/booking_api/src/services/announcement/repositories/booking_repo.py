@@ -72,6 +72,7 @@ class BookingSqlachemyRepository(_protocols.BookingRepositoryProtocol):
         _guest_rating = await self.rating_repo.get_by_id(_booking.guest_id)
 
         return layer_models.BookingToDetailResponse(
+            booking_id=_booking.id,
             guest_name=_guest.user_name,
             guest_rating=_guest_rating.user_raring,
             guest_status=_booking.guest_status,
