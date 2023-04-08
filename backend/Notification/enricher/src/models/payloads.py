@@ -46,4 +46,58 @@ class NewPromoContext(BaseUserContext):
     text_to_promo: str
 
 
-payload = Union[NewUserContext, NewReviewsLikesContext, NewContentContext, NewPromoContext]
+class NewAnnounceContext(BaseUserContext):
+    author_name: str
+    announce_title: str
+    event_time: str
+    movie_title: str
+    link: str
+
+
+class PutAnnounceContext(BaseUserContext):
+    author_name: str
+    announce_title: str
+    link: str
+
+
+class DeleteAnnounceContext(BaseUserContext):
+    author_name: str
+    announce_title: str
+    link: str
+
+
+class DoneAnnounceContext(BaseUserContext):
+    announce_title: str
+    link: str
+
+
+class DeleteBookingContext(BaseUserContext):
+    guest_name: str
+    del_booking_announce_title: str
+
+
+class NewBookingContext(BaseUserContext):
+    guest_name: str
+    new_booking_announce_title: str
+    link: str
+
+
+class StatusBookingContext(BaseUserContext):
+    another_name: str
+    announce_title: str
+    link: str
+
+
+payload = Union[
+    NewUserContext,
+    NewReviewsLikesContext,
+    NewContentContext,
+    NewPromoContext,
+    NewAnnounceContext,
+    PutAnnounceContext,
+    DeleteAnnounceContext,
+    DoneAnnounceContext,
+    DeleteBookingContext,
+    NewBookingContext,
+    StatusBookingContext,
+]

@@ -15,6 +15,15 @@ class EventType(enum.Enum):
     new_likes = 'new_likes'
     promo = 'promo'
 
+    announce_new = 'announce_new'
+    announce_put = 'announce_put'
+    announce_done = 'announce_done'
+    announce_delete = 'announce_delete'
+
+    booking_new = 'booking_new'
+    booking_status = 'booking_status'
+    booking_delete = 'booking_delete'
+
 
 class Template(Base):
     __tablename__ = 'notifications_template'

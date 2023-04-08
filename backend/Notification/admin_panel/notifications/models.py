@@ -16,6 +16,15 @@ class EventType(models.TextChoices):
     NEW_LIKES = 'new_likes'
     PROMO = 'promo'
 
+    ANNOUNCE_NEW = 'announce_new'
+    ANNOUNCE_PUT = 'announce_put'
+    ANNOUNCE_DONE = 'announce_done'
+    ANNOUNCE_DEL = 'announce_delete'
+
+    BOOKING_NEW = 'booking_new'
+    BOOKING_STATUS = 'booking_status'
+    BOOKING_DEL = 'booking_delete'
+
 
 class Template(UUIDMixin, TimeStampedMixin):  # type: ignore[misc]
 
