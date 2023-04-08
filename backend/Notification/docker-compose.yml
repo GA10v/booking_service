@@ -1,7 +1,7 @@
 version: '3.9'
 
 volumes:
-  rabbitmq_data: # postgres_data:
+  rabbitmq_data:
 
   static:
   media:
@@ -57,24 +57,6 @@ services:
     command: >
       bash -c "python3 main.py"
 
-  # websocket_worker:
-  #   container_name: websocket_worker
-  #   build:
-  #     context: services/sender
-  #     dockerfile: Dockerfile
-  #   restart: always
-  #   depends_on:
-  #     rabbitmq:
-  #       condition: service_healthy
-  #   ports:
-  #     - "8765:8765"
-  #   env_file:
-  #     - .env
-  #   networks:
-  #     - project-network
-  #   command: >
-  #     bash -c "python -m v1.workers.websocket_worker --port 8765 --ip 0.0.0.0"
-
   admin-panel:
     container_name: admin_panel
     build:
@@ -84,9 +66,6 @@ services:
     volumes:
       - static:/opt/app/static/
       - media:/opt/app/media/
-      # depends_on:
-      # postgres:
-      #   condition: service_healthy
     env_file:
       - .env
     networks:
@@ -105,8 +84,6 @@ services:
       dockerfile: Dockerfile
     restart: always
     depends_on:
-      # postgres:
-      #   condition: service_healthy
       admin-panel:
         condition: service_started
     env_file:
@@ -122,8 +99,6 @@ services:
       dockerfile: Dockerfile
     restart: always
     depends_on:
-      # postgres:
-      #   condition: service_healthy
       admin-panel:
         condition: service_started
     env_file:
@@ -143,18 +118,8 @@ services:
         condition: service_healthy
       admin-panel:
         condition: service_started
-      # url_shortener:
-      #   condition: service_started
       celery:
         condition: service_started
-      # mock_admin:
-      #   condition: service_started
-      # mock_auth:
-      #   condition: service_started
-      # redis:
-      #   condition: service_healthy
-      # postgres:
-      #   condition: service_healthy
     env_file:
       - .env
     networks:
@@ -206,49 +171,3 @@ services:
       retries: 5
     networks:
       - project-network
-  # mock_admin:
-  #   container_name: mock_admin
-  #   build:
-  #     context: mock/admin_panel
-  #     dockerfile: Dockerfile
-  #   restart: always
-  #   env_file:
-  #     - .env
-  #   networks:
-  #     - notification-network
-
-  # mock_auth:
-  #   container_name: mock_auth
-  #   build:
-  #     context: mock/auth
-  #     dockerfile: Dockerfile
-  #   restart: always
-  #   env_file:
-  #     - .env
-  #   networks:
-  #     - project-network
-
-  # mock_ugc:
-  #   container_name: mock_ugc
-  #   build:
-  #     context: mock/ugc
-  #     dockerfile: Dockerfile
-  #   restart: always
-  #   env_file:
-  #     - .env
-  #   networks:
-  #     - project-network
-
-  # redis:
-  #   container_name: redis
-  #   image: redis:7.0.4-alpine
-  #   restart: always
-  #   expose:
-  #     - 6379
-  #   volumes:
-  #     - cache:/data
-  #   networks:
-  #     - project-network
-  #   healthcheck:
-  #     test: redis-cli ping
-
