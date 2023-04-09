@@ -103,5 +103,5 @@ echo $'\n'SETUP.sh step 7 time now: `date +"%T" `
 mongosh --host mongos1:27017 <<-EOSQL
   use $MONGODB_DB;
   db.createCollection($MONGODB_REVIEW_COLLECTION)
-  sh.shardCollection("$MONGODB_DB.$MONGODB_REVIEW_COLLECTION", {"guest_id": "hashed", "event_id": "hashed"})
+  sh.shardCollection("$MONGODB_DB.$MONGODB_REVIEW_COLLECTION", {"id": "hashed"})
 EOSQL
