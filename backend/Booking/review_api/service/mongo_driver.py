@@ -17,4 +17,4 @@ class MongoService:
         await self.collection.insert_one(_doc.dict())
 
     async def get_document_by_event_id(self, event_id: str) -> Review:
-        return await self.collection.find(filter={'event_id': event_id})
+        return self.collection.find(filter={'event_id': event_id})
