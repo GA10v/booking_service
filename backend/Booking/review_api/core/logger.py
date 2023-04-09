@@ -68,7 +68,7 @@ LOGGING = {
         'handlers': LOG_DEFAULT_HANDLERS,
     },
 }
-logging.config.dictConfig(LOGGING)
+# logging.config.dictConfig(LOGGING)
 
 
 def get_logger(_name_: str) -> logging.Logger:
