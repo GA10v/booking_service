@@ -40,24 +40,27 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'stream': 'ext://sys.stdout',
         },
-        'logstash': {
-            'class': 'logstash.LogstashHandler',
-            'level': 'INFO',
-            'host': settings.logging.LOGSTASH_HOST,
-            'port': settings.logging.LOGSTASH_PORT,
-        },
+        # 'logstash': {
+        #     'class': 'logstash.LogstashHandler',
+        #     'level': 'INFO',
+        #     'host': settings.logging.LOGSTASH_HOST,
+        #     'port': settings.logging.LOGSTASH_PORT,
+        # },
     },
     'loggers': {
         'fast_api_service': {
-            'handlers': ['logstash', 'console'],
+            # 'handlers': ['logstash', 'console'],
+            'handlers': ['console'],
             'level': 'INFO',
         },
         'uvicorn.error': {
             'level': 'INFO',
-            'handlers': ['logstash', 'console'],
+            # 'handlers': ['logstash', 'console'],
+            'handlers': ['console'],
         },
         'uvicorn.access': {
-            'handlers': ['access', 'logstash', 'console'],
+            'handlers': ['access', 'console'],
+            # 'handlers': ['access', 'logstash', 'console'],
             'level': 'INFO',
             'propagate': False,
         },
