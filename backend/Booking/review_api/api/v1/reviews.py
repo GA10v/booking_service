@@ -30,9 +30,9 @@ async def create_review(
     review = Review(
         **review.dict(),
         event_id=event_id,
-        guest_id=_user['sub'],
+        guest_id=_user['user_id'],
         created=dt.utcnow(),
-        modified=dt.utcnow()
+        modified=dt.utcnow(),
     )
     logger.info(review)
     await mongo_service.insert_document(review)
