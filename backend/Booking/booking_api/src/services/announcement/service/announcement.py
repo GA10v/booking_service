@@ -16,6 +16,7 @@ from services.announcement.repositories import (
     announce_repo,
     booking_repo,
     movie_repo,
+    notific_repo,
     rating_repo,
     user_repo,
 )
@@ -32,6 +33,7 @@ class AnnouncementService:
         movie_repo: _protocols.MovieRepositoryProtocol,
         rating_repo: _protocols.RatingRepositoryProtocol,
         booking_repo: _protocols.BookingRepositoryProtocol,
+        notific_repo: _protocols.NotificRepositoryProtocol,
         cache: RedisCache,
     ):
         self.repo = repo
@@ -39,6 +41,7 @@ class AnnouncementService:
         self.movie_repo = movie_repo
         self.rating_repo = rating_repo
         self.booking_repo = booking_repo
+        self.notific_repo = notific_repo
         self.redis = cache
         logger.info('AnnouncementService init ...')
 
@@ -157,7 +160,16 @@ class AnnouncementService:
             logger.info(f'[+] Create announcement <{_id}>')
         except exc.UniqueConstraintError:
             raise
-        return await self.get_one(_id)
+        annouce = await self.get_one(_id)
+
+        # оповещаем подписчиков о новом событии
+        if annouce.status.value == layer_payload.EventStatus.Created.value:
+            _user = await self.user_repo.get_by_id(author_id)
+            for sub in _user.subs:
+                payload = layer_payload.NewAnnounce(new_announce_id=_id, user_id=sub)
+                await self.notific_repo.send(layer_payload.EventType.announce_new, payload)
+
+        return annouce
 
     async def update(
         self,
@@ -192,14 +204,38 @@ class AnnouncementService:
         # Нельзя менять объявления в статусе Done
         if _announce.status == layer_models.EventStatus.Done.value:
             raise exc.UniqueConstraintError
-
         # Только автор и sudo могут вносить изменения
         if not await self._check_permissions(announce_id=announce_id, user=user):
             raise exc.NoAccessError
+        # обновляем объявление
         try:
             await self.repo.update(announce_id=announce_id, update_announce=payload)
         except exc.UniqueConstraintError:
             raise
+
+        # оповещаем гостей об изменениях
+        announce = await self.get_one(announce_id)
+        notific_list = []
+        if announce.guest_list:
+            for guest in announce.guest_list:
+                if guest.author_status is False:
+                    continue
+                guest_id = await self.booking_repo.get_by_id(guest.booking_id)
+                _payload = layer_payload.PutAnnounce(
+                    put_announce_id=announce_id,
+                    user_id=str(guest_id),
+                )
+                await self.notific_repo.send(layer_payload.EventType.announce_put, _payload)
+                notific_list.append(guest_id)
+
+        # оповещаем подписчиков о новом событии
+        if payload.status.value == layer_models.EventStatus.Alive.value:
+            _user = await self.user_repo.get_by_id(user.get('user_id'))
+            for sub in _user.subs:
+                if sub in notific_list:
+                    continue
+                payload = layer_payload.NewAnnounce(new_announce_id=announce_id, user_id=sub)
+                await self.notific_repo.send(layer_payload.EventType.announce_new, payload)
 
     async def delete(
         self,
@@ -219,9 +255,24 @@ class AnnouncementService:
             await self.repo.get_by_id(announce_id)
         except exc.NotFoundError:
             raise
+        _announce: layer_models.DetailAnnouncementResponse = await self.get_one(announce_id)
         # Только автор и sudo могут вносить изменения
         if await self._check_permissions(announce_id=announce_id, user=user):
             await self.repo.delete(announce_id=announce_id)
+
+            # оповещае гостей об удалении объявления
+            if _announce.guest_list:
+                for guest in _announce.guest_list:
+                    if guest.author_status is False:
+                        continue
+                    guest_id = await self.booking_repo.get_by_id(guest.booking_id)
+                    _payload = layer_payload.DeleteAnnounce(
+                        delete_announce_id=str(_announce.id),
+                        author_name=_announce.author_name,
+                        announce_title=_announce.title,
+                        user_id=str(guest_id),
+                    )
+                    await self.notific_repo.send(layer_payload.EventType.announce_delete, _payload)
             return
         raise exc.NoAccessError
 
@@ -253,6 +304,7 @@ def get_announcement_service(
     movie_repo: _protocols.MovieRepositoryProtocol = Depends(movie_repo.get_movie_repo),
     rating_repo: _protocols.RatingRepositoryProtocol = Depends(rating_repo.get_rating_repo),
     booking_repo: _protocols.BookingRepositoryProtocol = Depends(booking_repo.get_booking_repo),
+    notific_repo: _protocols.NotificRepositoryProtocol = Depends(notific_repo.get_notific_repo),
     cache: CacheProtocol = Depends(get_cache),
 ) -> AnnouncementService:
-    return AnnouncementService(repo, user_repo, movie_repo, rating_repo, booking_repo, cache)
+    return AnnouncementService(repo, user_repo, movie_repo, rating_repo, booking_repo, notific_repo, cache)
