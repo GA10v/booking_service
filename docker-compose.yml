@@ -308,7 +308,7 @@ services:
 
   # mongosetup:
   #   container_name: mongosetup
-  #   image: mongo:6.0.3-focal
+  #   image: mongo:6.0.5-jammy
   #   depends_on:
   #     - mongocfg1
   #     - mongocfg2
@@ -328,6 +328,32 @@ services:
   #   volumes:
   #     - ./scripts:/scripts
   #   entrypoint: [ "bash", "-c", "sh ./scripts/setup.sh" ]
+
+  booking_review_api:
+    container_name: booking_review_api
+    build:
+      context: backend/
+      dockerfile: Dockerfile
+    restart: always
+    env_file:
+      - .env
+    depends_on:
+      - mongocfg1
+      - mongocfg2
+      - mongocfg3
+      - mongors1n1
+      - mongors1n2
+      - mongors1n3
+      - mongors2n1
+      - mongors2n2
+      - mongors2n3
+      - mongos1
+      - mongos2
+    logging:
+      driver: gelf
+      options:
+        gelf-address: udp://127.0.0.1:5044
+        tag: review_api
 
 
 volumes:

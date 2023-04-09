@@ -40,6 +40,7 @@ async def update_review(
     review_id: str,
     _user: dict = Depends(auth_handler.auth_wrapper),
 ) -> Review:
+    # review = Review(**review.dict(), event_id=event_id, guest_id=_user['sub'])
     return status.HTTP_200_OK
 
 
