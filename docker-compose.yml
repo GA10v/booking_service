@@ -332,7 +332,7 @@ services:
   booking_review_api:
     container_name: booking_review_api
     build:
-      context: backend/
+      context: backend/Booking/review_api
       dockerfile: Dockerfile
     restart: always
     env_file:
