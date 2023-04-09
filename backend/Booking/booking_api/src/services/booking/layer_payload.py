@@ -77,11 +77,7 @@ class StatusBooking(BaseModel):
     another_id: str | UUID
 
 
-context = Union[
-    DeleteBooking,
-    NewBooking,
-    StatusBooking,
-]
+context = Union[DeleteBooking, NewBooking, StatusBooking]
 
 
 class EventType(str, Enum):

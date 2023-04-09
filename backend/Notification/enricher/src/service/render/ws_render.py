@@ -75,7 +75,7 @@ class TextRender(RenderProtocol):
                 .replace('{{link}}', data.link)
             )
 
-        elif isinstance(data, payloads.NewBookingContext):
+        elif isinstance(data, payloads.StatusBookingContext):
             return (
                 template.text_msg.replace('{{user_name}}', data.user_name)
                 .replace('{{another_name}}', data.another_name)
