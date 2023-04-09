@@ -10,6 +10,13 @@ def orjson_dumps(obj_to_serialize: Any, *, default: Any) -> Any:
     return orjson.dumps(obj_to_serialize, default=default).decode()
 
 
+class DefaultOrjsonModel(BaseModel):
+
+    class Config:
+        json_loads = orjson.loads
+        json_dumps = orjson_dumps
+
+
 class DefaultModel(BaseModel):
     id: str | UUID
     created: datetime

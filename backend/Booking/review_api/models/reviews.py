@@ -1,6 +1,6 @@
 """Models to describe review."""
 
-from models.base import DefaultModel
+from models.base import DefaultModel, DefaultOrjsonModel
 from uuid import UUID
 
 
@@ -24,7 +24,7 @@ class Review(ReviewBase):
     score: int
 
 
-class ReviewIncoming(DefaultModel):
+class ReviewIncoming(DefaultOrjsonModel):
     """Class to collect data from guest."""
 
     review_text: str
