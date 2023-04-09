@@ -112,6 +112,10 @@ class BookingSqlachemyRepository(_protocols.BookingRepositoryProtocol):
             return []
         return [await self._get_booking_resp(data) for data in scalar_result]
 
+    async def get_guest_id(self, booking_id: str | UUID) -> str | UUID:
+        data: layer_models.PGBooking = await self.db.get(Booking, booking_id)
+        return data.guest_id
+
 
 @lru_cache()
 def get_booking_repo(
