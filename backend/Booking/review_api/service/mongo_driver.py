@@ -13,4 +13,4 @@ class MongoService:
         self.collection = self.database[settings.mongo.COLLECTION]
 
     async def insert_document(self, _doc: Review):
-        await self.collection.insert_one(_doc.json())
+        await self.collection.insert_one(_doc.dict())
