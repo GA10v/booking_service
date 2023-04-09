@@ -91,12 +91,12 @@ mongosh --host mongos1:27017 <<EOF
 EOF
 
 echo $'\n'SETUP.sh step 6 time now: `date +"%T" `
-mongosh --host mongos1:27017 <<-EOSQL
+mongosh --host mongors1n1:27017 <<-EOSQL
   use $MONGODB_DB;
 EOSQL
 sleep 5
 mongosh --host mongos1:27017 <<-EOSQL
-  sh.enableSharding($MONGODB_DB)
+  sh.enableSharding("$MONGODB_DB")
 EOSQL
 
 echo $'\n'SETUP.sh step 7 time now: `date +"%T" `
