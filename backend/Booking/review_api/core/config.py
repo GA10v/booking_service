@@ -58,7 +58,7 @@ class MongoSettings(BaseConfig):
     REVIEW_COLLECTION: str = 'reviews'
 
     class Config:
-        env_prefix = 'MONGO_'
+        env_prefix = 'MONGODB_'
 
     @property
     def uri(self) -> MongoDsn:
