@@ -93,15 +93,12 @@ EOF
 echo $'\n'SETUP.sh step 6 time now: `date +"%T" `
 mongosh --host mongors1n1:27017 <<-EOSQL
   use $MONGODB_DB;
-EOSQL
-sleep 5
-mongosh --host mongos1:27017 <<-EOSQL
-  sh.enableSharding("$MONGODB_DB")
+  sh.enableSharding("$MONGODB_DB");
 EOSQL
 
 echo $'\n'SETUP.sh step 7 time now: `date +"%T" `
 mongosh --host mongos1:27017 <<-EOSQL
   use $MONGODB_DB;
-  db.createCollection("$MONGODB_REVIEW_COLLECTION")
-  sh.shardCollection("$MONGODB_DB.$MONGODB_REVIEW_COLLECTION", {"id": "hashed"})
+  db.createCollection("$MONGODB_REVIEW_COLLECTION");
+  sh.shardCollection("$MONGODB_DB.$MONGODB_REVIEW_COLLECTION", {"id": "hashed"});
 EOSQL

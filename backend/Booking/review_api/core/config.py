@@ -55,7 +55,7 @@ class MongoSettings(BaseConfig):
     HOST: str = 'localhost'
     PORT: int = 27017
     DB: str = 'booking_reviews'
-    COLLECTION: str = 'reviews'
+    REVIEW_COLLECTION: str = 'reviews'
 
     class Config:
         env_prefix = 'MONGO_'
