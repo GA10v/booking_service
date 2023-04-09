@@ -213,12 +213,13 @@ class BookingService:
             ):  # noqa: W503
                 return
 
-            if perm.value in [1, 2]:
-                await self.repo.update(
-                    user_id=user.get('user_id'),
-                    booking_id=booking_id,
-                    new_status=new_status,
-                )
+            if perm.value not in [1, 2]:
+                raise exc.NoAccessError
+            await self.repo.update(
+                user_id=user.get('user_id'),
+                booking_id=booking_id,
+                new_status=new_status,
+            )
         except (exc.NoAccessError, exc.NotFoundError):
             raise
 
