@@ -69,5 +69,5 @@ async def get_review(
 async def get_reviews(
     event_id: str,
     _user: dict = Depends(auth_handler.auth_wrapper),
-) -> Review:
+) -> int:     #Review:
     return status.HTTP_200_OK
