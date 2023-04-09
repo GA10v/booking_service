@@ -387,4 +387,4 @@ volumes:
 
 networks:
   project-network:
-    # external: true
+    external: true
