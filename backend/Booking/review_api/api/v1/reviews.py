@@ -86,7 +86,7 @@ async def get_reviews(
 ) -> Review:
     results = []
     reviews = await mongo_service.get_document_by_event_id(event_id)
-    for review in await reviews.cursor():
+    for review in await reviews.to_list():
         logger.info(review)
         results.append(Review(review))
     logger.info(results)
