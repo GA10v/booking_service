@@ -37,7 +37,7 @@ async def create_review(
         id=uuid.uuid4(),
     )
     logger.info(review)
-    await mongo_service.insert_document(review)
+    await mongo_service.insert_document(review.dict())
     return review
 
 
