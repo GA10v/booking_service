@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import APIRouter, Depends, status
 
 from models.reviews import Review, ReviewIncoming
@@ -5,6 +7,7 @@ from service.mongo_driver import MongoService
 from utils import auth
 
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 auth_handler = auth.AuthHandler()
 
@@ -24,6 +27,7 @@ async def create_review(
     mongo_service: MongoService = Depends(),
 ) -> Review:
     review = Review(**review.dict(), event_id=event_id, guest_id=_user['sub'])
+    logger.info(review)
     await mongo_service.insert_document(review)
     return review
 
