@@ -76,7 +76,7 @@ async def get_review(
     '/reviews/{event_id}',
     summary='Получение всех отзывов на событие',
     description='Получение всех отзывов',
-    response_model=list[Review] | Review,
+    response_model=list[Review],
     response_description='Список ревью события',
 )
 async def get_reviews(
@@ -84,4 +84,6 @@ async def get_reviews(
     _user: dict = Depends(auth_handler.auth_wrapper),
     mongo_service: MongoService = Depends(),
 ) -> Review:
-    return mongo_service.get_document_by_event_id(event_id)
+    results = mongo_service.get_document_by_event_id(event_id)
+    logger.info(results)
+    return results
