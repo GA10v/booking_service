@@ -40,12 +40,12 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'stream': 'ext://sys.stdout',
         },
-        # 'logstash': {
-        #     'class': 'logstash.LogstashHandler',
-        #     'level': 'INFO',
-        #     'host': settings.logging.LOGSTASH_HOST,
-        #     'port': settings.logging.LOGSTASH_PORT,
-        # },
+        'logstash': {
+            'class': 'logstash.LogstashHandler',
+            'level': 'INFO',
+            'host': settings.logging.LOGSTASH_HOST,
+            'port': settings.logging.LOGSTASH_PORT,
+        },
     },
     'loggers': {
         'fast_api_service': {
