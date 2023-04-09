@@ -87,7 +87,8 @@ async def get_reviews(
     results = []
     reviews = await mongo_service.get_document_by_event_id(event_id)
     async for review in reviews:
-        logger.info(review)
-        results.append(Review(review))
+        logger.info(f'review object type: {type(review)} and content {review}')
+        review_obj = Review(review)
+        results.append(review_obj)
     logger.info(results)
     return results
