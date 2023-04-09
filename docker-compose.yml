@@ -349,11 +349,11 @@ services:
       - mongors2n3
       - mongos1
       - mongos2
-    logging:
-      driver: gelf
-      options:
-        gelf-address: udp://127.0.0.1:5044
-        tag: review_api
+    # logging:
+    #   driver: gelf
+    #   options:
+    #     gelf-address: udp://127.0.0.1:5044
+    #     tag: review_api
 
 
 volumes:
