@@ -83,7 +83,11 @@ async def get_reviews(
     event_id: str,
     _user: dict = Depends(auth_handler.auth_wrapper),
     mongo_service: MongoService = Depends(),
-) -> Review:
-    results = await mongo_service.get_document_by_event_id(event_id)
+) -> Review:.
+    results = []
+    reviews = await mongo_service.get_document_by_event_id(event_id)
+    for review in await results.cursor():
+        logger.info(review)
+        results.append(Review(review))
     logger.info(results)
     return results
