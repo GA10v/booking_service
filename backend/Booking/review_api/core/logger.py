@@ -50,16 +50,13 @@ LOGGING = {
     'loggers': {
         'fast_api_service': {
             'handlers': ['logstash', 'console'],
-            # 'handlers': ['console'],
             'level': 'INFO',
         },
         'uvicorn.error': {
             'level': 'INFO',
             'handlers': ['logstash', 'console'],
-            'handlers': ['console'],
         },
         'uvicorn.access': {
-            # 'handlers': ['access', 'console'],
             'handlers': ['access', 'logstash', 'console'],
             'level': 'INFO',
             'propagate': False,
