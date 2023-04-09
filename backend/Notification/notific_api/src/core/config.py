@@ -11,7 +11,7 @@ class BaseConfig(BaseSettings):
 
 class FastapiSetting(BaseConfig):
     HOST: str = 'localhost'
-    PORT: int = 8080
+    PORT: int = 8070
     NOTIFIC_PREFIX: str = '/app/v1/notification'
 
     class Config:

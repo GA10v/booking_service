@@ -2,12 +2,12 @@ from datetime import datetime
 
 import aiohttp
 from aiohttp.client_exceptions import ClientError
-
-from core.config import settings
-from core.logger import get_logger
 from models import payloads
 from models.events import Event
 from service.enrich.protocol import PayloadsProtocol
+
+from core.config import settings
+from core.logger import get_logger
 from utils.auth import _headers
 
 logger = get_logger(__name__)
@@ -149,7 +149,7 @@ class DeleteAnnouncementPayload(PayloadsProtocol, BaseAnnouncementPayload):
             telegram_name=_user.get('telegram_name'),
             delivery_type=_user.get('delivery_type'),
             author_name=self.data.context.author_name,
-            announce_title=self.data.context.author_name,
+            announce_title=self.data.context.announce_title,
             link=_link.get('url'),
         )
 
