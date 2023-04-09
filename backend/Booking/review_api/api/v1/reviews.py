@@ -76,11 +76,12 @@ async def get_review(
     '/reviews/{event_id}',
     summary='Получение всех отзывов на событие',
     description='Получение всех отзывов',
-    response_model=int,
+    response_model=list[Review] | Review,
     response_description='Список ревью события',
 )
 async def get_reviews(
     event_id: str,
     _user: dict = Depends(auth_handler.auth_wrapper),
+    mongo_service: MongoService = Depends(),
 ) -> Review:
-    return status.HTTP_200_OK
+    return mongo_service.get_document_by_event_id(event_id)
