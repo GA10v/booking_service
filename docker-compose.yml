@@ -328,28 +328,29 @@ services:
     networks:
       - project-network
 
-  # mongosetup:
-  #   container_name: mongosetup
-  #   image: mongo:6.0.5-jammy
-  #   depends_on:
-  #     - mongocfg1
-  #     - mongocfg2
-  #     - mongocfg3
-  #     - mongors1n1
-  #     - mongors1n2
-  #     - mongors1n3
-  #     - mongors2n1
-  #     - mongors2n2
-  #     - mongors2n3
-  #     - mongos1
-  #     - mongos2
-  #   env_file:
-  #     - .env
-
-  #   restart: "no"
-  #   volumes:
-  #     - ./scripts:/scripts
-  #   entrypoint: [ "bash", "-c", "sh ./scripts/setup.sh" ]
+  mongosetup:
+    container_name: mongosetup
+    image: mongo:6.0.5-jammy
+    depends_on:
+      - mongocfg1
+      - mongocfg2
+      - mongocfg3
+      - mongors1n1
+      - mongors1n2
+      - mongors1n3
+      - mongors2n1
+      - mongors2n2
+      - mongors2n3
+      - mongos1
+      - mongos2
+    env_file:
+      - .env
+    restart: "no"
+    volumes:
+      - ./scripts:/scripts
+    entrypoint: [ "bash", "-c", "sh ./scripts/setup.sh" ]
+    networks:
+      - project-network
 
   booking_review_api:
     container_name: booking_review_api
