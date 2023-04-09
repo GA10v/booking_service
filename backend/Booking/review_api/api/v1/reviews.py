@@ -1,4 +1,5 @@
 import logging
+import uuid
 from datetime import datetime as dt
 
 from fastapi import APIRouter, Depends, status
@@ -33,6 +34,7 @@ async def create_review(
         guest_id=_user['user_id'],
         created=dt.utcnow(),
         modified=dt.utcnow(),
+        id=uuid.uuid4(),
     )
     logger.info(review)
     await mongo_service.insert_document(review)
