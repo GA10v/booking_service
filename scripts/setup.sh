@@ -1,8 +1,6 @@
 #!/bin/bash
 sleep 1
 
-MONGODB_DB
-
 echo $'\n'SETUP.sh step 1 time now: `date +"%T" `
 mongosh --host mongocfg1:27017 <<EOF
   var cfg = {
