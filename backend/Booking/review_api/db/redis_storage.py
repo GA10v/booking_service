@@ -31,7 +31,7 @@ class RedisStorage(Cache):
         result = self.redis.get(f'review::{review_id}')
         if not result:
             return None
-        return Review(json.loads(result))
+        return Review.parse_obj(json.loads(result))
 
 
 redis: RedisStorage | None = None
