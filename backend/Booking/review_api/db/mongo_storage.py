@@ -39,14 +39,8 @@ class MongoStorage(Storage):
             }})
 
     async def get_average_by_event_id(self, event_id: str):
-        pipeline = [
-            {
-                '$group': {
-                    '_id': event_id,
-                    'score_average': {'$avg': 'score'},
-                },
-            },
-        ]
+        #  [ { $group: { _id: "$event_id", avgerage_score: { $avg: "$score" } } }]
+        pipeline = [{'$group': {'_id': event_id, 'score_average': {'$avg': '$score'}}}]
         doc = await self.collection.aggregate(pipeline).next()
         logger.info(doc)
         return Event.parse_obj(doc)
