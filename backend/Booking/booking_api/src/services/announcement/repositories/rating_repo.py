@@ -25,9 +25,15 @@ class RatingMockRepository(_protocols.RatingRepositoryProtocol):
         await self.redis.set(key, data)
 
     async def get_by_id(self, user_id: str | UUID) -> layer_models.RatingToResponse:
-        return layer_models.RatingToResponse(
+        if _cache := await self._get_from_cache(f'rating:{user_id}'):
+            logger.info('RatingToResponse from cache')
+            return layer_models.RatingToResponse(**_cache)
+        data = layer_models.RatingToResponse(
             user_raring=round(random.uniform(0.0, 10.0), 1),
         )
+        await self._set_to_cache(f'rating:{user_id}', data.dict())
+        logger.info('RatingToResponse set to cache')
+        return data
 
 
 @lru_cache()

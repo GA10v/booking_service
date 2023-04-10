@@ -31,6 +31,9 @@ class MovieMockRepository(_protocols.MovieRepositoryProtocol):
         await self.redis.set(key, data)
 
     async def get_by_id(self, movie_id: str | UUID) -> layer_models.MovieToResponse:
+        if _cache := await self._get_from_cache(f'movie:{movie_id}'):
+            logger.info('MovieToResponse from cache')
+            return layer_models.MovieToResponse(**_cache)
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.post(
@@ -43,10 +46,12 @@ class MovieMockRepository(_protocols.MovieRepositoryProtocol):
         except ClientError as ex:  # noqa: F841
             logger.debug(f'Except <{ex}>')
             return None
-
-        return layer_models.MovieToResponse(
+        data = layer_models.MovieToResponse(
             movie_title=_movie.get('title'),
         )
+        await self._set_to_cache(f'movie:{movie_id}', data.dict())
+        logger.info('MovieToResponse set to cache')
+        return data
 
 
 @lru_cache()

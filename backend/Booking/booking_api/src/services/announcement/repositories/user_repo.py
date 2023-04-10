@@ -32,6 +32,9 @@ class UserMockRepository(_protocols.UserRepositoryProtocol):
         await self.redis.set(key, data)
 
     async def get_by_id(self, user_id: str | UUID) -> layer_models.UserToResponse:
+        if _cache := await self._get_from_cache(f'user:{user_id}'):
+            logger.info('MovieToResponse from cache')
+            return layer_models.UserToResponse(**_cache)
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.post(
@@ -51,12 +54,14 @@ class UserMockRepository(_protocols.UserRepositoryProtocol):
         except ClientError as ex:  # noqa: F841
             logger.debug(f'Except <{ex}>')
             return None
-
-        return layer_models.UserToResponse(
-            user_id=user_id,
+        data = layer_models.UserToResponse(
+            user_id=str(user_id),
             user_name=f"{_user.get('name')} {_user.get('last_name')}",
             subs=_subs,
         )
+        await self._set_to_cache(f'user:{user_id}', data.dict())
+        logger.info('UserToResponse set to cache')
+        return data
 
 
 @lru_cache()
