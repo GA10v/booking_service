@@ -44,6 +44,10 @@ class MongoStorage(Storage):
         pipeline = [{'$group': {'_id': event_id, 'score_average': {'$avg': '$score'}}}]
         doc = await self.collection.aggregate(pipeline).next()
         doc['event_id'] = doc.pop('_id')
+        if doc.get('score_average', None):
+            doc['score_average'] = round(doc['score_average'], 1)
+        else:
+            doc['score_average'] = 0.0
         return Event.parse_obj(doc)
 
 
