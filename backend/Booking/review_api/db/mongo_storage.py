@@ -23,7 +23,7 @@ class MongoStorage(Storage):
         return self.collection.find(filter={'event_id': event_id})
 
     async def get_document_by_id(self, review_id: str) -> Review:
-        return Review.from_obj(self.collection.find_one(filter={'id': review_id}))
+        return Review.parse_obj(self.collection.find_one(filter={'id': review_id}))
 
     async def update_document(self, _doc: Review):
         await self.collection.update_one(
