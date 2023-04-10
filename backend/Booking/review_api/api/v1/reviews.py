@@ -86,8 +86,12 @@ async def get_review(
     event_id: str,
     review_id: str,
     _user: dict = Depends(auth_handler.auth_wrapper),
+    review_service: ReviewService = REVIEW_SERVICE_INSTANCE,
 ) -> Review:
-    return status.HTTP_200_OK
+    review_db: Review = await review_service.get_document_by_id(review_id)
+    if review_db.event_id != event_id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    return review_db
 
 
 @router.get(
