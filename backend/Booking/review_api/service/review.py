@@ -24,7 +24,12 @@ class ReviewService:
         await self.mongo.update_document(review)
 
     async def get_document_by_id(self, review_id: str) -> Review:
-        return await self.mongo.get_document_by_id(review_id)
+        result = await self.redis.get_document_by_id(review_id)
+        if not result:
+            result = await self.mongo.get_document_by_id(review_id)
+        if result:
+            await self.redis.put_review_to_cache(result)
+        return result
 
     async def get_all_reviews_for_event_id(self, event_id: str):
         reviews = await self.mongo.get_document_by_event_id(event_id)

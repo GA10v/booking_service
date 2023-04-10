@@ -1,10 +1,12 @@
 import logging
+import json
 
 from pydantic_collections import BaseCollectionModel
 from redis import Redis
 
 from db.models.base_classes import Cache
 from models.reviews import Review
+from core.config import settings
 
 
 logger = logging.getLogger(__name__)
@@ -21,6 +23,12 @@ class RedisStorage(Cache):
 
     async def close(self):
         await self.redis.close()
+
+    async def put_review_to_cache(self, review: Review):
+        await self.redis.set(f'review::{review.id}', review.json(), ex=settings.redis.EXPIRE_SEC)
+
+    async def get_document_by_id(self, review_id: str) -> Review:
+        return Review(json.loads(self.redis.get(f'review::{review_id}')))
 
 
 redis: RedisStorage | None = None
