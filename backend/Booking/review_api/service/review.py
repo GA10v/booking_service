@@ -1,3 +1,4 @@
+import json
 from functools import lru_cache
 
 from fastapi import Depends
@@ -40,7 +41,7 @@ class ReviewService:
             result_generator = await self.mongo.get_document_by_event_id(event_id)
             result = [Review.parse_obj(review) async for review in result_generator]
         if result:
-            await self.redis.put_reviews_to_cache(event_id, result)
+            await self.redis.put_reviews_to_cache(event_id, json.dumps(result))
         return result
 
     async def get_average_for_event_id(self, event_id: str) -> Event:
