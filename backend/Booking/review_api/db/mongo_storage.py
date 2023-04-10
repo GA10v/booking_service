@@ -25,6 +25,15 @@ class MongoStorage(Storage):
     async def get_document_by_id(self, review_id: str) -> Review:
         return Review.from_obj(self.collection.find_one(filter={'id': review_id}))
 
+    async def update_document(self, _doc: Review):
+        await self.collection.update_one(
+            {'id': _doc.id},
+            {'$set': {
+                'review_text': _doc.review_text,
+                'score': _doc.score,
+                'modified': _doc.modified,
+            }})
+
 
 mongo: MongoStorage | None = None
 

@@ -47,6 +47,7 @@ async def create_review(
     description='Изменение отзыва',
     response_model=Review,
     response_description='Обновлённое ревью события',
+    status_code=status.HTTP_202_ACCEPTED,
 )
 async def update_review(
     event_id: str,
@@ -56,13 +57,20 @@ async def update_review(
     review_service: ReviewService = REVIEW_SERVICE_INSTANCE,
 ) -> Review:
     review_db: Review = await review_service.get_document_by_id(review_id)
+    if not review_db:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     if event_id != review_db.event_id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Review is not attibuted to Event.')
     if review_db.guest_id != _user['sub']:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Not your review.')
-    # update 
-    review = Review(**review.dict(), event_id=event_id, guest_id=_user['sub'])
-    return status.HTTP_200_OK
+    review = Review(
+        **review.dict(),
+        event_id=event_id,
+        guest_id=_user['sub'],
+        modified=dt.utcnow(),
+    )
+    await review_service.update_review(review)
+    return review
 
 
 @router.get(
