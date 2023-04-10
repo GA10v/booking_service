@@ -2,7 +2,7 @@ from functools import lru_cache
 
 from fastapi import Depends
 
-from models.reviews import Review
+from models.reviews import Review, Event
 from db.models import base_classes
 from db.mongo_storage import get_mongo
 from db.redis_storage import get_redis
@@ -29,6 +29,9 @@ class ReviewService:
     async def get_all_reviews_for_event_id(self, event_id: str):
         reviews = await self.mongo.get_document_by_event_id(event_id)
         return [Review.parse_obj(review) async for review in reviews]
+
+    async def get_average_for_event_id(self, event_id: str) -> Event:
+        return await self.mongo.get_average_by_event_id(event_id)
 
 
 @lru_cache()

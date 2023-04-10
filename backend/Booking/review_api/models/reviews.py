@@ -29,3 +29,9 @@ class ReviewIncoming(DefaultOrjsonModel):
 
     review_text: str
     score: int
+
+
+class Event(DefaultOrjsonModel):
+
+    event_id: str
+    score_average: float

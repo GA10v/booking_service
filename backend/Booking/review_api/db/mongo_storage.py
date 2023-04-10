@@ -1,9 +1,13 @@
+import logging
 
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from db.models.base_classes import Storage
-from models.reviews import Review
+from models.reviews import Review, Event
 from core.config import settings
+
+
+logger = logging.getLogger(__name__)
 
 
 class MongoStorage(Storage):
@@ -33,6 +37,19 @@ class MongoStorage(Storage):
                 'score': _doc.score,
                 'modified': _doc.modified,
             }})
+
+    async def get_average_by_event_id(self, event_id: str):
+        pipeline = [
+            {
+                '$group': {
+                    '_id': event_id,
+                    'score_average': {'$avg': {'score'}},
+                },
+            },
+        ]
+        result = await self.collection.aggregate(pipeline)[0]
+        logger.info(result)
+        return Event.parse_obj(await self.collection.aggregate(pipeline)[0])
 
 
 mongo: MongoStorage | None = None

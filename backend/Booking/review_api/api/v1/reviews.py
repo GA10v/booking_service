@@ -4,7 +4,7 @@ from datetime import datetime as dt
 
 from fastapi import APIRouter, Depends, status, HTTPException
 
-from models.reviews import Review, ReviewIncoming
+from models.reviews import Review, ReviewIncoming, Event
 from service.review import ReviewService, get_review_service
 from utils import auth
 
@@ -107,3 +107,18 @@ async def get_reviews(
     review_service: ReviewService = REVIEW_SERVICE_INSTANCE,
 ) -> list[Review]:
     return await review_service.get_all_reviews_for_event_id(event_id)
+
+
+@router.get(
+    '/average_score/{event_id}',
+    summary='Получение среднего значения оценки по событию',
+    description='Получение среднего значения оценки по событию',
+    response_model=Event,
+    response_description='Средняя оценка по событию',
+)
+async def get_average(
+    event_id: str,
+    _user: dict = Depends(auth_handler.auth_wrapper),
+    review_service: ReviewService = REVIEW_SERVICE_INSTANCE,
+) -> Event:
+    return await review_service.get_average_for_event_id(event_id)
