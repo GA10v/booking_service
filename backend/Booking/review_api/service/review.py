@@ -4,8 +4,8 @@ from fastapi import Depends
 
 from models.reviews import Review
 from db.models import base_classes
-from db.mongo_service import get_mongo
-from db.redis_service import get_redis
+from db.mongo_storage import get_mongo
+from db.redis_storage import get_redis
 
 REDIS_INSTANCE = Depends(get_redis)
 MONGO_INSTANCE = Depends(get_mongo)
