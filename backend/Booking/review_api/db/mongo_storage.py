@@ -43,7 +43,7 @@ class MongoStorage(Storage):
             {
                 '$group': {
                     '_id': event_id,
-                    'score_average': {'$avg': {'score'}},
+                    'score_average': {'$avg': 'score'},
                 },
             },
         ]
