@@ -23,7 +23,7 @@ class RedisStorage(Cache):
         self.redis.set(f'review::{review.id}', review.json(), ex=settings.redis.EXPIRE_SEC)
 
     async def put_reviews_to_cache(self, event_id: str, reviews: ReviewCollection):
-        self.redis.set(f'reviews::event_id::{event_id}', reviews.json(), ex=settings.redis.EXPIRE_SEC)
+        self.redis.set(f'reviews::event_id::{event_id}', reviews, ex=settings.redis.EXPIRE_SEC)
 
     async def get_document_by_id(self, review_id: str) -> Review:
         result = self.redis.get(f'review::{review_id}')
