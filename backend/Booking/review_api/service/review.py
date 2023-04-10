@@ -1,10 +1,8 @@
 from functools import lru_cache
 
-from motor import AsyncIOMotorClient
 from fastapi import Depends
 
 from models.reviews import Review
-from core.config import settings
 from db.models import base_classes
 from db.mongo_service import get_mongo
 from db.redis_service import get_redis

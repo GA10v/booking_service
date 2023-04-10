@@ -1,5 +1,5 @@
 
-from motor import AsyncIOMotorClient
+from motor.motor_asyncio import AsyncIOMotorClient
 
 from db.models.base_classes import Storage
 from models.reviews import Review
