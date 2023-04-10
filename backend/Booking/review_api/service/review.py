@@ -41,7 +41,7 @@ class ReviewService:
             result_generator = await self.mongo.get_document_by_event_id(event_id)
             result = [Review.parse_obj(review) async for review in result_generator]
         if result:
-            await self.redis.put_reviews_to_cache(event_id, ReviewCollection(result).json())
+            await self.redis.put_reviews_to_cache(event_id, ReviewCollection(result))
         return result
 
     async def get_average_for_event_id(self, event_id: str) -> Event:
