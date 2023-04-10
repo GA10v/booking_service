@@ -17,6 +17,7 @@ class UserToResponse(BaseModel):
 
 class BookingToDetailResponse(BaseModel):
     booking_id: str | UUID
+    guest_id: str | UUID
     guest_name: str
     guest_rating: float
     guest_status: bool
