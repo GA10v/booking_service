@@ -26,7 +26,7 @@ class DebugSettings(BaseConfig):
 
 
 class WatcherSettings(BaseConfig):
-    SLEEP_MINUTES: int = 15
+    SLEEP_MINUTES: int = 1
 
     @property
     def sleep(self):
@@ -78,6 +78,44 @@ class RedisSettings(BaseConfig):
         env_prefix = 'REDIS_'
 
 
+class NotificationSettings(BaseConfig):
+    HOST: str = 'localhost'
+    PORT: int = 8070
+    NOTIFIC_PREFIX: str = '/app/v1/notification/'
+
+    @property
+    def uri(self):
+        return f'http://{self.HOST}:{self.PORT}{self.NOTIFIC_PREFIX}'
+
+    class Config:
+        env_prefix = 'NOTIFIC_FASTAPI_'
+
+
+class BookingSettings(BaseConfig):
+    HOST: str = 'localhost'
+    PORT: int = 8080
+    API_PREFIX: str = '/app/v1'
+
+    @property
+    def uri(self):
+        return f'http://{self.HOST}:{self.PORT}{self.API_PREFIX}'
+
+    @property
+    def announce_uri(self):
+        return f'{self.uri}/announcement/'
+
+    @property
+    def all_announce_uri(self):
+        return f'{self.uri}/announcements/'
+
+    @property
+    def booking_uri(self):
+        return f'{self.uri}/booking/'
+
+    class Config:
+        env_prefix = 'FASTAPI_'
+
+
 class ProjectSettings(BaseConfig):
     PROJECT_NAME: str = 'Graduate_work'
     BASE_DIR = Path(__file__).parent.parent
@@ -87,6 +125,8 @@ class ProjectSettings(BaseConfig):
     jwt: JWTSettings = JWTSettings()
     redis: RedisSettings = RedisSettings()
     watcher: WatcherSettings = WatcherSettings()
+    nptific: NotificationSettings = NotificationSettings()
+    booking: BookingSettings = BookingSettings()
 
 
 settings = ProjectSettings()
