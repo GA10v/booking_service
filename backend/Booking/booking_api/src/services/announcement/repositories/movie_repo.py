@@ -4,11 +4,10 @@ from uuid import UUID
 
 import aiohttp
 from aiohttp.client_exceptions import ClientError
-from fastapi import Depends
 
 from core.config import settings
 from core.logger import get_logger
-from db.redis import CacheProtocol, RedisCache, get_cache
+from db.redis import get_cache
 from services.announcement import layer_models
 from services.announcement.repositories import _protocols
 from utils.auth import _headers
@@ -17,10 +16,10 @@ logger = get_logger(__name__)
 
 
 class MovieMockRepository(_protocols.MovieRepositoryProtocol):
-    def __init__(self, cache: RedisCache) -> None:
+    def __init__(self) -> None:
         self.movie_endpoint = f'{settings.movie_api.uri}movie/'
         self._headers = _headers()
-        self.redis = cache
+        self.redis = get_cache()
 
         logger.info('MovieMockRepository init ...')
 
@@ -50,7 +49,7 @@ class MovieMockRepository(_protocols.MovieRepositoryProtocol):
             logger.debug(f'Except <{ex}>')
             return None
         data = layer_models.MovieToResponse(
-            movie_id=movie_id,
+            movie_id=str(movie_id),
             movie_title=_movie.get('title'),
             duration=_duration,
         )
@@ -60,5 +59,5 @@ class MovieMockRepository(_protocols.MovieRepositoryProtocol):
 
 
 @lru_cache()
-def get_movie_repo(cache: CacheProtocol = Depends(get_cache)) -> _protocols.MovieRepositoryProtocol:
-    return MovieMockRepository(cache)
+def get_movie_repo() -> _protocols.MovieRepositoryProtocol:
+    return MovieMockRepository()

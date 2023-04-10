@@ -4,11 +4,10 @@ from uuid import UUID
 
 import aiohttp
 from aiohttp.client_exceptions import ClientError
-from fastapi import Depends
 
 from core.config import settings
 from core.logger import get_logger
-from db.redis import CacheProtocol, RedisCache, get_cache
+from db.redis import get_cache
 from services.announcement import layer_models
 from services.announcement.repositories import _protocols
 from utils.auth import _headers
@@ -17,11 +16,11 @@ logger = get_logger(__name__)
 
 
 class UserMockRepository(_protocols.UserRepositoryProtocol):
-    def __init__(self, cache: RedisCache) -> None:
+    def __init__(self) -> None:
         self.auth_endpoint = f'{settings.auth.uri}user_info/'
         self.ugc_endpoint = f'{settings.ugc.uri}subscribers/'
         self._headers = _headers()
-        self.redis = cache
+        self.redis = get_cache()
 
         logger.info('UserMockRepository init ...')
 
@@ -65,5 +64,5 @@ class UserMockRepository(_protocols.UserRepositoryProtocol):
 
 
 @lru_cache()
-def get_user_repo(cache: CacheProtocol = Depends(get_cache)) -> _protocols.UserRepositoryProtocol:
-    return UserMockRepository(cache)
+def get_user_repo() -> _protocols.UserRepositoryProtocol:
+    return UserMockRepository()

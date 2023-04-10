@@ -8,7 +8,7 @@ import utils.exceptions as exc
 from core.logger import get_logger
 from db.models.announcement import Announcement
 from db.pg_db import AsyncSession, get_session
-from db.redis import CacheProtocol, RedisCache, get_cache
+from db.redis import get_cache
 from services.booking import layer_models
 from services.booking.repositories import _protocols
 
@@ -16,9 +16,9 @@ logger = get_logger(__name__)
 
 
 class AnnounceSqlachemyRepository(_protocols.AnnouncementRepositoryProtocol):
-    def __init__(self, db_session: AsyncSession, cache: RedisCache) -> None:
+    def __init__(self, db_session: AsyncSession) -> None:
         self.db = db_session
-        self.redis = cache
+        self.redis = get_cache()
         logger.info('AnnounceSqlachemyRepository init ...')
 
     async def _get_from_cache(self, key: str) -> Any:
@@ -53,6 +53,5 @@ class AnnounceSqlachemyRepository(_protocols.AnnouncementRepositoryProtocol):
 @lru_cache()
 def get_announcement_repo(
     db_session: AsyncSession = Depends(get_session),
-    cache: CacheProtocol = Depends(get_cache),
 ) -> _protocols.AnnouncementRepositoryProtocol:
-    return AnnounceSqlachemyRepository(db_session, cache)
+    return AnnounceSqlachemyRepository(db_session)
