@@ -47,7 +47,7 @@ class MongoStorage(Storage):
                 },
             },
         ]
-        result = await self.collection.aggregate(pipeline)
+        result = await self.collection.aggregate(pipeline).find_one()
         logger.info(result)
         # return Event.parse_obj(await self.collection.aggregate(pipeline)[0])
 
