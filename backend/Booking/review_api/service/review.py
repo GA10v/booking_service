@@ -5,13 +5,10 @@ from fastapi import Depends
 from models.reviews import Review, Event
 from db.models import base_classes
 from db.mongo_storage import get_mongo
-from db.redis_storage import get_redis
+from db.redis_storage import get_redis, ReviewCollection
 
 REDIS_INSTANCE = Depends(get_redis)
 MONGO_INSTANCE = Depends(get_mongo)
-
-class ReviewCollection(BaseCollectionModel[Review]):
-    pass
 
 
 class ReviewService:
