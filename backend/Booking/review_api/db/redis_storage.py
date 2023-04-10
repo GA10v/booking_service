@@ -29,7 +29,8 @@ class RedisStorage(Cache):
 
     async def get_document_by_id(self, review_id: str) -> Review:
         result = self.redis.get(f'review::{review_id}')
-        logger.info(result)
+        if not result:
+            return None
         return Review(json.loads(result))
 
 
