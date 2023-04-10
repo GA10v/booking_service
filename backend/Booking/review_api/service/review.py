@@ -38,6 +38,8 @@ class ReviewService:
         reviews = await self.redis.get_document_by_event_id(event_id)
         if not reviews:
             reviews = await self.mongo.get_document_by_event_id(event_id)
+        else:
+            return reviews
         if reviews:
             await self.redis.put_reviews_to_cache(event_id, reviews)
         return reviews
