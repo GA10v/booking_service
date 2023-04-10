@@ -19,7 +19,7 @@ init_sentry()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    redis_instance = await redis.from_url(
+    redis_instance = redis.from_url(
         settings.redis.uri,
         decode_responses=True,
     )
