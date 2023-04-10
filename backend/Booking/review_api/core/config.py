@@ -65,6 +65,20 @@ class MongoSettings(BaseConfig):
         return f'mongodb://{self.HOST}:{self.PORT}'
 
 
+class RedisSettings(BaseConfig):
+    HOST: str = 'localhost'
+    PORT: int = 6379
+    INDEX: int = 0
+    EXPIRE_SEC: int = 5 * 60  # 5 minutes
+
+    @property
+    def uri(self):
+        return f'redis://{self.HOST}:{self.PORT}/{self.INDEX}'
+
+    class Config:
+        env_prefix = 'REDIS_'
+
+
 class ProjectSettings(BaseConfig):
     PROJECT_NAME: str = 'Graduate_work'
     BASE_DIR = Path(__file__).parent.parent
@@ -73,6 +87,7 @@ class ProjectSettings(BaseConfig):
     fastapi: FastapiSettings = FastapiSettings()
     jwt: JWTSettings = JWTSettings()
     mongo: MongoSettings = MongoSettings()
+    redis: RedisSettings = RedisSettings()
 
 
 settings = ProjectSettings()

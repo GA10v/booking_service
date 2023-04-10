@@ -1,7 +1,10 @@
 import logging
+from contextlib import asynccontextmanager
 
 import uvicorn
+import redis
 from fastapi import FastAPI
+from motor import motor_asyncio
 
 from api.v1 import reviews
 from core.config import settings
@@ -9,20 +12,35 @@ from core.logger import LOGGING
 from middleware.auth import auth_middleware
 from middleware.logger import logging_middleware
 from utils.sentry import init_sentry
+from db import mongo_storage, redis_storage
 
 init_sentry()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    redis_instance = await redis.from_url(
+        settings.redis.uri,
+        decode_responses=True,
+    )
+    redis_storage.redis = redis_storage.RedisStorage(redis_instance)
+    mongo_instance = motor_asyncio.AsyncIOMotorClient(settings.mongo.uri)
+    mongo_storage.mongo = mongo_storage.MongoStorage(mongo_instance)
+    yield
+    await redis_storage.redis.close()
+    mongo_storage.mongo = None  # autoclose in 5 minutes default
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
     docs_url='/api/openapi',
     openapi_url='/api/openapi.json',
+    lifespan=lifespan,
 )
 
 # middleware
 logging_middleware(app=app)
 if not settings.debug.DEBUG:
     auth_middleware(app=app)
-
 
 # @app.on_event('startup')
 # async def startup():

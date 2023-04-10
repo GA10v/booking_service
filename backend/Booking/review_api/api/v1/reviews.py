@@ -2,16 +2,17 @@ import logging
 import uuid
 from datetime import datetime as dt
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, HTTPException
 
 from models.reviews import Review, ReviewIncoming
-from service.mongo_driver import MongoService
+from service.review import ReviewService, get_review_service
 from utils import auth
 
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 auth_handler = auth.AuthHandler()
+REVIEW_SERVICE_INSTANCE = Depends(get_review_service)
 
 
 @router.post(
@@ -26,7 +27,7 @@ async def create_review(
     event_id: str,
     review: ReviewIncoming,
     _user: dict = Depends(auth_handler.auth_wrapper),
-    mongo_service: MongoService = Depends(),
+    review_service: ReviewService = REVIEW_SERVICE_INSTANCE,
 ) -> Review:
     review = Review(
         **review.dict(),
@@ -36,8 +37,7 @@ async def create_review(
         modified=dt.utcnow(),
         id=uuid.uuid4(),
     )
-    logger.info(review)
-    await mongo_service.insert_document(review)
+    await review_service.add_review(review)
     return review
 
 
@@ -51,9 +51,17 @@ async def create_review(
 async def update_review(
     event_id: str,
     review_id: str,
+    review: ReviewIncoming,
     _user: dict = Depends(auth_handler.auth_wrapper),
+    review_service: ReviewService = REVIEW_SERVICE_INSTANCE,
 ) -> Review:
-    # review = Review(**review.dict(), event_id=event_id, guest_id=_user['sub'])
+    review_db: Review = await review_service.get_document_by_id(review_id)
+    if event_id != review_db.event_id:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Review is not attibuted to Event.')
+    if review_db.guest_id != _user['sub']:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Not your review.')
+    # update 
+    review = Review(**review.dict(), event_id=event_id, guest_id=_user['sub'])
     return status.HTTP_200_OK
 
 
@@ -82,13 +90,6 @@ async def get_review(
 async def get_reviews(
     event_id: str,
     _user: dict = Depends(auth_handler.auth_wrapper),
-    mongo_service: MongoService = Depends(),
-) -> Review:
-    results = []
-    reviews = await mongo_service.get_document_by_event_id(event_id)
-    async for review in reviews:
-        logger.info(f'review object type: {type(review)} and content {review}')
-        review_obj = Review.parse_obj(review)
-        results.append(review_obj)
-    logger.info(results)
-    return results
+    review_service: ReviewService = REVIEW_SERVICE_INSTANCE,
+) -> list[Review]:
+    return await review_service.get_all_reviews_for_event_id(event_id)
