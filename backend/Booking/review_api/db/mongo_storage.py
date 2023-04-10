@@ -3,7 +3,7 @@ import logging
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from db.models.base_classes import Storage
-from models.reviews import Review, Event
+from models.reviews import Review, Event, ReviewCollection
 from core.config import settings
 
 
@@ -24,7 +24,9 @@ class MongoStorage(Storage):
         await self.collection.insert_one(_doc.dict())
 
     async def get_document_by_event_id(self, event_id: str) -> Review:
-        return self.collection.find(filter={'event_id': event_id})
+        result_generator = self.collection.find(filter={'event_id': event_id})
+        reviews = [Review.parse_obj(review) async for review in result_generator]
+        return ReviewCollection(reviews)
 
     async def get_document_by_id(self, review_id: str) -> Review:
         return Review.parse_obj(await self.collection.find_one(filter={'id': review_id}))

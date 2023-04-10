@@ -3,6 +3,8 @@
 from models.base import DefaultModel, DefaultOrjsonModel
 from uuid import UUID
 
+from pydantic_collections import BaseCollectionModel
+
 
 class ReviewBase(DefaultModel):
     """Class with common options to all models."""
@@ -35,3 +37,7 @@ class Event(DefaultOrjsonModel):
 
     event_id: str
     score_average: float
+
+
+class ReviewCollection(BaseCollectionModel[Review]):
+    pass

@@ -1,19 +1,14 @@
 import logging
 import json
 
-from pydantic_collections import BaseCollectionModel
 from redis import Redis
 
 from db.models.base_classes import Cache
-from models.reviews import Review
+from models.reviews import Review, ReviewCollection
 from core.config import settings
 
 
 logger = logging.getLogger(__name__)
-
-
-class ReviewCollection(BaseCollectionModel[Review]):
-    pass
 
 
 class RedisStorage(Cache):
