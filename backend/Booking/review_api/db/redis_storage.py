@@ -28,7 +28,9 @@ class RedisStorage(Cache):
         await self.redis.set(f'review::{review.id}', review.json(), ex=settings.redis.EXPIRE_SEC)
 
     async def get_document_by_id(self, review_id: str) -> Review:
-        return Review(json.loads(self.redis.get(f'review::{review_id}')))
+        result = self.redis.get(f'review::{review_id}')
+        logger.info(result)
+        return Review(json.loads(result))
 
 
 redis: RedisStorage | None = None
