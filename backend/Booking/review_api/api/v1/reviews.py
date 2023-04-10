@@ -68,6 +68,8 @@ async def update_review(
         event_id=event_id,
         guest_id=_user['user_id'],
         modified=dt.utcnow(),
+        created=review_db.created,
+        id=review_db.id,
     )
     await review_service.update_review(review)
     return review
