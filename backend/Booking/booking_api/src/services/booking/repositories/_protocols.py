@@ -83,3 +83,9 @@ class AnnouncementRepositoryProtocol(ABC):
         :raises NotFoundError
         """
         ...
+
+
+class NotificRepositoryProtocol(ABC):
+    @abstractmethod
+    async def send(self, event_type: layer_payload.EventType, payload: layer_payload.context) -> None:
+        ...

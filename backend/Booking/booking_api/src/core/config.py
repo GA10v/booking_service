@@ -140,6 +140,19 @@ class URLShortnerSettings(BaseConfig):
         env_prefix = 'URLSHORT_'
 
 
+class NotificationSettings(BaseConfig):
+    HOST: str = 'localhost'
+    PORT: int = 8070
+    NOTIFIC_PREFIX: str = '/app/v1/notification/'
+
+    @property
+    def uri(self):
+        return f'http://{self.HOST}:{self.PORT}{self.NOTIFIC_PREFIX}'
+
+    class Config:
+        env_prefix = 'NOTIFIC_FASTAPI_'
+
+
 class ProjectSettings(BaseConfig):
     PROJECT_NAME: str = 'Graduate_work'
     BASE_DIR = Path(__file__).parent.parent
@@ -152,6 +165,7 @@ class ProjectSettings(BaseConfig):
     movie_api: MovieAPIMock = MovieAPIMock()
     ugc: UGCMock = UGCMock()
     url_shortner: URLShortnerSettings = URLShortnerSettings()
+    nptific: NotificationSettings = NotificationSettings()
     redis: RedisSettings = RedisSettings()
 
 

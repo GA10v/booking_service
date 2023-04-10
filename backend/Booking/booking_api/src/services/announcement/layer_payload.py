@@ -1,5 +1,6 @@
 import enum
 from datetime import datetime
+from typing import Union
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -57,3 +58,56 @@ class APIMultyPayload(BaseModel):
     ticket: int | None
     date: datetime | None
     location: str | None
+
+
+class NewAnnounce(BaseModel):
+    new_announce_id: str | UUID
+    user_id: str | UUID
+
+
+class PutAnnounce(BaseModel):
+    put_announce_id: str | UUID
+    user_id: str | UUID
+
+
+class DeleteAnnounce(BaseModel):
+    delete_announce_id: str | UUID
+    author_name: str
+    announce_title: str
+    user_id: str | UUID
+
+
+class DoneAnnounce(BaseModel):
+    done_announce_id: str | UUID
+    user_id: str | UUID
+
+
+context = Union[
+    NewAnnounce,
+    PutAnnounce,
+    DeleteAnnounce,
+    DoneAnnounce,
+]
+
+
+class EventType(str, enum.Enum):
+    announce_new = 'announce_new'
+    announce_put = 'announce_put'
+    announce_done = 'announce_done'
+    announce_delete = 'announce_delete'
+
+    def __repr__(self) -> str:
+        return f'{self.value}'
+
+
+class NotificEvent(BaseModel):
+    notification_id: str
+    source_name: str
+    event_type: EventType
+    context: context
+    created_at: datetime
+
+    def dict(self, *args, **kwargs) -> dict:
+        _dict: dict = super().dict(*args, **kwargs)
+        _dict['created_at'] = _dict['created_at'].strftime('%Y-%m-%d %H:%M:%S')
+        return _dict

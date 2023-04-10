@@ -18,7 +18,7 @@ class Booking(Base):
     )
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
-    announcement_id = Column(UUID(as_uuid=True), ForeignKey(Announcement.id), nullable=False)
+    announcement_id = Column(UUID(as_uuid=True), ForeignKey(Announcement.id, ondelete='cascade'), nullable=False)
     movie_id = Column(UUID(as_uuid=True), default=uuid.uuid4, index=True)
     author_id = Column(UUID(as_uuid=True), default=uuid.uuid4, index=True)
     guest_id = Column(UUID(as_uuid=True), default=uuid.uuid4, index=True)
