@@ -10,6 +10,9 @@ from db.redis_storage import get_redis
 REDIS_INSTANCE = Depends(get_redis)
 MONGO_INSTANCE = Depends(get_mongo)
 
+class ReviewCollection(BaseCollectionModel[Review]):
+    pass
+
 
 class ReviewService:
 
@@ -34,9 +37,9 @@ class ReviewService:
     async def get_all_reviews_for_event_id(self, event_id: str):
         result = await self.redis.get_document_by_event_id(event_id)
         if not result:
-            result = await self.mongo.get_document_by_event_id(event_id)
+            result = ReviewCollection(await self.mongo.get_document_by_event_id(event_id))
         if result:
-            await self.redis.put_reviews_to_cache(event_id, result.to_list())
+            await self.redis.put_reviews_to_cache(event_id, result)
         return [Review.parse_obj(review) async for review in result]
 
     async def get_average_for_event_id(self, event_id: str) -> Event:
