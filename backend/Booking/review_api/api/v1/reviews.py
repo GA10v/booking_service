@@ -61,12 +61,12 @@ async def update_review(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     if event_id != review_db.event_id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Review is not attibuted to Event.')
-    if review_db.guest_id != _user['sub']:
+    if review_db.guest_id != _user['user_id']:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Not your review.')
     review = Review(
         **review.dict(),
         event_id=event_id,
-        guest_id=_user['sub'],
+        guest_id=_user['user_id'],
         modified=dt.utcnow(),
     )
     await review_service.update_review(review)
