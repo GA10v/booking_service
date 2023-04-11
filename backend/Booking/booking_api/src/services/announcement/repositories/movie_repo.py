@@ -4,11 +4,10 @@ from uuid import UUID
 
 import aiohttp
 from aiohttp.client_exceptions import ClientError
-from fastapi import Depends
 
 from core.config import settings
 from core.logger import get_logger
-from db.redis import CacheProtocol, RedisCache, get_cache
+from db.redis import get_cache
 from services.announcement import layer_models
 from services.announcement.repositories import _protocols
 from utils.auth import _headers
@@ -17,10 +16,10 @@ logger = get_logger(__name__)
 
 
 class MovieMockRepository(_protocols.MovieRepositoryProtocol):
-    def __init__(self, cache: RedisCache) -> None:
+    def __init__(self) -> None:
         self.movie_endpoint = f'{settings.movie_api.uri}movie/'
         self._headers = _headers()
-        self.redis = cache
+        self.redis = get_cache()
 
         logger.info('MovieMockRepository init ...')
 
@@ -31,6 +30,9 @@ class MovieMockRepository(_protocols.MovieRepositoryProtocol):
         await self.redis.set(key, data)
 
     async def get_by_id(self, movie_id: str | UUID) -> layer_models.MovieToResponse:
+        if _cache := await self._get_from_cache(f'movie:{movie_id}'):
+            logger.info('MovieToResponse from cache')
+            return layer_models.MovieToResponse(**_cache)
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.post(
@@ -46,14 +48,16 @@ class MovieMockRepository(_protocols.MovieRepositoryProtocol):
         except ClientError as ex:  # noqa: F841
             logger.debug(f'Except <{ex}>')
             return None
-
-        return layer_models.MovieToResponse(
-            movie_id=movie_id,
+        data = layer_models.MovieToResponse(
+            movie_id=str(movie_id),
             movie_title=_movie.get('title'),
             duration=_duration,
         )
+        await self._set_to_cache(f'movie:{movie_id}', data.dict())
+        logger.info('MovieToResponse set to cache')
+        return data
 
 
 @lru_cache()
-def get_movie_repo(cache: CacheProtocol = Depends(get_cache)) -> _protocols.MovieRepositoryProtocol:
-    return MovieMockRepository(cache)
+def get_movie_repo() -> _protocols.MovieRepositoryProtocol:
+    return MovieMockRepository()

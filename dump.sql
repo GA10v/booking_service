@@ -1716,7 +1716,7 @@ ALTER TABLE ONLY public.auth_permission
 --
 
 ALTER TABLE ONLY public.booking
-    ADD CONSTRAINT booking_announcement_id_fkey FOREIGN KEY (announcement_id) REFERENCES public.announcements(id);
+    ADD CONSTRAINT booking_announcement_id_fkey FOREIGN KEY (announcement_id) REFERENCES public.announcements(id) ON DELETE CASCADE;
 
 
 --

@@ -10,7 +10,15 @@ from core.config import settings
 from core.logger import get_logger
 from db.redis import CacheProtocol, RedisCache, get_cache
 from services.booking import layer_models, layer_payload
-from services.booking.repositories import _protocols, announce_repo, booking_repo, movie_repo, rating_repo, user_repo
+from services.booking.repositories import (
+    _protocols,
+    announce_repo,
+    booking_repo,
+    movie_repo,
+    notific_repo,
+    rating_repo,
+    user_repo,
+)
 
 logger = get_logger(__name__)
 
@@ -29,6 +37,7 @@ class BookingService:
         movie_repo: _protocols.MovieRepositoryProtocol,
         rating_repo: _protocols.RatingRepositoryProtocol,
         announce_repo: _protocols.AnnouncementRepositoryProtocol,
+        notific_repo: _protocols.NotificRepositoryProtocol,
         cache: RedisCache,
     ) -> None:
         self.repo = repo
@@ -36,6 +45,7 @@ class BookingService:
         self.movie_repo = movie_repo
         self.rating_repo = rating_repo
         self.announce_repo = announce_repo
+        self.notific_repo = notific_repo
         self.redis = cache
         logger.info('BookingServic init ...')
 
@@ -134,12 +144,20 @@ class BookingService:
         # Автор объявления не может быть гостем
         if str(_announce.author_id) == str(user.get('user_id')):
             raise exc.NoAccessError
-
+        # создаем заявку
         try:
             _id = await self.repo.create(announce=_announce, user_id=user.get('user_id'))
             logger.info(f'[+] Create booking <{_id}>')
         except exc.UniqueConstraintError:
             raise
+        # оповещаем автора события
+        payload = layer_payload.NewBooking(
+            new_booking_id=_id,
+            announce_id=announce_id,
+            user_id=str(_announce.author_id),
+        )
+        await self.notific_repo.send(event_type=layer_payload.EventType.booking_new, payload=payload)
+
         return await self.get_one(_id, user=user)
 
     async def update(
@@ -147,7 +165,7 @@ class BookingService:
         user: dict,
         booking_id: str | UUID,
         new_status: layer_payload.APIUpdatePayload,
-    ) -> layer_models.DetailBookingResponse:
+    ) -> None:
         """
         Изменить свой статус в заявке.
 
@@ -179,18 +197,44 @@ class BookingService:
                     raise exc.NoAccessError
             except (exc.NoAccessError, exc.NotFoundError):
                 raise
-
+        else:
+            _booking: layer_models.PGBooking = await self.repo.get_by_id(booking_id)
+            _announce: layer_models.AnnounceToResponse = await self.announce_repo.get_by_id(
+                _booking.announcement_id,
+            )
         try:
-            prem: Permission = await self._check_permissions(user, booking_id)
-            if prem.value in [1, 2]:
-                await self.repo.update(
-                    user_id=user.get('user_id'),
-                    booking_id=booking_id,
-                    new_status=new_status,
-                )
+            perm: Permission = await self._check_permissions(user, booking_id)
+            # если статус не изменился - ничего не меняем
+            if (
+                (perm == Permission.author)
+                and (_booking.author_status is new_status.my_status)  # noqa: W503
+                or (perm == Permission.guest)  # noqa: W503
+                and (_booking.guest_status is new_status.my_status)  # noqa: W503
+            ):  # noqa: W503
+                return
+
+            if perm.value not in [1, 2]:
+                raise exc.NoAccessError
+            await self.repo.update(
+                user_id=user.get('user_id'),
+                booking_id=booking_id,
+                new_status=new_status,
+            )
         except (exc.NoAccessError, exc.NotFoundError):
             raise
-        return
+
+        # определяем кому отправлять уведомление
+        _user = _booking.guest_id
+        if perm == Permission.guest:
+            _user = _booking.author_id
+        # отправляем уведомление
+        payload = layer_payload.StatusBooking(
+            status_booking_id=booking_id,
+            announce_id=str(_announce.announce_id),
+            user_id=str(_user),
+            another_id=user.get('user_id'),
+        )
+        await self.notific_repo.send(event_type=layer_payload.EventType.booking_status, payload=payload)
 
     async def delete(
         self,
@@ -208,13 +252,31 @@ class BookingService:
 
         # TODO: переводить статус в Alive, когда освободилось место
 
+        # проверяем что запись есть
+        try:
+            _booking: layer_models.PGBooking = await self.repo.get_by_id(booking_id)
+        except exc.NotFoundError:
+            raise
         try:
             prem: Permission = await self._check_permissions(user, booking_id)
             # только sudo и гость могут удалить заявку
-            if prem.value in [0, 2]:
-                await self.repo.delete(booking_id=booking_id)
+            if prem.value not in [0, 2]:
+                raise exc.NoAccessError
+            await self.repo.delete(booking_id=booking_id)
         except (exc.NoAccessError, exc.NotFoundError):
             raise
+
+        # TODO: CACHE
+
+        # отправляем уведомление автороу объявления
+        _guest: layer_models.UserToResponse = await self.user_repo.get_by_id(_booking.guest_id)
+
+        payload = layer_payload.DeleteBooking(
+            del_booking_announce_id=str(_booking.announcement_id),
+            guest_name=_guest.user_name,
+            user_id=str(_booking.author_id),
+        )
+        await self.notific_repo.send(event_type=layer_payload.EventType.booking_delete, payload=payload)
 
     async def get_multy(
         self,
@@ -247,6 +309,7 @@ def get_booking_service(
     movie_repo: _protocols.MovieRepositoryProtocol = Depends(movie_repo.get_movie_repo),
     rating_repo: _protocols.RatingRepositoryProtocol = Depends(rating_repo.get_rating_repo),
     announce_repo: _protocols.AnnouncementRepositoryProtocol = Depends(announce_repo.get_announcement_repo),
+    notific_repo: _protocols.NotificRepositoryProtocol = Depends(notific_repo.get_notific_repo),
     cache: CacheProtocol = Depends(get_cache),
 ) -> BookingService:
-    return BookingService(repo, user_repo, movie_repo, rating_repo, announce_repo, cache)
+    return BookingService(repo, user_repo, movie_repo, rating_repo, announce_repo, notific_repo, cache)

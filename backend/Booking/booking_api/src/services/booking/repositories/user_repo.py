@@ -4,11 +4,10 @@ from uuid import UUID
 
 import aiohttp
 from aiohttp.client_exceptions import ClientError
-from fastapi import Depends
 
 from core.config import settings
 from core.logger import get_logger
-from db.redis import CacheProtocol, RedisCache, get_cache
+from db.redis import get_cache
 from services.booking import layer_models
 from services.booking.repositories import _protocols
 from utils.auth import _headers
@@ -17,11 +16,11 @@ logger = get_logger(__name__)
 
 
 class UserMockRepository(_protocols.UserRepositoryProtocol):
-    def __init__(self, cache: RedisCache) -> None:
+    def __init__(self) -> None:
         self.auth_endpoint = f'{settings.auth.uri}user_info/'
         self.ugc_endpoint = f'{settings.ugc.uri}subscribers/'
         self._headers = _headers()
-        self.redis = cache
+        self.redis = get_cache()
 
         logger.info('UserMockRepository init ...')
 
@@ -32,6 +31,9 @@ class UserMockRepository(_protocols.UserRepositoryProtocol):
         await self.redis.set(key, data)
 
     async def get_by_id(self, user_id: str | UUID) -> layer_models.UserToResponse:
+        if _cache := await self._get_from_cache(f'user:{user_id}'):
+            logger.info('MovieToResponse from cache')
+            return layer_models.UserToResponse(**_cache)
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.post(
@@ -50,13 +52,16 @@ class UserMockRepository(_protocols.UserRepositoryProtocol):
         except ClientError as ex:  # noqa: F841
             logger.debug(f'Except <{ex}>')
             return None
-        return layer_models.UserToResponse(
-            user_id=user_id,
+        data = layer_models.UserToResponse(
+            user_id=str(user_id),
             user_name=f"{_user.get('name')} {_user.get('last_name')}",
             subs=_subs,
         )
+        await self._set_to_cache(f'user:{user_id}', data.dict())
+        logger.info('UserToResponse set to cache')
+        return data
 
 
 @lru_cache()
-def get_user_repo(cache: CacheProtocol = Depends(get_cache)) -> _protocols.UserRepositoryProtocol:
-    return UserMockRepository(cache)
+def get_user_repo() -> _protocols.UserRepositoryProtocol:
+    return UserMockRepository()

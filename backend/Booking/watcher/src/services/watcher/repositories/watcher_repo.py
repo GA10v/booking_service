@@ -2,15 +2,20 @@ from datetime import datetime, timedelta
 from typing import Any
 from uuid import UUID
 
+import aiohttp
 import pytz
 import sqlalchemy.exc as sqlalch_exc
+from aiohttp.client_exceptions import ClientError
+from sqlalchemy import select, update
+
+from core.config import settings
 from core.logger import get_logger
 from db.db import AsyncSession
 from db.models.announcement import Announcement
 from db.redis import RedisCache
 from services.watcher import layer_models, layer_payload
 from services.watcher.repositories import _protocols
-from sqlalchemy import select, update
+from utils.auth import _headers
 
 logger = get_logger(__name__)
 utc = pytz.UTC
@@ -20,6 +25,8 @@ class WatcherSqlachemyRepository(_protocols.WatcherRepositoryProtocol):
     def __init__(self, db_session: AsyncSession, cache: RedisCache) -> None:
         self.db = db_session
         self.redis = cache
+        self.announce_endpoint = settings.booking.announce_uri
+        self._headers = _headers()
         logger.info('WatcherSqlachemyRepository init ...')
 
     async def _get_from_cache(self, key: str) -> Any:
@@ -83,6 +90,21 @@ class WatcherSqlachemyRepository(_protocols.WatcherRepositoryProtocol):
                         ),
                     )
         return res
+
+    async def get_by_id(self, data: layer_models.UpdateStatus) -> layer_models.DetailAnnouncementResponse:
+        try:
+            async with aiohttp.ClientSession(trust_env=True) as session:
+                async with session.get(
+                    f'{self.announce_endpoint}{data.announcement_id}',
+                    headers=self._headers,
+                ) as resp:
+                    _announce = await resp.json()
+
+        except ClientError as ex:  # noqa: F841
+            logger.debug(f'Except <{ex}>')
+            raise ex
+
+        return layer_models.DetailAnnouncementResponse(**_announce)
 
 
 def get_watcher_repo(

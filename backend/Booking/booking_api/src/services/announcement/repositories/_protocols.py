@@ -73,6 +73,10 @@ class BookingRepositoryProtocol(ABC):
     async def get_confirmed_list(self, announce_id: str | UUID) -> list[layer_models.BookingToDetailResponse]:
         ...
 
+    @abstractmethod
+    async def get_guest_id(self, announce_id: str | UUID) -> str | UUID:
+        ...
+
 
 class RatingRepositoryProtocol(ABC):
     @abstractmethod
@@ -83,4 +87,10 @@ class RatingRepositoryProtocol(ABC):
 class MovieRepositoryProtocol(ABC):
     @abstractmethod
     async def get_by_id(self, movie_id: str | UUID) -> layer_models.MovieToResponse:
+        ...
+
+
+class NotificRepositoryProtocol(ABC):
+    @abstractmethod
+    async def send(self, event_type: layer_payload.EventType, payload: layer_payload.context) -> None:
         ...
