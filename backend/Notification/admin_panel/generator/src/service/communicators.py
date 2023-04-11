@@ -1,3 +1,5 @@
+import logging
+
 import psycopg2
 from psycopg2.extras import DictCursor
 
@@ -8,6 +10,8 @@ from generator.src.models.user import User
 from generator.src.service.connector import AuthenticatedSession
 
 db_creds = settings.django.db_creds
+
+logger = logging.getLogger(__name__)
 
 
 class UGCConnection:
@@ -20,7 +24,8 @@ class UGCConnection:
 
     def get_likes_count(self, review_id: str) -> int:
         """Return number of current likes on review."""
-        return self.connector.post(url=f'{settings.ugc.likes_count_uri}{review_id}')
+        likes = self.connector.post(url=f'{settings.ugc.likes_count_uri}{review_id}')
+        return likes["likes_count"]
 
     def close(self) -> None:
         """Close requests session."""
@@ -33,18 +38,22 @@ class AuthConnection:
 
     def get_user_data(self, user_id: str) -> User:
         """Return list of users, subscribed to new content events."""
+        logger.info(f'get user data with id {user_id}')
         response = self.connector.post(url=f'{settings.auth.user_data_uri}{user_id}')
-        return response if response.ok else response.raise_for_status()
+        return response
 
     def get_user_group(self, group_id: str) -> list[str]:
         """Return list of users, belong to the group."""
+        logger.info(f'get user group with id {group_id}')
         response = self.connector.post(url=f'{settings.auth.group_id_uri}{group_id}')
-        return response if response.ok else response.raise_for_status()
+        logger.info(f'response: {response}')
+        return response
 
     def filter_users(self, user_ids: list[str], conditions: list) -> list[str]:
         """Filter users, that match the conditions."""
         #
-        return [self.get_user_data(user_id).user_id for user_id in user_ids if conditions]
+        logger.info('filter users by conditions')
+        return [self.get_user_data(user_id)["user_id"] for user_id in user_ids if conditions]
 
     # TODO: Как должна работать эта строчка? что такое self.get_user_data(user_id).user_id ?
     #
@@ -59,8 +68,10 @@ class ApiConnection:
         self.connector = connector
 
     def send_event(self, event: Event):
-        response = self.connector.post(url=settings.api.send_uri, payload=event.dict())
-        return response if response.ok else response.raise_for_status()
+        logger.info(f'Send event. Payload: {event}')
+        response = self.connector.post(url=settings.api.send_uri, payload=event)
+        logger.info(f'response: {response}')
+        return response
 
     def close(self) -> None:
         """Close requests session."""
@@ -78,9 +89,12 @@ class PGConnection:
         data = self.cursor.fetchall()
         return [dict(el) for el in data]
 
-    def get_task(self, task_id: str) -> Task:
+    def get_task_from_db(self, task_id: str) -> Task:
+        logger.info(f'select notification with id {task_id}')
         command = f"""SELECT * from notifications_task \
                     WHERE notifications_task.pkid = '{task_id}';"""
         self.cursor.execute(command)
         _data = self.cursor.fetchone()
-        return Task(**_data)
+        task = Task(**_data)
+        logger.info(f'Task from DB: {task}')
+        return task

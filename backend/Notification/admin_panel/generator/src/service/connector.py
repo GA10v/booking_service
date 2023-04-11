@@ -17,7 +17,7 @@ class AuthenticatedSession:
         return resp.json()
 
     def post(self, url, payload=None, **kwargs):
-        resp = self.session.post(url=url, data=payload, **kwargs)
+        resp = self.session.post(url=url, json=payload, **kwargs)
         return resp.json()
 
     def close(self):
