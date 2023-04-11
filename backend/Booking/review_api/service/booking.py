@@ -31,7 +31,7 @@ class BookingService:
         url = f'{self.base_url}/{booking_id}'
         async with httpx.AsyncClient() as client:
             response = await client.get(url, headers=_headers())
-        logger.info(f'Response: {response.text} status {response.status}')
+        logger.info(f'Response: {response.text} status {response.status_code}')
         result = None
         if response.json():
             result = PGBooking(json.loads(result.json()))
