@@ -177,9 +177,6 @@ class BookingService:
         :raises UniqueConstraintError: если запист уже существует в базе
         :raises NoAccessError: если у пользователя нет прав на изменение заявки
         """
-
-        # TODO: переводить статус в Closed, когда все места заняты
-
         if not settings.debug.DEBUG:  # noqa: SIM102
             # проверяем, что объявление живое
             try:

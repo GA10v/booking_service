@@ -675,6 +675,7 @@ bab7cf136960
 
 COPY public.announcements (id, status, title, description, movie_id, author_id, sub_only, is_free, tickets_count, event_time, event_location, created, modified, duration) FROM stdin;
 eca370e7-c65d-44f3-b390-5c2733df02e6	Created	Fake Title	Fake description	50760ee6-2073-445d-ad25-f665937f3b33	50760ee6-2073-445d-ad25-f665937f3b33	f	t	2	2023-10-08 00:33:23.946855+00	Fake location	2023-04-07 21:33:23.96206+00	2023-04-07 21:33:23.962067+00	0
+0be54aaa-cb63-415b-8435-0d55848eee11	Created	Fake Title	Fake description	8f1a49f0-0319-4589-9130-08bad05a1d3b	50760ee6-2073-445d-ad25-f665937f3b33	f	t	2	2023-10-11 06:47:44.31039+00	Fake location	2023-04-11 06:47:44.338932+00	2023-04-11 06:47:44.338945+00	0
 \.
 
 
@@ -832,7 +833,7 @@ COPY public.django_celery_beat_intervalschedule (id, every, period) FROM stdin;
 --
 
 COPY public.django_celery_beat_periodictask (id, name, task, args, kwargs, queue, exchange, routing_key, expires, enabled, last_run_at, total_run_count, date_changed, description, crontab_id, interval_id, solar_id, one_off, start_time, priority, headers, clocked_id, expire_seconds) FROM stdin;
-1	celery.backend_cleanup	celery.backend_cleanup	[]	{}	\N	\N	\N	\N	t	\N	0	2023-04-08 01:13:58.180428+00		1	\N	\N	f	\N	\N	{}	\N	43200
+1	celery.backend_cleanup	celery.backend_cleanup	[]	{}	\N	\N	\N	\N	t	\N	0	2023-04-11 06:44:10.224969+00		1	\N	\N	f	\N	\N	{}	\N	43200
 \.
 
 
@@ -841,7 +842,7 @@ COPY public.django_celery_beat_periodictask (id, name, task, args, kwargs, queue
 --
 
 COPY public.django_celery_beat_periodictasks (ident, last_update) FROM stdin;
-1	2023-04-08 01:13:58.182188+00
+1	2023-04-11 06:44:10.226071+00
 \.
 
 
@@ -999,6 +1000,9 @@ COPY public.notifications_template (created, modified, pkid, title, event_type, 
 COPY public.short_url (id, original_url, short_id, created_at) FROM stdin;
 1	http://localhost:8080/app/v1/announcement/eca370e7-c65d-44f3-b390-5c2733df02e6	hPTczpyT	2023-04-08 00:30:28.154002
 2	http://localhost:8080/app/v1/announcement/eca370e7-c65d-44f3-b390-5c2733df02e6	1dkE63RU	2023-04-08 00:30:28.154125
+3	http://booking_api:8080/app/v1/announcement/0be54aaa-cb63-415b-8435-0d55848eee11	FialIFdC	2023-04-11 06:43:59.679454
+4	http://booking_api:8080/app/v1/announcement/0be54aaa-cb63-415b-8435-0d55848eee11	K33yaiGn	2023-04-11 06:43:59.600247
+5	http://booking_api:8080/app/v1/announcement/0be54aaa-cb63-415b-8435-0d55848eee11	Qgj3sQAL	2023-04-11 06:43:59.679454
 \.
 
 
@@ -1108,7 +1112,7 @@ SELECT pg_catalog.setval('public.django_migrations_id_seq', 40, true);
 -- Name: short_url_id_seq; Type: SEQUENCE SET; Schema: public; Owner: guest
 --
 
-SELECT pg_catalog.setval('public.short_url_id_seq', 2, true);
+SELECT pg_catalog.setval('public.short_url_id_seq', 5, true);
 
 
 --

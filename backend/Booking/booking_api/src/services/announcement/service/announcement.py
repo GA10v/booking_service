@@ -155,7 +155,7 @@ class AnnouncementService:
             raise
         annouce = await self.get_one(_id)
         # оповещаем подписчиков о новом событии
-        if annouce.status.value == layer_payload.EventStatus.Created.value:
+        if annouce.status.value == layer_payload.EventStatus.Alive.value:
             _user = await self.user_repo.get_by_id(author_id)
             for sub in _user.subs:
                 payload = layer_payload.NewAnnounce(new_announce_id=_id, user_id=sub)
@@ -180,8 +180,10 @@ class AnnouncementService:
         """
         if not settings.debug.DEBUG:  # noqa: SIM102
             # Событе не может быть Alive, если event_time истек
-            if (payload.event_time < utc.localize(datetime.utcnow())) and (
-                payload.status.value == layer_models.EventStatus.Alive.value
+            if (
+                payload.event_time
+                and (payload.event_time < utc.localize(datetime.utcnow()))  # noqa: W503
+                and (payload.status.value == layer_models.EventStatus.Alive.value)  # noqa: W503
             ):
                 raise exc.UniqueConstraintError
         # Только Watcher может присваивать статус Done
@@ -280,6 +282,28 @@ class AnnouncementService:
         logger.info(f'Get user <{user_id}>: <{_user}>')
 
         return await self.repo.get_multy(query=query, user=_user)
+
+    async def get_to_review(
+        self,
+        announce_id: str | UUID,
+        guest_id: str | UUID,
+    ) -> layer_models.AnnouncementToReviewResponse:
+        _announce: layer_models.PGAnnouncement = await self.repo.get_by_id(announce_id)
+
+        _author = await self.user_repo.get_by_id(_announce.author_id)
+        logger.info(f'Get user <{announce_id}>: <{_author}>')
+
+        _guest = await self.user_repo.get_by_id(guest_id)
+        logger.info(f'Get user <{announce_id}>: <{_guest}>')
+
+        return layer_models.AnnouncementToReviewResponse(
+            author_id=str(_announce.author_id),
+            guest_id=guest_id,
+            announcement_id=announce_id,
+            announcement_title=_announce.title,
+            author_name=_author.user_name,
+            guest_name=_guest.user_name,
+        )
 
 
 @lru_cache()

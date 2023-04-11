@@ -14,11 +14,6 @@ def auth_middleware(app: FastAPI):
         if auth_header is None:
             return Response('Authorization header is missing', HTTPStatus.UNAUTHORIZED)
         claims = parse_header(auth_header)
-        if claims.get('is_super'):
+        if claims.get('is_super') or settings.permission.User.value in claims.get('permissions'):
             return await call_next(request)
-
-        produce_path = '...'  # TODO: добавлять ручки требующие проверки
-        if produce_path in str(request.url):
-            if settings.permission.User in claims.get('permissions'):
-                return await call_next(request)
-            return Response('Permission denied', HTTPStatus.FORBIDDEN)
+        return Response('Permission denied', HTTPStatus.FORBIDDEN)
