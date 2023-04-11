@@ -153,6 +153,19 @@ class NotificationSettings(BaseConfig):
         env_prefix = 'NOTIFIC_FASTAPI_'
 
 
+class RatingSettings(BaseConfig):
+    HOST: str = 'localhost'
+    PORT: int = 8084
+    RATING_PREFIX: str = '/app/v1/average_score/'
+
+    @property
+    def uri(self):
+        return f'http://{self.HOST}:{self.PORT}{self.RATING_PREFIX}'
+
+    class Config:
+        env_prefix = '_FASTAPI_'
+
+
 class ProjectSettings(BaseConfig):
     PROJECT_NAME: str = 'Graduate_work'
     BASE_DIR = Path(__file__).parent.parent
@@ -168,6 +181,7 @@ class ProjectSettings(BaseConfig):
     nptific: NotificationSettings = NotificationSettings()
     redis: RedisSettings = RedisSettings()
     permission = PermissionSettings
+    rating: RatingSettings = RatingSettings()
 
 
 settings = ProjectSettings()
