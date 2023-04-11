@@ -54,6 +54,24 @@ class BookingSqlachemyRepository(_protocols.BookingRepositoryProtocol):
             guest_status=_booking.guest_status,
         )
 
+    async def get_confirmed_list(self, announce_id: str | UUID) -> list[layer_models.PGBooking]:
+        """Получение подтвержденных заявок.
+
+        :param announce_id: id объявления
+        :return список подтвержденных заявок
+        """
+        _query = (
+            select(Booking)
+            .where(Booking.announcement_id == announce_id)
+            .filter(Booking.author_status, Booking.guest_status)
+        )
+        _res = await self.db.execute(_query)
+        scalar_result = [data._asdict() for data in _res.scalars().all()]
+
+        if len(scalar_result) == 0:
+            return []
+        return [layer_models.PGBooking(**data) for data in scalar_result]
+
     async def get_by_id(self, booking_id: str | UUID) -> layer_models.PGBooking:
         """Получение полной информации о Booking.
 
