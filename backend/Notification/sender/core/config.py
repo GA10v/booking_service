@@ -40,9 +40,9 @@ class EmailSettings(BaseConfig):
 
     USER: str = ''
     PASSWORD: str = ''
-    SMTP_SERVER: str = ''
-    SMTP_PORT: int = 465
-    SMTP_SSL: bool | None = False
+    SMTP_SERVER: str = 'smtp.yandex.ru'
+    SMTP_PORT: int = 587
+    SMTP_SSL: bool = False
 
     class Config:
         """Configuration plugin."""

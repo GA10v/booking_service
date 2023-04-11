@@ -1,13 +1,13 @@
 import asyncio
 from typing import Any
 
-from broker.consumer import RabbitMQConsumer
-from models.notifications import TemplateToSender
 from pydantic.error_wrappers import ValidationError
+
+from broker.consumer import RabbitMQConsumer
+from core.logger import get_logger
+from models.notifications import TemplateToSender
 from v1.workers.generic_worker import Worker
 from v1.workers.handler import get_worker
-
-from core.logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -22,7 +22,7 @@ async def handler(message: dict[str, Any]) -> None:
         logger.exception(f'Except {ex}')
         raise
     worker: Worker = await get_worker(data=notification)
-    await worker().send_message(notification=notification)
+    await worker.send_message(notification=notification)
     logger.info('Send')
 
 
