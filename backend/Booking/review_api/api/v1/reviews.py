@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, status, HTTPException
 
 from models.reviews import Review, ReviewIncoming, Event
 from service.review import ReviewService, get_review_service
+from service.booking import BookingService, get_booking_service
 from utils import auth
 
 
@@ -13,6 +14,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 auth_handler = auth.AuthHandler()
 REVIEW_SERVICE_INSTANCE = Depends(get_review_service)
+BOOKING_SERVCIE_INSTANCE = Depends(get_booking_service)
 
 
 @router.post(
@@ -28,7 +30,9 @@ async def create_review(
     review: ReviewIncoming,
     _user: dict = Depends(auth_handler.auth_wrapper),
     review_service: ReviewService = REVIEW_SERVICE_INSTANCE,
+    booking_service: BookingService = BOOKING_SERVCIE_INSTANCE,
 ) -> Review:
+    booking = booking_service.get_booking(review.event_id)
     review = Review(
         **review.dict(),
         event_id=event_id,
@@ -38,6 +42,7 @@ async def create_review(
         id=uuid.uuid4(),
     )
     await review_service.add_review(review)
+    logger.info(f'And sending to: {booking.author_id}')
     return review
 
 
