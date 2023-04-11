@@ -34,7 +34,7 @@ class BookingService:
         logger.info(f'Response: {response.text} status {response.status_code}')
         result = None
         if response.json():
-            result = PGBooking(json.loads(result.json()))
+            result = PGBooking(json.loads(response.json()))
 
         return result
 
