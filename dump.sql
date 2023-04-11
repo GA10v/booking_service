@@ -674,7 +674,7 @@ bab7cf136960
 --
 
 COPY public.announcements (id, status, title, description, movie_id, author_id, sub_only, is_free, tickets_count, event_time, event_location, created, modified, duration) FROM stdin;
-eca370e7-c65d-44f3-b390-5c2733df02e6	Created	Fake Title	Fake description	50760ee6-2073-445d-ad25-f665937f3b33	50760ee6-2073-445d-ad25-f665937f3b33	f	t	4	2023-04-08 00:33:23.946855+00	Fake location	2023-04-07 21:33:23.96206+00	2023-04-07 21:33:23.962067+00	0
+eca370e7-c65d-44f3-b390-5c2733df02e6	Created	Fake Title	Fake description	50760ee6-2073-445d-ad25-f665937f3b33	50760ee6-2073-445d-ad25-f665937f3b33	f	t	2	2023-10-08 00:33:23.946855+00	Fake location	2023-04-07 21:33:23.96206+00	2023-04-07 21:33:23.962067+00	0
 \.
 
 

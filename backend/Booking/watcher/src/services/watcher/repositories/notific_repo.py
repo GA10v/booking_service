@@ -3,23 +3,22 @@ from functools import lru_cache
 from uuid import uuid4
 
 import aiohttp
-from fastapi import Depends
+from services.watcher import layer_payload
+from services.watcher.repositories import _protocols
 
 from core.config import settings
 from core.logger import get_logger
-from db.redis import CacheProtocol, RedisCache, get_cache
-from services.watcher import layer_payload
-from services.watcher.repositories import _protocols
+from db.redis import CacheProtocol, get_cache
 from utils.auth import _headers
 
 logger = get_logger(__name__)
 
 
 class NotificApiRepository(_protocols.NotificRepositoryProtocol):
-    def __init__(self, cache: RedisCache) -> None:
+    def __init__(self, cache: CacheProtocol) -> None:
         self.notific_endpoint = f'{settings.nptific.uri}send'
         self._headers = _headers()
-        self.redis = cache
+        self.redis = get_cache()
 
         logger.info('NotificApiRepository init ...')
 
@@ -42,5 +41,5 @@ class NotificApiRepository(_protocols.NotificRepositoryProtocol):
 
 
 @lru_cache()
-def get_notific_repo(cache: CacheProtocol = Depends(get_cache)) -> _protocols.NotificRepositoryProtocol:
+def get_notific_repo(cache: CacheProtocol) -> _protocols.NotificRepositoryProtocol:
     return NotificApiRepository(cache)

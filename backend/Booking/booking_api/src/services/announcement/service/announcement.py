@@ -91,17 +91,11 @@ class AnnouncementService:
         except exc.NotFoundError:
             raise
 
-        # TODO: CACHE
-
         _user = await self.user_repo.get_by_id(_announce.author_id)
         logger.info(f'Get user <{announce_id}>: <{_user}>')
 
-        # TODO: CACHE
-
         _movie = await self.movie_repo.get_by_id(_announce.movie_id)
         logger.info(f'Get movie <{_announce.movie_id}>: <{_movie}>')
-
-        # TODO: CACHE
 
         _rating = await self.rating_repo.get_by_id(_announce.author_id)
         logger.info(f'Get author_rating <{_announce.author_id}>: <{_rating}>')
@@ -114,6 +108,8 @@ class AnnouncementService:
         _confirmed_list = await self.booking_repo.get_confirmed_list(announce_id=announce_id)
 
         _tickets_left = _announce.tickets_count - len(_confirmed_list)
+        if _tickets_left < 0:
+            _tickets_left = 0
 
         return layer_models.DetailAnnouncementResponse(
             id=_announce.id,
@@ -151,9 +147,6 @@ class AnnouncementService:
         :raises UniqueConstraintError: если запист уже существует в базе
         """
         try:
-
-            # TODO: CACHE
-
             _movie = await self.movie_repo.get_by_id(movie_id)
             logger.info(f'Get movie <{movie_id}>: <{_movie}>')
             _id = await self.repo.create(new_announce=new_announce, movie=_movie, author_id=author_id)
@@ -161,14 +154,12 @@ class AnnouncementService:
         except exc.UniqueConstraintError:
             raise
         annouce = await self.get_one(_id)
-
         # оповещаем подписчиков о новом событии
         if annouce.status.value == layer_payload.EventStatus.Created.value:
             _user = await self.user_repo.get_by_id(author_id)
             for sub in _user.subs:
                 payload = layer_payload.NewAnnounce(new_announce_id=_id, user_id=sub)
                 await self.notific_repo.send(layer_payload.EventType.announce_new, payload)
-
         return annouce
 
     async def update(
@@ -212,7 +203,6 @@ class AnnouncementService:
             await self.repo.update(announce_id=announce_id, update_announce=payload)
         except exc.UniqueConstraintError:
             raise
-
         # оповещаем гостей об изменениях
         announce = await self.get_one(announce_id)
         notific_list = []
@@ -227,7 +217,6 @@ class AnnouncementService:
                 )
                 await self.notific_repo.send(layer_payload.EventType.announce_put, _payload)
                 notific_list.append(guest_id)
-
         # оповещаем подписчиков о новом событии
         if payload.status.value == layer_models.EventStatus.Alive.value:
             _user = await self.user_repo.get_by_id(user.get('user_id'))
@@ -259,7 +248,6 @@ class AnnouncementService:
         # Только автор и sudo могут вносить изменения
         if await self._check_permissions(announce_id=announce_id, user=user):
             await self.repo.delete(announce_id=announce_id)
-
             # оповещае гостей об удалении объявления
             if _announce.guest_list:
                 for guest in _announce.guest_list:
@@ -288,9 +276,6 @@ class AnnouncementService:
         :param query: данные для поиска
         :return: список объявлений
         """
-
-        # TODO: CACHE
-
         _user: layer_models.UserToResponse = await self.user_repo.get_by_id(user_id)
         logger.info(f'Get user <{user_id}>: <{_user}>')
 
