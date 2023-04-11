@@ -12,7 +12,7 @@ Base = declarative_base()
 class EventType(enum.Enum):
     welcome = 'welcome_message'
     new_content = 'new_content'
-    new_likes = 'new_likes'
+    new_score = 'new_score'
     promo = 'promo'
 
     announce_new = 'announce_new'

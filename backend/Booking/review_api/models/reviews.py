@@ -41,3 +41,5 @@ class Event(DefaultOrjsonModel):
 
 class ReviewCollection(BaseCollectionModel[Review]):
     pass
+
+

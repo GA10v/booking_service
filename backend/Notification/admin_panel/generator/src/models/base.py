@@ -14,7 +14,7 @@ class UserGroup(str, Enum):
 
 class EventType(str, Enum):
     new_content = 'new_content'
-    new_likes = 'new_likes'
+    new_score = 'new_score'
     promo = 'promo'
     score_request = 'score_request'
 
