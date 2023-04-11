@@ -32,7 +32,7 @@ async def create_review(
     review_service: ReviewService = REVIEW_SERVICE_INSTANCE,
     booking_service: BookingService = BOOKING_SERVCIE_INSTANCE,
 ) -> Review:
-    booking = booking_service.get_booking(review.event_id)
+    booking = booking_service.get_booking(event_id)
     review = Review(
         **review.dict(),
         event_id=event_id,
