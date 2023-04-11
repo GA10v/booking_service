@@ -1,4 +1,5 @@
 """Models to describe review."""
+from enum import Enum
 
 from models.base import DefaultModel, DefaultOrjsonModel
 from uuid import UUID
@@ -43,3 +44,11 @@ class ReviewCollection(BaseCollectionModel[Review]):
     pass
 
 
+class EventType(str, Enum):
+    new_content = 'new_content'
+    new_score = 'new_score'
+    promo = 'promo'
+    score_request = 'score_request'
+
+    def __repr__(self) -> str:
+        return f'{self.value}'
