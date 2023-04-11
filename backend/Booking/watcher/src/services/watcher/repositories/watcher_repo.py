@@ -48,7 +48,11 @@ class WatcherSqlachemyRepository(_protocols.WatcherRepositoryProtocol):
         query = (
             select(Announcement)
             .where(Announcement.event_time < utc.localize(now))
-            .filter(Announcement.status == layer_payload.EventStatus.Alive.value)
+            .filter(
+                Announcement.status.in_(
+                    (layer_payload.EventStatus.Alive.value, layer_payload.EventStatus.Closed.value),
+                ),
+            )
         )
 
         _res = await self.db.execute(query)

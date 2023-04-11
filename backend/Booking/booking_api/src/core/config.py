@@ -167,6 +167,7 @@ class ProjectSettings(BaseConfig):
     url_shortner: URLShortnerSettings = URLShortnerSettings()
     nptific: NotificationSettings = NotificationSettings()
     redis: RedisSettings = RedisSettings()
+    permission = PermissionSettings
 
 
 settings = ProjectSettings()
