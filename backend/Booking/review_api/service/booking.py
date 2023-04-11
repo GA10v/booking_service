@@ -4,9 +4,12 @@ from uuid import uuid4
 
 import jwt
 import httpx
+import logging
 
 from core.config import settings
 from models.booking import PGBooking
+
+logger = logging.getLogger(__name__)
 
 
 def _headers() -> str:
@@ -28,7 +31,7 @@ class BookingService:
         url = f'{self.base_url}/{booking_id}'
         async with httpx.AsyncClient() as client:
             response = await client.get(url, headers=_headers())
-
+        logger.info(f'Response: {response.text} status {response.status}')
         result = None
         if response.json():
             result = PGBooking(json.loads(result.json()))
