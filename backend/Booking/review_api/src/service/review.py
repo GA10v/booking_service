@@ -1,13 +1,11 @@
 import logging
-from uuid import UUID
 from functools import lru_cache
 
 from fastapi import Depends
-
-from src.models.reviews import Review, Event, UserReviewAvg
 from src.db.models import base_classes
 from src.db.mongo_storage import get_mongo
 from src.db.redis_storage import get_redis
+from src.models.reviews import Event, Review, UserReviewAvg
 from src.utils.notific import NotificApiRepository
 
 REDIS_INSTANCE = Depends(get_redis)
@@ -18,12 +16,11 @@ logger = logging.getLogger(__name__)
 
 
 class ReviewService:
-
     def __init__(
-            self,
-            redis: base_classes.Cache,
-            mongo: base_classes.Storage,
-            notific: NotificApiRepository,
+        self,
+        redis: base_classes.Cache,
+        mongo: base_classes.Storage,
+        notific: NotificApiRepository,
     ):
         self.redis = redis
         self.mongo = mongo
@@ -60,33 +57,6 @@ class ReviewService:
 
     async def get_average_for_user(self, user: str) -> UserReviewAvg:
         return await self.mongo.get_average_for_user(user)
-
-    # async def new_likes_create(
-    #     self,
-    #     author_id: str | UUID,
-    #     new_likes: None,  # TODO: add payload model
-    # ):
-    #     """
-    #     Запись новой оценки и оповещение хоста события.
-    #     :param guest_id: id автора оценки
-    #     :param new_likes: данные оценки
-    #     """
-    #     try:
-    #         _guest = await self.notific.get_by_id(author_id)  # TODO: нужен метод
-    #         logger.info(f'Get guest with id {guest_id}: {_guest}>')
-    #         _id = await self.notific.create(new_likes=new_likes, author_id=guest_id)  # TODO: нужен метод
-    #         logger.info(f'[+] Create announcement <{_id}>')
-    #     except exc.UniqueConstraintError:
-    #         raise
-
-    #     annouce = await self.get_one(_id)
-
-    #     # оповещаем автора о новой оценке
-    #     payload = NewScorePayload(announcement_id=_id, user_id=guest_id)
-    #     await self.send(layer_payload.EventType.announce_new, payload)
-    #     # TODO: поправить и продолжить
-
-    #     return annouce
 
 
 @lru_cache()

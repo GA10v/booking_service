@@ -25,7 +25,7 @@ class UGCConnection:
     def get_likes_count(self, review_id: str) -> int:
         """Return number of current likes on review."""
         likes = self.connector.post(url=f'{settings.ugc.likes_count_uri}{review_id}')
-        return likes["likes_count"]
+        return likes['likes_count']
 
     def close(self) -> None:
         """Close requests session."""
@@ -39,8 +39,7 @@ class AuthConnection:
     def get_user_data(self, user_id: str) -> User:
         """Return list of users, subscribed to new content events."""
         logger.info(f'get user data with id {user_id}')
-        response = self.connector.post(url=f'{settings.auth.user_data_uri}{user_id}')
-        return response
+        return self.connector.post(url=f'{settings.auth.user_data_uri}{user_id}')
 
     def get_user_group(self, group_id: str) -> list[str]:
         """Return list of users, belong to the group."""
@@ -53,7 +52,7 @@ class AuthConnection:
         """Filter users, that match the conditions."""
         #
         logger.info('filter users by conditions')
-        return [self.get_user_data(user_id)["user_id"] for user_id in user_ids if conditions]
+        return [self.get_user_data(user_id)['user_id'] for user_id in user_ids if conditions]
 
     # TODO: Как должна работать эта строчка? что такое self.get_user_data(user_id).user_id ?
     #

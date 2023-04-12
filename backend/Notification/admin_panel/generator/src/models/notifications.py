@@ -1,9 +1,9 @@
 from datetime import datetime
-from uuid import UUID, uuid4
+
+from pydantic import BaseModel
 
 from generator.src.models.base import EventType
 from generator.src.models.context import NewContent, NewPromo, NewReviewsLikes
-from pydantic import BaseModel
 
 
 class Event(BaseModel):

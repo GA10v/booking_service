@@ -1,6 +1,6 @@
-from datetime import datetime
 import logging
 from collections import namedtuple
+from datetime import datetime
 from typing import Union
 from uuid import uuid4
 
@@ -76,13 +76,13 @@ class ProcessTask:
         for record in db_records:
             logger.info(f'proceed with review {record["review_id"]}')
             logger.info(f'previous likes count: {record["likes_count"]}')
-            current_likes = self.connection.ugc.get_likes_count(record["review_id"])
+            current_likes = self.connection.ugc.get_likes_count(record['review_id'])
             logger.info(f'current likes count: {current_likes}')
-            if current_likes > record["likes_count"]:
+            if current_likes > record['likes_count']:
                 # remove "pkid" key from record
                 record.pop('pkid')
                 # update likes in record
-                record["likes_count"] = current_likes
+                record['likes_count'] = current_likes
                 filtered_reviews.append(record)
                 logger.info('add to updated reviews')
         return filtered_reviews
