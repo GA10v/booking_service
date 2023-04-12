@@ -41,7 +41,7 @@ class EmailSettings(BaseConfig):
     USER: str = ''
     PASSWORD: str = ''
     SMTP_SERVER: str = ''
-    SMTP_PORT: int = 465
+    SMTP_PORT: int | None = 465
     SMTP_SSL: bool | None = False
 
     class Config:
