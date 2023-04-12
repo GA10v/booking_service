@@ -6,13 +6,13 @@ import redis
 from fastapi import FastAPI
 from motor import motor_asyncio
 
-from api.v1 import reviews
-from core.config import settings
-from core.logger import LOGGING
-from middleware.auth import auth_middleware
-from middleware.logger import logging_middleware
-from utils.sentry import init_sentry
-from db import mongo_storage, redis_storage
+from backend.Booking.review_api.src.api.v1 import reviews
+from backend.Booking.review_api.src.core import settings
+from backend.Booking.review_api.src.core import LOGGING
+from backend.Booking.review_api.src.middleware.auth import auth_middleware
+from backend.Booking.review_api.src.middleware.logger import logging_middleware
+from backend.Booking.review_api.src.utils.sentry import init_sentry
+from backend.Booking.review_api.src.db import mongo_storage, redis_storage
 
 init_sentry()
 
