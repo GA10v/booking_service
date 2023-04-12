@@ -31,6 +31,4 @@ async def get_payload(data: Event) -> payload:
         payload = booking.StatusBookingPayload(data)
     elif data.event_type == EventType.booking_new:
         payload = booking.NewBookingPayload(data)
-    elif data.event_type == EventType.new_likes:
-        payload = new_likes.NewScorePayload(data)
     return await payload.payload()
