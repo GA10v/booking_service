@@ -4,7 +4,7 @@ from datetime import datetime as dt
 
 from fastapi import APIRouter, Depends, status, HTTPException
 
-from models.reviews import Review, ReviewIncoming, Event
+from src.models.reviews import Review, ReviewIncoming, Event
 from service.review import ReviewService, get_review_service
 from service.booking import BookingService, get_booking_service
 from utils import auth
