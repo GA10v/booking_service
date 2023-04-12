@@ -4,11 +4,11 @@ from uuid import uuid4
 
 import aiohttp
 
-from core.config import settings
-from core.logger import get_logger
-from service.base import NoificationServiceBase
-from utils.auth import _headers
-from models import reviews
+from src.core.config import settings
+from src.core.logger import get_logger
+from src.service.base import NoificationServiceBase
+from src.utils.auth import _headers
+from src.models import reviews
 
 logger = get_logger(__name__)
 

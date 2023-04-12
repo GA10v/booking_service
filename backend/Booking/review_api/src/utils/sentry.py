@@ -4,7 +4,7 @@ import sentry_sdk
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 from sentry_sdk.utils import BadDsn
 
-from core.config import settings
+from src.core.config import settings
 
 
 def init_sentry():

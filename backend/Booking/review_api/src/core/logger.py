@@ -1,7 +1,7 @@
 import logging
 import logging.config
 
-from core.config import settings
+from src.core.config import settings
 
 LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 LOG_DEFAULT_HANDLERS = [

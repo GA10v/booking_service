@@ -6,8 +6,8 @@ import jwt
 import httpx
 import logging
 
-from core.config import settings
-from models.booking import PGBooking
+from src.core.config import settings
+from src.models.booking import PGBooking
 
 logger = logging.getLogger(__name__)
 

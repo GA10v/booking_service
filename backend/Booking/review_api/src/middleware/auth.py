@@ -3,8 +3,8 @@ from http import HTTPStatus
 from fastapi import FastAPI, Request
 from fastapi.responses import Response
 
-from core.config import settings
-from utils.auth import parse_header
+from src.core.config import settings
+from src.utils.auth import parse_header
 
 
 def auth_middleware(app: FastAPI):
