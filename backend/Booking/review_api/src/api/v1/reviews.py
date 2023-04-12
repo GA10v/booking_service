@@ -5,9 +5,9 @@ from datetime import datetime as dt
 from fastapi import APIRouter, Depends, status, HTTPException
 
 from src.models.reviews import Review, ReviewIncoming, Event
-from service.review import ReviewService, get_review_service
-from service.booking import BookingService, get_booking_service
-from utils import auth
+from src.service.review import ReviewService, get_review_service
+from src.service.booking import BookingService, get_booking_service
+from src.utils import auth
 
 
 logger = logging.getLogger(__name__)
