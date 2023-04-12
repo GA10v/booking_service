@@ -1,12 +1,12 @@
-from abc import ABC, abstract_method
+from abc import ABC, abstractmethod
 
 
 class NoificationServiceBase(ABC):
 
-    @abstract_method
+    @abstractmethod
     def __init__(self):
         pass
 
-    @abstract_method
+    @abstractmethod
     async def send(self):
         pass
