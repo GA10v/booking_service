@@ -2,10 +2,10 @@ from functools import lru_cache
 
 from fastapi import Depends
 
-from models.reviews import Review, Event
-from db.models import base_classes
-from db.mongo_storage import get_mongo
-from db.redis_storage import get_redis
+from src.models.reviews import Review, Event
+from src.db.models import base_classes
+from src.db.mongo_storage import get_mongo
+from src.db.redis_storage import get_redis
 
 from utils.notific import NotificApiRepository
 
