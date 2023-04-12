@@ -40,6 +40,11 @@ class Event(DefaultOrjsonModel):
     score_average: float
 
 
+class UserReviewAvg(DefaultOrjsonModel):
+
+    score_average: float
+
+
 class ReviewCollection(BaseCollectionModel[Review]):
     pass
 

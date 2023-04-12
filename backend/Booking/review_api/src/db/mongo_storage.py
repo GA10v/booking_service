@@ -3,7 +3,7 @@ import logging
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from src.db.models.base_classes import Storage
-from src.models.reviews import Review, Event, ReviewCollection
+from src.models.reviews import Review, Event, ReviewCollection, UserReviewAvg
 from src.core.config import settings
 
 
@@ -49,6 +49,15 @@ class MongoStorage(Storage):
         else:
             doc['score_average'] = 0.0
         return Event.parse_obj(doc)
+
+    async def get_average_for_user(self, user_id: str):
+        pipeline = [{'$group': {'_id': user_id, 'score_average': {'$avg': '$score'}}}]
+        doc = await self.collection.aggregate(pipeline).next()
+        if doc.get('score_average', None):
+            doc['score_average'] = round(doc['score_average'], 1)
+        else:
+            doc['score_average'] = 0.0
+        return UserReviewAvg.parse_obj(doc)
 
 
 mongo: MongoStorage | None = None

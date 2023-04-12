@@ -35,6 +35,15 @@ class FastapiSettings(BaseConfig):
         env_prefix = 'FASTAPI_'
 
 
+class ReveiwAPISettings(BaseConfig):
+    HOST: str = 'localhost'
+    PORT: int = 8084
+    API_PREFIX: str = '/app/v1'
+
+    class Config:
+        env_prefix = 'REVIEW_API'
+
+
 class PermissionSettings(Enum):
     User = 0
     Subscriber = 1
@@ -88,6 +97,7 @@ class ProjectSettings(BaseConfig):
     jwt: JWTSettings = JWTSettings()
     mongo: MongoSettings = MongoSettings()
     redis: RedisSettings = RedisSettings()
+    review_api: ReveiwAPISettings = ReveiwAPISettings()
 
 
 settings = ProjectSettings()

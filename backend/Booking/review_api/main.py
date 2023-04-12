@@ -54,8 +54,8 @@ if not settings.debug.DEBUG:
 #     # TODO: закрыть все, выключить свет
 
 
-app.include_router(reviews.router, prefix=settings.fastapi.API_PREFIX, tags=['reviews'])
+app.include_router(reviews.router, prefix=settings.review_api.API_PREFIX, tags=['reviews'])
 
 
 if __name__ == '__main__':
-    uvicorn.run('main:app', host='0.0.0.0', port=8081, log_config=LOGGING, log_level=logging.DEBUG)
+    uvicorn.run('main:app', host='0.0.0.0', port=settings.review_api.PORT, log_config=LOGGING, log_level=logging.DEBUG)

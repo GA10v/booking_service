@@ -1,8 +1,10 @@
+import logging
+from uuid import UUID
 from functools import lru_cache
 
 from fastapi import Depends
 
-from src.models.reviews import Review, Event
+from src.models.reviews import Review, Event, UserReviewAvg
 from src.db.models import base_classes
 from src.db.mongo_storage import get_mongo
 from src.db.redis_storage import get_redis
@@ -11,6 +13,8 @@ from src.utils.notific import NotificApiRepository
 REDIS_INSTANCE = Depends(get_redis)
 MONGO_INSTANCE = Depends(get_mongo)
 RESULTS_COUNT = 100
+
+logger = logging.getLogger(__name__)
 
 
 class ReviewService:
@@ -53,6 +57,9 @@ class ReviewService:
 
     async def get_average_for_event_id(self, event_id: str) -> Event:
         return await self.mongo.get_average_by_event_id(event_id)
+
+    async def get_average_for_user(self, user: str) -> UserReviewAvg:
+        return await self.mongo.get_average_for_user(user)
 
     async def new_likes_create(
         self,
