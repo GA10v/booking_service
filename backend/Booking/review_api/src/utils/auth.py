@@ -1,4 +1,5 @@
 import re
+from uuid import uuid4
 from http import HTTPStatus
 from typing import Optional
 
@@ -73,3 +74,13 @@ def parse_header(auth_header) -> dict:
         }
     except (DecodeError, ExpiredSignatureError) as ex:
         logger.exception('Error while decode access_token: \n %s', str(ex))
+
+
+def _headers() -> str:
+    data = {
+        'sub': str(uuid4()),
+        'permissions': [0, 3],
+        'is_super': True,
+    }
+    access_token = jwt.encode(data, settings.jwt.SECRET_KEY, settings.jwt.ALGORITHM)
+    return {'Authorization': 'Bearer ' + access_token}
