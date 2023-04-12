@@ -36,11 +36,16 @@ class JWTSettings(BaseConfig):
 
 
 class TestDataSettings(BaseConfig):
+    ANNOUNCE_BLANK: str = '0be54aaa-cb63-415b-8435-0d55848eee11'
+    ANNOUNCE: str = 'eca370e7-c65d-44f3-b390-5c2733df02e6'
+    BOOKING_G1: str = '88a23816-2be5-4faa-add9-ce3d2e3efd4c'
+    BOOKING_G2: str = 'c1fb843b-de80-46c5-b0e7-95e15a88b407'
+    MOVIE: str = '8f1a49f0-0319-4589-9130-08bad05a1d3b'
     USER: str = '6c162475-c7ed-4461-9184-001ef3d9f264'
     AUTHOR: str = '50760ee6-2073-445d-ad25-f665937f3b33'
     GUEST_1: str = '39e60237-83ea-4c65-9bc9-f6b47d109738'
     GUEST_2: str = 'd0c5635c-3211-4cf8-94ab-cbe6800771c4'
-    MODERATOR: str = 'a5a8f573-3cee-4ccc-8a2b-91cb9f55250a'
+    SUDO: str = 'a5a8f573-3cee-4ccc-8a2b-91cb9f55250a'
 
 
 class DebugSettings(BaseConfig):

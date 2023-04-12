@@ -33,7 +33,7 @@ async def create(
             description='Fake description',
             sub_only=False,
             is_free=True,
-            tickets_count=4,
+            tickets_count=2,
             event_time=datetime.now(),
             event_location='Fake location',
         )

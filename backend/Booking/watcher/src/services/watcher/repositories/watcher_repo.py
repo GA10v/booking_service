@@ -6,15 +6,15 @@ import aiohttp
 import pytz
 import sqlalchemy.exc as sqlalch_exc
 from aiohttp.client_exceptions import ClientError
+from services.watcher import layer_models, layer_payload
+from services.watcher.repositories import _protocols
 from sqlalchemy import select, update
 
 from core.config import settings
 from core.logger import get_logger
 from db.db import AsyncSession
 from db.models.announcement import Announcement
-from db.redis import RedisCache
-from services.watcher import layer_models, layer_payload
-from services.watcher.repositories import _protocols
+from db.redis import CacheProtocol
 from utils.auth import _headers
 
 logger = get_logger(__name__)
@@ -22,7 +22,7 @@ utc = pytz.UTC
 
 
 class WatcherSqlachemyRepository(_protocols.WatcherRepositoryProtocol):
-    def __init__(self, db_session: AsyncSession, cache: RedisCache) -> None:
+    def __init__(self, db_session: AsyncSession, cache: CacheProtocol) -> None:
         self.db = db_session
         self.redis = cache
         self.announce_endpoint = settings.booking.announce_uri
@@ -48,7 +48,11 @@ class WatcherSqlachemyRepository(_protocols.WatcherRepositoryProtocol):
         query = (
             select(Announcement)
             .where(Announcement.event_time < utc.localize(now))
-            .filter(Announcement.status == layer_payload.EventStatus.Alive.value)
+            .filter(
+                Announcement.status.in_(
+                    (layer_payload.EventStatus.Alive.value, layer_payload.EventStatus.Closed.value),
+                ),
+            )
         )
 
         _res = await self.db.execute(query)
@@ -109,6 +113,6 @@ class WatcherSqlachemyRepository(_protocols.WatcherRepositoryProtocol):
 
 def get_watcher_repo(
     db_session: AsyncSession,
-    cache: RedisCache,
+    cache: CacheProtocol,
 ) -> _protocols.WatcherRepositoryProtocol:
     return WatcherSqlachemyRepository(db_session, cache)

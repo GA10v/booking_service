@@ -57,6 +57,10 @@ class BookingRepositoryProtocol(ABC):
         """
         ...
 
+    @abstractmethod
+    async def get_confirmed_list(self, announce_id: str | UUID) -> list[layer_models.PGBooking]:
+        ...
+
 
 class UserRepositoryProtocol(ABC):
     @abstractmethod
@@ -82,6 +86,14 @@ class AnnouncementRepositoryProtocol(ABC):
         """
         :raises NotFoundError
         """
+        ...
+
+    @abstractmethod
+    async def set_alive_status(self, announce_id: str | UUID) -> None:
+        ...
+
+    @abstractmethod
+    async def set_closed_status(self, announce_id: str | UUID) -> None:
         ...
 
 

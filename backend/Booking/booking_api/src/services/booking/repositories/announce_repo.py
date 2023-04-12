@@ -3,6 +3,7 @@ from typing import Any
 from uuid import UUID
 
 from fastapi import Depends
+from sqlalchemy import update
 
 import utils.exceptions as exc
 from core.logger import get_logger
@@ -47,7 +48,28 @@ class AnnounceSqlachemyRepository(_protocols.AnnouncementRepositoryProtocol):
             author_id=_data.get('author_id'),
             event_time=_data.get('event_time'),
             movie_id=_data.get('movie_id'),
+            tickets_count=_data.get('tickets_count'),
         )
+
+    async def set_alive_status(self, announce_id: str | UUID) -> None:
+        query = (
+            update(Announcement)
+            .where(Announcement.id == announce_id)
+            .values({'status': layer_models.EventStatus.Alive})
+        )
+        await self.db.execute(query)
+        await self.db.commit()
+        logger.info(f'Update announcement <{announce_id}>')
+
+    async def set_closed_status(self, announce_id: str | UUID) -> None:
+        query = (
+            update(Announcement)
+            .where(Announcement.id == announce_id)
+            .values({'status': layer_models.EventStatus.Closed})
+        )
+        await self.db.execute(query)
+        await self.db.commit()
+        logger.info(f'Update announcement <{announce_id}>')
 
 
 @lru_cache()

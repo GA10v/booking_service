@@ -3,7 +3,6 @@ from random import randint
 from uuid import uuid4
 
 from faker import Faker
-
 from models import ReviewInfo
 
 fake = Faker()
@@ -34,4 +33,8 @@ def get_fake_review_info(
 
 
 def get_fake_group() -> list[str]:
-    return [str(uuid4()) for _ in range(20)]
+    return [
+        '50760ee6-2073-445d-ad25-f665937f3b33',
+        '39e60237-83ea-4c65-9bc9-f6b47d109738',
+        'd0c5635c-3211-4cf8-94ab-cbe6800771c4',
+    ]

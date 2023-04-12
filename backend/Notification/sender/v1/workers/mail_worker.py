@@ -1,49 +1,52 @@
 """Module to use to send email."""
 
-import smtplib
 from email.message import EmailMessage
 
+from aiosmtplib import SMTP, SMTPException
+
+from core.config import settings
 from models.notifications import TemplateToSender
 from v1.workers.generic_worker import Worker
 
-from core.config import settings
-
 
 class EmailWorker(Worker):
-    """Mail Worker Logic."""
-
     def __init__(self) -> None:
-        """Create instance of MAILWorker."""
         self.server = settings.email.SMTP_SERVER
         self.port = settings.email.SMTP_PORT
         self.user = settings.email.USER
         self.password = settings.email.PASSWORD
-        self.connection: smtplib.SMTP | smtplib.SMTP_SSL
-        if settings.email.SMTP_SSL:
-            self.connection = smtplib.SMTP_SSL(self.server, self.port)
-        else:
-            self.connection = smtplib.SMTP(self.server, self.port)
-        self.connection.login(self.user, self.password)
+        self.client = SMTP(
+            hostname=self.server,
+            port=self.port,
+            password=self.password,
+            username=self.user,
+        )
 
-    def send_message(
-        self,
-        notification: TemplateToSender,
-    ) -> None:
-        """Send emails.
+    async def connect(self):
+        await self.client.connect()
 
-        Args:
-            notification: TemplateToSender - includes reciepents, subject and body
-        """
+    async def disconnect(self) -> None:
+        await self.client.quit()
+
+    async def _connect(self) -> bool:
+        if not self.client.is_connected:
+            await self.connect()
+        return self.client.is_connected
+
+    async def send_message(self, notification: TemplateToSender) -> None:
         message = EmailMessage()
         message['From'] = settings.email.USER
-        message['To'] = ';'.join(notification.recipient)
+        message['To'] = notification.recipient
         message['Subject'] = notification.subject
         message.add_alternative(notification.email_body, subtype='html')
         try:
-            self.connection.sendmail(
-                settings.email.USER,
-                notification.recipient,
-                message.as_string(),
-            )
+            if await self._connect():
+                await self.client.sendmail(
+                    sender=self.user,
+                    recipients=notification.recipient,
+                    message=message.as_string(),
+                )
+        except SMTPException:
+            raise
         finally:
-            self.connection.close()
+            await self.disconnect()

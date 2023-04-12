@@ -177,9 +177,6 @@ class BookingService:
         :raises UniqueConstraintError: если запист уже существует в базе
         :raises NoAccessError: если у пользователя нет прав на изменение заявки
         """
-
-        # TODO: переводить статус в Closed, когда все места заняты
-
         if not settings.debug.DEBUG:  # noqa: SIM102
             # проверяем, что объявление живое
             try:
@@ -204,7 +201,8 @@ class BookingService:
             )
         try:
             perm: Permission = await self._check_permissions(user, booking_id)
-            # если статус не изменился - ничего не меняем
+
+            # если статус не изменился - ничего не трогаем
             if (
                 (perm == Permission.author)
                 and (_booking.author_status is new_status.my_status)  # noqa: W503
@@ -212,7 +210,7 @@ class BookingService:
                 and (_booking.guest_status is new_status.my_status)  # noqa: W503
             ):  # noqa: W503
                 return
-
+            # sudo не может влиять на статус заявки
             if perm.value not in [1, 2]:
                 raise exc.NoAccessError
             await self.repo.update(
@@ -223,10 +221,24 @@ class BookingService:
         except (exc.NoAccessError, exc.NotFoundError):
             raise
 
+        # проверяем кол-во свободных мест
+        confirmed_list = len(await self.repo.get_confirmed_list(_booking.announcement_id))
+        tickets_count = _announce.tickets_count
+        res = tickets_count - confirmed_list
+
+        # если появилось свободное место - объявление пререводим в статус Alive
+        if _announce.status == layer_models.EventStatus.Closed and res > 0:
+            await self.announce_repo.set_alive_status(_booking.announcement_id)
+
+        # если свободные места закончились - объявление пререводим в статус Closed
+        if _announce.status == layer_models.EventStatus.Alive and res == 0:
+            await self.announce_repo.set_closed_status(_booking.announcement_id)
+
         # определяем кому отправлять уведомление
         _user = _booking.guest_id
         if perm == Permission.guest:
             _user = _booking.author_id
+
         # отправляем уведомление
         payload = layer_payload.StatusBooking(
             status_booking_id=booking_id,
@@ -249,9 +261,6 @@ class BookingService:
         :raises NotFoundError: если указаная запись не была найдена в базе
         :raises NoAccessError: если у пользователя нет прав на изменение заявки
         """
-
-        # TODO: переводить статус в Alive, когда освободилось место
-
         # проверяем что запись есть
         try:
             _booking: layer_models.PGBooking = await self.repo.get_by_id(booking_id)
@@ -266,14 +275,24 @@ class BookingService:
         except (exc.NoAccessError, exc.NotFoundError):
             raise
 
-        # TODO: CACHE
+        # проверяем кол-во свободных мест
+        _announce: layer_models.AnnounceToResponse = await self.announce_repo.get_by_id(
+            _booking.announcement_id,
+        )
+        confirmed_list = len(await self.repo.get_confirmed_list(_booking.announcement_id))
+        tickets_count = _announce.tickets_count
+        res = tickets_count - confirmed_list
+
+        # если появилось свободное место - объявление пререводим в статус Alive
+        if _announce.status == layer_models.EventStatus.Closed and res > 0:
+            await self.announce_repo.set_alive_status(_booking.announcement_id)
 
         # отправляем уведомление автороу объявления
-        _guest: layer_models.UserToResponse = await self.user_repo.get_by_id(_booking.guest_id)
+        _author: layer_models.UserToResponse = await self.user_repo.get_by_id(_booking.author_id)
 
         payload = layer_payload.DeleteBooking(
             del_booking_announce_id=str(_booking.announcement_id),
-            guest_name=_guest.user_name,
+            guest_name=_author.user_name,
             user_id=str(_booking.author_id),
         )
         await self.notific_repo.send(event_type=layer_payload.EventType.booking_delete, payload=payload)

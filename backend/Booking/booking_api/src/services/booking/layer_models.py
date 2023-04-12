@@ -6,7 +6,9 @@ from pydantic import BaseModel
 
 
 class MovieToResponse(BaseModel):
+    movie_id: str | UUID
     movie_title: str
+    duration: int
 
 
 class RatingToResponse(BaseModel):
@@ -35,6 +37,7 @@ class AnnounceToResponse(BaseModel):
     author_id: str | UUID
     movie_id: str | UUID
     event_time: datetime
+    tickets_count: int
 
 
 class BookingResponse(BaseModel):
