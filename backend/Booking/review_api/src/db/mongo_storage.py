@@ -2,9 +2,9 @@ import logging
 
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from db.models.base_classes import Storage
-from models.reviews import Review, Event, ReviewCollection
-from core.config import settings
+from src.db.models.base_classes import Storage
+from src.models.reviews import Review, Event, ReviewCollection
+from src.core.config import settings
 
 
 logger = logging.getLogger(__name__)
