@@ -1,4 +1,4 @@
-from abs import ABC, abstract_method
+from abc import ABC, abstract_method
 
 
 class NoificationServiceBase(ABC):
