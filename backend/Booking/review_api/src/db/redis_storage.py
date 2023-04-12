@@ -3,9 +3,9 @@ import json
 
 from redis import Redis
 
-from db.models.base_classes import Cache
-from models.reviews import Review, ReviewCollection
-from core.config import settings
+from src.db.models.base_classes import Cache
+from src.models.reviews import Review, ReviewCollection
+from src.core.config import settings
 
 
 logger = logging.getLogger(__name__)
