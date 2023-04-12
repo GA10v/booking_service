@@ -58,7 +58,7 @@ class NewScoreContext(BaseUserContext):
     announcement_id: str
     author_name: str
     guest_name: str
-    announcement_title: str
+    announce_title: str
 
 
 class PutAnnounceContext(BaseUserContext):

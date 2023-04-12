@@ -36,7 +36,7 @@ class NewScorePayloads(PayloadsProtocol):
         return NewScoreContext(
             announcement_id=_review.get('announcement_id'),
             author_name=_review.get('author_name'),
-            announcemenmt_title=_review.get('announcement_title'),
+            announce_title=_review.get('announcement_title'),
             movie_title=_review.get('announcement_title'),
             guest_name=_review.get('guest_name'),
         )

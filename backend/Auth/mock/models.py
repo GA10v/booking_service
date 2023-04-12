@@ -8,7 +8,7 @@ from pydantic import BaseModel
 class EventType(str, Enum):
     welcome = 'welcome_message'
     new_content = 'new_content'
-    new_score = 'new_score'
+    new_score = 'new_likes'
     promo = 'promo'
 
     def __repr__(self) -> str:
