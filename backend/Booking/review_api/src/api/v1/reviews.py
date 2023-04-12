@@ -10,6 +10,7 @@ from src.models.noitifciations import NewReviewsLikes
 from src.service.review import ReviewService, get_review_service
 from src.service.booking import BookingService, get_booking_service
 from src.utils import auth
+from src.core.config import settings
 
 
 logger = logging.getLogger(__name__)
@@ -44,7 +45,15 @@ async def create_review(
         id=uuid.uuid4(),
     )
     await review_service.add_review(review)
-    notification: NewReviewsLikes
+    notification: NewReviewsLikes = NewReviewsLikes(
+        author_name=booking.author_name,
+        announce_title='New Review for booking',
+        link=(
+            f'http://{settings.review_api.HOST}:{settings.review_api.PORT}'
+            f'/api/v1//reviews/{booking.announcement_id}/{review.id}'
+        ),
+        guest_name=_user.get('user_id'),
+    )
     await review_service.new_likes_create(notification)
     return review
 

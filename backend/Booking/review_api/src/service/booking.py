@@ -7,7 +7,7 @@ import httpx
 import logging
 
 from src.core.config import settings
-from src.models.booking import PGBooking
+from src.models.announce import AnnouncementToReviewResponse
 
 logger = logging.getLogger(__name__)
 
@@ -25,16 +25,19 @@ def _headers() -> str:
 class BookingService:
 
     def __init__(self):
-        self.base_url = f'http://{settings.fastapi.HOST}:{settings.fastapi.PORT}/{settings.fastapi.API_PREFIX}/booking'
+        self.base_url = (
+            f'http://{settings.fastapi.HOST}:{settings.fastapi.PORT}/'
+            f'{settings.fastapi.API_PREFIX}/announcement'
+        )
 
-    async def get_booking(self, booking_id: str):
-        url = f'{self.base_url}/{booking_id}'
+    async def get_booking(self, announcement_id: str, guest_id: str) -> AnnouncementToReviewResponse:
+        url = f'{self.base_url}/{announcement_id}/{guest_id}'
         async with httpx.AsyncClient() as client:
             response = await client.get(url, headers=_headers())
         logger.info(f'Response: {response.text} status {response.status_code}')
         result = None
         if response.json():
-            result = PGBooking(json.loads(response.json()))
+            result = AnnouncementToReviewResponse(json.loads(response.json()))
 
         return result
 
