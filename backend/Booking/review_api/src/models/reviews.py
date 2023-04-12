@@ -1,10 +1,10 @@
 """Models to describe review."""
 from enum import Enum
-
-from models.base import DefaultModel, DefaultOrjsonModel
 from uuid import UUID
 
 from pydantic_collections import BaseCollectionModel
+
+from src.models.base import DefaultModel, DefaultOrjsonModel
 
 
 class ReviewBase(DefaultModel):
