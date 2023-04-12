@@ -2,7 +2,7 @@ from core.logger import get_logger
 from models.base import EventType
 from models.events import Event
 from models.payloads import payload
-from service.enrich import announce, booking, new_content, new_promo, new_review_likes, new_user, new_likes
+from service.enrich import announce, booking, new_content, new_promo, new_review_likes, new_user  # , new_likes
 
 logger = get_logger(__name__)
 
