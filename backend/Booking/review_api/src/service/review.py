@@ -61,32 +61,32 @@ class ReviewService:
     async def get_average_for_user(self, user: str) -> UserReviewAvg:
         return await self.mongo.get_average_for_user(user)
 
-    async def new_likes_create(
-        self,
-        guest_id: str | UUID,
-        new_likes: None,  # TODO: add payload model
-    ):
-        """
-        Запись новой оценки и оповещение хоста события.
-        :param guest_id: id автора оценки
-        :param new_likes: данные оценки
-        """
-        try:
-            _guest = await self.notific.get_by_id(guest_id)  # TODO: нужен метод
-            logger.info(f'Get guest with id {guest_id}: {_guest}>')
-            _id = await self.notific.create(new_likes=new_likes, author_id=guest_id)  # TODO: нужен метод
-            logger.info(f'[+] Create announcement <{_id}>')
-        except exc.UniqueConstraintError:
-            raise
+    # async def new_likes_create(
+    #     self,
+    #     author_id: str | UUID,
+    #     new_likes: None,  # TODO: add payload model
+    # ):
+    #     """
+    #     Запись новой оценки и оповещение хоста события.
+    #     :param guest_id: id автора оценки
+    #     :param new_likes: данные оценки
+    #     """
+    #     try:
+    #         _guest = await self.notific.get_by_id(author_id)  # TODO: нужен метод
+    #         logger.info(f'Get guest with id {guest_id}: {_guest}>')
+    #         _id = await self.notific.create(new_likes=new_likes, author_id=guest_id)  # TODO: нужен метод
+    #         logger.info(f'[+] Create announcement <{_id}>')
+    #     except exc.UniqueConstraintError:
+    #         raise
 
-        annouce = await self.get_one(_id)
+    #     annouce = await self.get_one(_id)
 
-        # оповещаем автора о новой оценке
-        payload = NewScorePayload(announcement_id=_id, user_id=guest_id)
-        await self.send(layer_payload.EventType.announce_new, payload)
-        # TODO: поправить и продолжить
+    #     # оповещаем автора о новой оценке
+    #     payload = NewScorePayload(announcement_id=_id, user_id=guest_id)
+    #     await self.send(layer_payload.EventType.announce_new, payload)
+    #     # TODO: поправить и продолжить
 
-        return annouce
+    #     return annouce
 
 
 @lru_cache()
