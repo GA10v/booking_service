@@ -1,6 +1,6 @@
 from datetime import datetime
-from uuid import UUID
 from typing import Any
+from uuid import UUID
 
 import orjson
 from pydantic import BaseModel
@@ -11,7 +11,6 @@ def orjson_dumps(obj_to_serialize: Any, *, default: Any) -> Any:
 
 
 class DefaultOrjsonModel(BaseModel):
-
     class Config:
         json_loads = orjson.loads
         json_dumps = orjson_dumps

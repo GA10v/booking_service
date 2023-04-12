@@ -1,10 +1,10 @@
 import json
+import logging
 from functools import lru_cache
 from uuid import uuid4
 
-import jwt
 import httpx
-import logging
+import jwt
 
 from src.core.config import settings
 from src.models.announce import AnnouncementToReviewResponse
@@ -23,11 +23,9 @@ def _headers() -> str:
 
 
 class BookingService:
-
     def __init__(self):
         self.base_url = (
-            f'http://{settings.fastapi.HOST}:{settings.fastapi.PORT}/'
-            f'{settings.fastapi.API_PREFIX}/announcement'
+            f'http://{settings.fastapi.HOST}:{settings.fastapi.PORT}/' f'{settings.fastapi.API_PREFIX}/announcement'
         )
 
     async def get_booking(self, announcement_id: str, guest_id: str) -> AnnouncementToReviewResponse:

@@ -1,18 +1,18 @@
 import logging
 from contextlib import asynccontextmanager
 
-import uvicorn
 import redis
+import uvicorn
 from fastapi import FastAPI
 from motor import motor_asyncio
 
 from src.api.v1 import reviews
 from src.core.config import settings
 from src.core.logger import LOGGING
+from src.db import mongo_storage, redis_storage
 from src.middleware.auth import auth_middleware
 from src.middleware.logger import logging_middleware
 from src.utils.sentry import init_sentry
-from src.db import mongo_storage, redis_storage
 
 init_sentry()
 
@@ -29,6 +29,7 @@ async def lifespan(app: FastAPI):
     yield
     await redis_storage.redis.close()
     mongo_storage.mongo = None  # autoclose in 5 minutes default
+
 
 app = FastAPI(
     title=settings.PROJECT_NAME,

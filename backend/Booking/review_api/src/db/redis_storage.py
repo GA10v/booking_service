@@ -1,18 +1,16 @@
-import logging
 import json
+import logging
 
 from redis import Redis
 
+from src.core.config import settings
 from src.db.models.base_classes import Cache
 from src.models.reviews import Review, ReviewCollection
-from src.core.config import settings
-
 
 logger = logging.getLogger(__name__)
 
 
 class RedisStorage(Cache):
-
     def __init__(self, redis: Redis):
         self.redis = redis
 
