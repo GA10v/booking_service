@@ -55,10 +55,10 @@ class NewAnnounceContext(BaseUserContext):
 
 
 class NewScoreContext(BaseUserContext):
+    announcement_id: str
     author_name: str
-    announce_title: str
-    movie_title: str
-    link: str
+    guest_name: str
+    announcement_title: str
 
 
 class PutAnnounceContext(BaseUserContext):
