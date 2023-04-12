@@ -5,6 +5,8 @@ from datetime import datetime as dt
 from fastapi import APIRouter, Depends, status, HTTPException
 
 from src.models.reviews import Review, ReviewIncoming, Event, UserReviewAvg
+from src.models.announce import AnnouncementToReviewResponse
+from src.models.noitifciations import NewReviewsLikes
 from src.service.review import ReviewService, get_review_service
 from src.service.booking import BookingService, get_booking_service
 from src.utils import auth
@@ -18,7 +20,7 @@ BOOKING_SERVCIE_INSTANCE = Depends(get_booking_service)
 
 
 @router.post(
-    '/reviews/{event_id}',
+    '/reviews/{announcement_id}',
     summary='Создание отзыва на событие',
     description='Создание отзыва',
     response_model=Review,
@@ -26,23 +28,24 @@ BOOKING_SERVCIE_INSTANCE = Depends(get_booking_service)
     status_code=status.HTTP_201_CREATED,
 )
 async def create_review(
-    event_id: str,
+    announcement_id: str,
     review: ReviewIncoming,
     _user: dict = Depends(auth_handler.auth_wrapper),
     review_service: ReviewService = REVIEW_SERVICE_INSTANCE,
     booking_service: BookingService = BOOKING_SERVCIE_INSTANCE,
 ) -> Review:
-    booking = await booking_service.get_booking(event_id)
+    booking: AnnouncementToReviewResponse = await booking_service.get_booking(announcement_id)
     review = Review(
         **review.dict(),
-        event_id=event_id,
+        event_id=booking.announcement_id,
         guest_id=_user['user_id'],
         created=dt.utcnow(),
         modified=dt.utcnow(),
         id=uuid.uuid4(),
     )
     await review_service.add_review(review)
-    logger.info(f'And sending to: {booking.author_id}')
+    notification: NewReviewsLikes
+    await review_service.new_likes_create(notification)
     return review
 
 
