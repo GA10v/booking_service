@@ -7,6 +7,8 @@ from db.models import base_classes
 from db.mongo_storage import get_mongo
 from db.redis_storage import get_redis
 
+from utils.notific import NotificApiRepository
+
 REDIS_INSTANCE = Depends(get_redis)
 MONGO_INSTANCE = Depends(get_mongo)
 RESULTS_COUNT = 100
@@ -14,9 +16,15 @@ RESULTS_COUNT = 100
 
 class ReviewService:
 
-    def __init__(self, redis: base_classes.Cache, mongo: base_classes.Storage):
+    def __init__(
+            self,
+            redis: base_classes.Cache,
+            mongo: base_classes.Storage,
+            notific: NotificApiRepository,
+    ):
         self.redis = redis
         self.mongo = mongo
+        self.notific = NotificApiRepository
 
     async def add_review(self, review: Review):
         await self.mongo.insert_document(review)
@@ -46,6 +54,33 @@ class ReviewService:
 
     async def get_average_for_event_id(self, event_id: str) -> Event:
         return await self.mongo.get_average_by_event_id(event_id)
+
+    async def new_score_create(
+        self,
+        guest_id: str | UUID,
+        new_score: None,  # TODO: add payload model
+    ):
+        """
+        Запись новой оценки и оповещение хоста события.
+        :param guest_id: id автора оценки
+        :param new_score: данные оценки
+        """
+        try:
+            _guest = await self.notific.get_by_id(guest_id)  # TODO: нужен метод
+            logger.info(f'Get guest with id {guest_id}: {_guest}>')
+            _id = await self.notific.create(new_score=new_score, author_id=guest_id)  # TODO: нужен метод
+            logger.info(f'[+] Create announcement <{_id}>')
+        except exc.UniqueConstraintError:
+            raise
+
+        annouce = await self.get_one(_id)
+
+        # оповещаем автора о новой оценке
+        payload = NewScorePayload(announcement_id=_id, user_id=guest_id)
+        await self.send(layer_payload.EventType.announce_new, payload)
+        # TODO: поправить и продолжить
+
+        return annouce
 
 
 @lru_cache()
