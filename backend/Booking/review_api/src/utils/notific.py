@@ -18,22 +18,22 @@ class NotificApiRepository(NoificationServiceBase):
         self.notific_endpoint = f'{settings.nptific.uri}send'
         self._headers = _headers()
 
-    async def send(self, event_type: reviews.EventType, payload: layer_payload.context) -> None:
-        event = layer_payload.NotificEvent(
-            notification_id=str(uuid4()),
-            source_name='Announcement service',
-            event_type=event_type,
-            context=payload.dict(),
-            created_at=datetime.now(),
-        ).dict()
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
-                self.notific_endpoint,
-                headers=self._headers,
-                json=event,
-            ) as resp:
-                logger.info(f'Send notific <{self.notific_endpoint}>')
-                logger.info(f'Send notific resp.status: <{resp.status}>')
+    # async def send(self, event_type: reviews.EventType, payload: layer_payload.context) -> None:
+    #     event = layer_payload.NotificEvent(
+    #         notification_id=str(uuid4()),
+    #         source_name='Announcement service',
+    #         event_type=event_type,
+    #         context=payload.dict(),
+    #         created_at=datetime.now(),
+    #     ).dict()
+    #     async with aiohttp.ClientSession() as session:
+    #         async with session.post(
+    #             self.notific_endpoint,
+    #             headers=self._headers,
+    #             json=event,
+    #         ) as resp:
+    #             logger.info(f'Send notific <{self.notific_endpoint}>')
+    #             logger.info(f'Send notific resp.status: <{resp.status}>')
 
 
 @lru_cache()
