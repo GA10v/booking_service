@@ -46,7 +46,7 @@ class ReviewCollection(BaseCollectionModel[Review]):
 
 class EventType(str, Enum):
     new_content = 'new_content'
-    new_score = 'new_likes'
+    new_likes = 'new_likes'
     promo = 'promo'
     score_request = 'score_request'
 

@@ -55,20 +55,20 @@ class ReviewService:
     async def get_average_for_event_id(self, event_id: str) -> Event:
         return await self.mongo.get_average_by_event_id(event_id)
 
-    async def new_score_create(
+    async def new_likes_create(
         self,
         guest_id: str | UUID,
-        new_score: None,  # TODO: add payload model
+        new_likes: None,  # TODO: add payload model
     ):
         """
         Запись новой оценки и оповещение хоста события.
         :param guest_id: id автора оценки
-        :param new_score: данные оценки
+        :param new_likes: данные оценки
         """
         try:
             _guest = await self.notific.get_by_id(guest_id)  # TODO: нужен метод
             logger.info(f'Get guest with id {guest_id}: {_guest}>')
-            _id = await self.notific.create(new_score=new_score, author_id=guest_id)  # TODO: нужен метод
+            _id = await self.notific.create(new_likes=new_likes, author_id=guest_id)  # TODO: нужен метод
             logger.info(f'[+] Create announcement <{_id}>')
         except exc.UniqueConstraintError:
             raise

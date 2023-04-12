@@ -13,7 +13,7 @@ PROMO_FIELD_LEN = 4096
 class EventType(models.TextChoices):
     WELCOME = 'welcome_message'
     NEW_CONTENT = 'new_content'
-    NEW_SCORE = 'new_likes'
+    NEW_LIKES = 'new_likes'
     PROMO = 'promo'
 
     ANNOUNCE_NEW = 'announce_new'

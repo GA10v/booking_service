@@ -2,7 +2,7 @@ from core.logger import get_logger
 from models.base import EventType
 from models.events import Event
 from models.payloads import payload
-from service.enrich import announce, booking, new_content, new_promo, new_review_likes, new_user, new_score
+from service.enrich import announce, booking, new_content, new_promo, new_review_likes, new_user, new_likes
 
 logger = get_logger(__name__)
 
@@ -31,6 +31,6 @@ async def get_payload(data: Event) -> payload:
         payload = booking.StatusBookingPayload(data)
     elif data.event_type == EventType.booking_new:
         payload = booking.NewBookingPayload(data)
-    elif data.event_type == EventType.new_score:
-        payload = new_score.NewScorePayload(data)
+    elif data.event_type == EventType.new_likes:
+        payload = new_likes.NewScorePayload(data)
     return await payload.payload()
