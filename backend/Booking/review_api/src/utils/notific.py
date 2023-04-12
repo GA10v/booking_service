@@ -8,7 +8,7 @@ from src.core.config import settings
 from src.core.logger import get_logger
 from src.service.base import NoificationServiceBase
 from src.utils.auth import _headers
-from src.models import reviews, noitifciations
+from src.models import noitifciations
 
 logger = get_logger(__name__)
 
@@ -18,7 +18,7 @@ class NotificApiRepository(NoificationServiceBase):
         self.notific_endpoint = f'{settings.nptific.uri}send'
         self._headers = _headers()
 
-    async def send(self, payload: reviews.NewReviewsLikes) -> None:
+    async def send(self, payload: noitifciations.NewReviewsLikes) -> None:
         event_type = 'NewReview'  # is this right?
         event = noitifciations.NotificEvent(
             notification_id=str(uuid4()),
