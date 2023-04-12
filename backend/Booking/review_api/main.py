@@ -7,8 +7,8 @@ from fastapi import FastAPI
 from motor import motor_asyncio
 
 from src.api.v1 import reviews
-from src.core import settings
-from src.core import LOGGING
+from src.core.config import settings
+from src.core.logger import LOGGING
 from src.middleware.auth import auth_middleware
 from src.middleware.logger import logging_middleware
 from src.utils.sentry import init_sentry
