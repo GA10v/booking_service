@@ -1,4 +1,3 @@
-import json
 import logging
 from functools import lru_cache
 from uuid import uuid4
@@ -35,7 +34,7 @@ class BookingService:
         logger.info(f'Response: {response.text} status {response.status_code}')
         result = None
         if response.json():
-            result = AnnouncementToReviewResponse(json.loads(response.json()))
+            result = AnnouncementToReviewResponse(response.json())
 
         return result
 
