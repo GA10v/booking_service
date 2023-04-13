@@ -12,7 +12,8 @@ from middleware.auth import auth_middleware
 from middleware.logger import logging_middleware
 from utils.sentry import init_sentry
 
-init_sentry()
+if settings.logging.SENTRY_DSN:
+    init_sentry()
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
