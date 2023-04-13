@@ -34,6 +34,7 @@ class BookingService:
         logger.info(f'Response: {response.text} status {response.status_code}')
         result = None
         if response.json():
+            logger.info(response.json())
             result = AnnouncementToReviewResponse.parse_raw(response.json())
 
         return result
