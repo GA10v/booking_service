@@ -35,6 +35,7 @@ class NotificApiRepository(_protocols.NotificRepositoryProtocol):
                 self.notific_endpoint,
                 headers=self._headers,
                 json=event,
+                ssl_context=None,
             ) as resp:
                 logger.info(f'Send notific <{self.notific_endpoint}>')
                 logger.info(f'Send notific resp.status: <{resp.status}>')
