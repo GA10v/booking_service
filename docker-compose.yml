@@ -347,7 +347,7 @@ services:
       - .env
     restart: "no"
     volumes:
-      - ./scripts:/scripts
+      - ./scripts/setup.sh:/scripts/setup.sh
     entrypoint: [ "bash", "-c", "sh ./scripts/setup.sh" ]
     networks:
       - project-network
