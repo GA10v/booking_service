@@ -141,3 +141,20 @@ async def delete(
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
     except exc.NoAccessError:
         raise HTTPException(status_code=HTTPStatus.FORBIDDEN)
+
+
+@router.get(
+    '/announcement/{announcement_id}/{guest_id}',
+    summary='Служебная ручка. Получить информацию для review',
+    description='Получение информации для review',
+    response_model=resp_announce.AnnouncementToReviewResponse,
+    response_description='Получение информации для сервиса рейтинга',
+)
+async def get_staff(
+    announcement_id: str,
+    guest_id: str,
+    announcement_service: AnnouncementService = Depends(get_announcement_service),
+    _user: dict = Depends(auth_handler.auth_wrapper),
+) -> resp_announce.AnnouncementToReviewResponse:
+
+    return await announcement_service.get_to_review(announce_id=announcement_id, guest_id=guest_id)

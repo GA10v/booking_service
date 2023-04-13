@@ -112,9 +112,9 @@ class BookingService:
             guest_name=_guest.user_name,
             author_status=_booking.author_status,
             guest_status=_booking.guest_status,
-            author_rating=_author_rating.user_raring,
+            author_rating=_author_rating.user_rating,
             event_time=_booking.event_time,
-            guest_rating=_guest_rating.user_raring,
+            guest_rating=_guest_rating.user_rating,
         )
 
     async def create(

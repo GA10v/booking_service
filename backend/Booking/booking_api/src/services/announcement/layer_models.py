@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 
 class RatingToResponse(BaseModel):
-    user_raring: float
+    user_rating: float
 
 
 class UserToResponse(BaseModel):
@@ -100,3 +100,12 @@ class PGBooking(BaseModel):
     author_status: bool | None
     guest_status: bool | None
     event_time: datetime
+
+
+class AnnouncementToReviewResponse(BaseModel):
+    author_id: str | UUID
+    guest_id: str | UUID
+    announcement_id: str | UUID
+    author_name: str
+    guest_name: str
+    announcement_title: str

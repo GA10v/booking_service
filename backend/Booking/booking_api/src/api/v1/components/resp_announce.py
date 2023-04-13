@@ -54,3 +54,12 @@ class DetailAnnouncementResponse(BaseModel):
     guest_list: list[BookingToDetailResponse]
     author_rating: float
     duration: int
+
+
+class AnnouncementToReviewResponse(BaseModel):
+    author_id: str | UUID
+    guest_id: str | UUID
+    announcement_id: str | UUID
+    author_name: str
+    guest_name: str
+    announcement_title: str

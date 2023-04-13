@@ -126,7 +126,7 @@ class AnnouncementService:
             event_location=_announce.event_location,
             author_name=_user.user_name,
             guest_list=_guests,
-            author_rating=_rating.user_raring,
+            author_rating=_rating.user_rating,
             movie_title=_movie.movie_title,
             duration=_movie.duration,
         )
