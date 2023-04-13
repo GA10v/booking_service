@@ -29,6 +29,7 @@ class BookingService:
 
     async def get_booking(self, announcement_id: str, guest_id: str) -> AnnouncementToReviewResponse:
         url = f'{self.base_url}/{announcement_id}/{guest_id}'
+        logger.info(url)
         async with httpx.AsyncClient() as client:
             response = await client.get(url, headers=_headers())
         logger.info(f'Response: {response.text} status {response.status_code}')
