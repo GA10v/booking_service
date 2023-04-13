@@ -39,7 +39,7 @@ class RatingMockRepository(_protocols.RatingRepositoryProtocol):
         return data
 
 
-class RatingAPIReRepository(_protocols.RatingRepositoryProtocol):
+class RatingAPIRepository(_protocols.RatingRepositoryProtocol):
     def __init__(self) -> None:
         self.redis = get_cache()
         self.rating_endpoint = settings.rating.uri  # TODO
@@ -77,4 +77,4 @@ class RatingAPIReRepository(_protocols.RatingRepositoryProtocol):
 @lru_cache()
 def get_rating_repo() -> _protocols.RatingRepositoryProtocol:
     return RatingMockRepository()
-    return RatingAPIReRepository()
+    return RatingAPIRepository()
