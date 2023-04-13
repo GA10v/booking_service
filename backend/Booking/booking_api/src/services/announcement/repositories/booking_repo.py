@@ -75,7 +75,7 @@ class BookingSqlachemyRepository(_protocols.BookingRepositoryProtocol):
             booking_id=_booking.id,
             guest_id=_booking.guest_id,
             guest_name=_guest.user_name,
-            guest_rating=_guest_rating.user_raring,
+            guest_rating=_guest_rating.user_rating,
             guest_status=_booking.guest_status,
             author_status=_booking.author_status,
         )
