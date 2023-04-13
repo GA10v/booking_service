@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 
 class RatingToResponse(BaseModel):
-    user_raring: float
+    user_rating: float
 
 
 class UserToResponse(BaseModel):
