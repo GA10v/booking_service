@@ -32,7 +32,7 @@ class RatingMockRepository(_protocols.RatingRepositoryProtocol):
             logger.info('RatingToResponse from cache')
             return layer_models.RatingToResponse(**_cache)
         data = layer_models.RatingToResponse(
-            user_raring=round(random.uniform(0.0, 10.0), 1),
+            user_rating=round(random.uniform(0.0, 10.0), 1),
         )
         await self._set_to_cache(f'rating:{user_id}', data.dict())
         logger.info('RatingToResponse set to cache')
@@ -64,22 +64,17 @@ class RatingAPIReRepository(_protocols.RatingRepositoryProtocol):
                 ) as resp:
                     _rating = await resp.json()
                     logger.debug(f'Get rating <{user_id}>: <{_rating}>')
-                    # if settings.debug.DEBUG:  # noqa: E800
-                    #     _duration = 0  # noqa: E800
 
-        except ClientError as ex:  # noqa: F841
+        except ClientError as ex:
             logger.debug(f'Except <{ex}>')
             return None
-        # data = layer_models.MovieToResponse(  # noqa: E800
-        #     movie_id=str(movie_id),  # noqa: E800
-        #     movie_title=_movie.get('title'),  # noqa: E800
-        #     duration=_duration,  # noqa: E800
-        # )  # noqa: E800
-        # await self._set_to_cache(f'rating:{user_id}', data.dict())  # noqa: E800
-        # logger.info('RatingToResponse set to cache')  # noqa: E800
-        # return data  # noqa: E800
+        data = layer_models.RatingToResponse(user_rating=_rating['score_average'])
+        await self._set_to_cache(f'rating:{user_id}', data.dict())
+        logger.info('RatingToResponse set to cache')
+        return data
 
 
 @lru_cache()
 def get_rating_repo() -> _protocols.RatingRepositoryProtocol:
     return RatingMockRepository()
+    return RatingAPIReRepository()

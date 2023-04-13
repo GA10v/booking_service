@@ -163,7 +163,7 @@ class RatingSettings(BaseConfig):
         return f'http://{self.HOST}:{self.PORT}{self.RATING_PREFIX}'
 
     class Config:
-        env_prefix = '_FASTAPI_'
+        env_prefix = 'REVIEW_API'
 
 
 class ProjectSettings(BaseConfig):
