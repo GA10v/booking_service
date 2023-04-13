@@ -2,22 +2,23 @@ import logging
 import uuid
 from datetime import datetime as dt
 
-from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 
-from src.models.reviews import Review, ReviewIncoming, Event, UserReviewAvg
+from src.core.config import settings
 from src.models.announce import AnnouncementToReviewResponse
 from src.models.noitifciations import NewReviewsLikes
-from src.service.review import ReviewService, get_review_service
+from src.models.reviews import Event, Review, ReviewIncoming, UserReviewAvg
 from src.service.booking import BookingService, get_booking_service
+from src.service.review import ReviewService, get_review_service
 from src.utils import auth
-from src.core.config import settings
-
+from src.utils.notific import NotificApiRepository, get_notific_repo
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 auth_handler = auth.AuthHandler()
 REVIEW_SERVICE_INSTANCE = Depends(get_review_service)
-BOOKING_SERVCIE_INSTANCE = Depends(get_booking_service)
+BOOKING_SERVICE_INSTANCE = Depends(get_booking_service)
+NOTIFIC_SERVICE_INSTANCE = Depends(get_notific_repo)
 
 
 @router.post(
@@ -33,7 +34,8 @@ async def create_review(
     review: ReviewIncoming,
     _user: dict = Depends(auth_handler.auth_wrapper),
     review_service: ReviewService = REVIEW_SERVICE_INSTANCE,
-    booking_service: BookingService = BOOKING_SERVCIE_INSTANCE,
+    booking_service: BookingService = BOOKING_SERVICE_INSTANCE,
+    notific_service: NotificApiRepository = NOTIFIC_SERVICE_INSTANCE,
 ) -> Review:
     booking: AnnouncementToReviewResponse = await booking_service.get_booking(announcement_id)
     review = Review(
@@ -54,7 +56,7 @@ async def create_review(
         ),
         guest_name=_user.get('user_id'),
     )
-    await review_service.new_likes_create(notification)
+    await notific_service.send(notification)
     return review
 
 

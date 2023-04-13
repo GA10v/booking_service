@@ -2,14 +2,16 @@ import logging
 from functools import lru_cache
 
 from fastapi import Depends
+
 from src.db.models import base_classes
 from src.db.mongo_storage import get_mongo
 from src.db.redis_storage import get_redis
 from src.models.reviews import Event, Review, UserReviewAvg
-from src.utils.notific import NotificApiRepository
+from src.utils.notific import NotificApiRepository, get_notific_repo
 
 REDIS_INSTANCE = Depends(get_redis)
 MONGO_INSTANCE = Depends(get_mongo)
+NOTIFIC_INSTANCE = Depends(get_notific_repo)
 RESULTS_COUNT = 100
 
 logger = logging.getLogger(__name__)
@@ -63,5 +65,6 @@ class ReviewService:
 def get_review_service(
     redis: base_classes.Cache = REDIS_INSTANCE,
     mongo: base_classes.Storage = MONGO_INSTANCE,
+    notific: NotificApiRepository = NOTIFIC_INSTANCE,
 ) -> ReviewService:
-    return ReviewService(redis=redis, mongo=mongo)
+    return ReviewService(redis=redis, mongo=mongo, notific=notific)
