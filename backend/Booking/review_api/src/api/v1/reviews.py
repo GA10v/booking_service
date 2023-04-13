@@ -37,7 +37,7 @@ async def create_review(
     booking_service: BookingService = BOOKING_SERVICE_INSTANCE,
     notific_service: NotificApiRepository = NOTIFIC_SERVICE_INSTANCE,
 ) -> Review:
-    booking: AnnouncementToReviewResponse = await booking_service.get_booking(announcement_id)
+    booking: AnnouncementToReviewResponse = await booking_service.get_booking(announcement_id, _user['user_id'])
     review = Review(
         **review.dict(),
         event_id=booking.announcement_id,
