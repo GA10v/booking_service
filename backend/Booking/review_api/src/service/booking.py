@@ -24,7 +24,7 @@ def _headers() -> str:
 class BookingService:
     def __init__(self):
         self.base_url = (
-            f'http://{settings.fastapi.HOST}:{settings.fastapi.PORT}/' f'{settings.fastapi.API_PREFIX}/announcement'
+            f'http://{settings.fastapi.HOST}:{settings.fastapi.PORT}/{settings.fastapi.API_PREFIX}/announcement'
         )
 
     async def get_booking(self, announcement_id: str, guest_id: str) -> AnnouncementToReviewResponse:
