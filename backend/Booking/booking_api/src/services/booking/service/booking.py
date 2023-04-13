@@ -8,7 +8,7 @@ from fastapi import Depends
 import utils.exceptions as exc
 from core.config import settings
 from core.logger import get_logger
-from db.redis import CacheProtocol, RedisCache, get_cache
+from db.redis import CacheProtocol, get_cache
 from services.booking import layer_models, layer_payload
 from services.booking.repositories import (
     _protocols,
@@ -38,7 +38,7 @@ class BookingService:
         rating_repo: _protocols.RatingRepositoryProtocol,
         announce_repo: _protocols.AnnouncementRepositoryProtocol,
         notific_repo: _protocols.NotificRepositoryProtocol,
-        cache: RedisCache,
+        cache: CacheProtocol,
     ) -> None:
         self.repo = repo
         self.user_repo = user_repo

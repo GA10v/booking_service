@@ -11,7 +11,7 @@ from core.config import settings
 from core.logger import get_logger
 from db.models.announcement import Announcement
 from db.pg_db import AsyncSession, get_session
-from db.redis import get_cache
+from db.redis import CacheProtocol, get_cache
 from services.announcement import layer_models, layer_payload
 from services.announcement.repositories import _protocols
 
@@ -19,9 +19,9 @@ logger = get_logger(__name__)
 
 
 class AnnounceSqlachemyRepository(_protocols.AnnouncementRepositoryProtocol):
-    def __init__(self, db_session: AsyncSession) -> None:
+    def __init__(self, db_session: AsyncSession, cache: CacheProtocol) -> None:
         self.db = db_session
-        self.redis = get_cache()
+        self.redis = cache
         logger.info('AnnounceSqlachemyRepository init ...')
 
     async def _get_from_cache(self, key: str) -> Any:
@@ -163,4 +163,5 @@ class AnnounceSqlachemyRepository(_protocols.AnnouncementRepositoryProtocol):
 def get_announcement_repo(
     db_session: AsyncSession = Depends(get_session),
 ) -> _protocols.AnnouncementRepositoryProtocol:
-    return AnnounceSqlachemyRepository(db_session)
+    cache: CacheProtocol = get_cache()
+    return AnnounceSqlachemyRepository(db_session, cache)

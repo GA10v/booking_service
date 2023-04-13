@@ -9,7 +9,7 @@ from fastapi import Depends
 import utils.exceptions as exc
 from core.config import settings
 from core.logger import get_logger
-from db.redis import CacheProtocol, RedisCache, get_cache
+from db.redis import CacheProtocol, get_cache
 from services.announcement import layer_models, layer_payload
 from services.announcement.repositories import (
     _protocols,
@@ -34,7 +34,7 @@ class AnnouncementService:
         rating_repo: _protocols.RatingRepositoryProtocol,
         booking_repo: _protocols.BookingRepositoryProtocol,
         notific_repo: _protocols.NotificRepositoryProtocol,
-        cache: RedisCache,
+        cache: CacheProtocol,
     ):
         self.repo = repo
         self.user_repo = user_repo

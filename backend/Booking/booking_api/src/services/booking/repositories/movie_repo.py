@@ -7,7 +7,7 @@ from aiohttp.client_exceptions import ClientError
 
 from core.config import settings
 from core.logger import get_logger
-from db.redis import get_cache
+from db.redis import CacheProtocol, get_cache
 from services.booking import layer_models
 from services.booking.repositories import _protocols
 from utils.auth import _headers
@@ -16,10 +16,10 @@ logger = get_logger(__name__)
 
 
 class MovieMockRepository(_protocols.MovieRepositoryProtocol):
-    def __init__(self) -> None:
+    def __init__(self, cache: CacheProtocol) -> None:
         self.movie_endpoint = f'{settings.movie_api.uri}movie/'
         self._headers = _headers()
-        self.redis = get_cache()
+        self.redis = cache
 
         logger.info('MovieMockRepository init ...')
 
@@ -60,4 +60,5 @@ class MovieMockRepository(_protocols.MovieRepositoryProtocol):
 
 @lru_cache()
 def get_movie_repo() -> _protocols.MovieRepositoryProtocol:
-    return MovieMockRepository()
+    cache: CacheProtocol = get_cache()
+    return MovieMockRepository(cache)

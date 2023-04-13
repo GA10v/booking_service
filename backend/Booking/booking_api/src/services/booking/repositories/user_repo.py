@@ -7,7 +7,7 @@ from aiohttp.client_exceptions import ClientError
 
 from core.config import settings
 from core.logger import get_logger
-from db.redis import get_cache
+from db.redis import CacheProtocol, get_cache
 from services.booking import layer_models
 from services.booking.repositories import _protocols
 from utils.auth import _headers
@@ -16,11 +16,11 @@ logger = get_logger(__name__)
 
 
 class UserMockRepository(_protocols.UserRepositoryProtocol):
-    def __init__(self) -> None:
+    def __init__(self, cache: CacheProtocol) -> None:
         self.auth_endpoint = f'{settings.auth.uri}user_info/'
         self.ugc_endpoint = f'{settings.ugc.uri}subscribers/'
         self._headers = _headers()
-        self.redis = get_cache()
+        self.redis = cache
 
         logger.info('UserMockRepository init ...')
 
@@ -64,4 +64,5 @@ class UserMockRepository(_protocols.UserRepositoryProtocol):
 
 @lru_cache()
 def get_user_repo() -> _protocols.UserRepositoryProtocol:
-    return UserMockRepository()
+    cache: CacheProtocol = get_cache()
+    return UserMockRepository(cache)
