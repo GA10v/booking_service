@@ -800,6 +800,7 @@ COPY public.django_admin_log (id, action_time, object_id, object_repr, action_fl
 16	2023-04-08 01:30:23.585245+00	f3ad2c61-48cf-4608-884c-ddd979b630f4	ad729eba-87dd-4c03-a8d9-83ed2d9afcb1	1	[{"added": {}}]	7	1
 17	2023-04-08 01:30:32.668945+00	313a6d6a-afd4-4db4-a05b-85fb578af38f	1294a721-6339-40f6-9dbb-84ff37fc791e	1	[{"added": {}}]	7	1
 18	2023-04-08 01:30:46.590444+00	932a0415-75d1-4f13-a458-094d6d89d408	9526d218-04cd-4bd5-93c8-ec3830e70875	1	[{"added": {}}]	7	1
+19	2023-04-13 10:54:32.443615+00	a7bd4502-f89a-4b63-ace6-570472de3e9d	new_likes:<a7bd4502-f89a-4b63-ace6-570472de3e9d>	2	[{"changed": {"fields": ["Text msg"]}}]	9	1
 \.
 
 
@@ -833,7 +834,7 @@ COPY public.django_celery_beat_intervalschedule (id, every, period) FROM stdin;
 --
 
 COPY public.django_celery_beat_periodictask (id, name, task, args, kwargs, queue, exchange, routing_key, expires, enabled, last_run_at, total_run_count, date_changed, description, crontab_id, interval_id, solar_id, one_off, start_time, priority, headers, clocked_id, expire_seconds) FROM stdin;
-1	celery.backend_cleanup	celery.backend_cleanup	[]	{}	\N	\N	\N	\N	t	\N	0	2023-04-11 06:44:10.224969+00		1	\N	\N	f	\N	\N	{}	\N	43200
+1	celery.backend_cleanup	celery.backend_cleanup	[]	{}	\N	\N	\N	\N	t	\N	0	2023-04-13 10:49:45.673057+00		1	\N	\N	f	\N	\N	{}	\N	43200
 \.
 
 
@@ -842,7 +843,7 @@ COPY public.django_celery_beat_periodictask (id, name, task, args, kwargs, queue
 --
 
 COPY public.django_celery_beat_periodictasks (ident, last_update) FROM stdin;
-1	2023-04-11 06:44:10.226071+00
+1	2023-04-13 10:49:45.674152+00
 \.
 
 
@@ -980,7 +981,6 @@ COPY public.notifications_task (created, modified, pkid, title, event_type, user
 
 COPY public.notifications_template (created, modified, pkid, title, event_type, subject, template_files, text_msg) FROM stdin;
 2023-04-08 01:15:51.682288+00	2023-04-08 01:15:51.682317+00	e8051481-c4d9-4649-9e92-011e0132cafa	New content	new_content	New content	templates/new_content	Здравстувуйте, {{user_name}}! Мы рады сообщить, что в PRACTIX уже доступен {{movie_title}}, который вы так ждали!
-2023-04-08 01:16:14.505935+00	2023-04-08 01:16:14.505956+00	a7bd4502-f89a-4b63-ace6-570472de3e9d	New Likes	new_likes	New Likes	templates/new_likes	Здравстувуйте, {{user_name}}! Мы рады сообщить, что ваш обзор на {{movie_title}}, собрал уже {{likes}} положительных оценок!
 2023-04-08 01:16:38.600091+00	2023-04-08 01:16:38.600113+00	92b89143-a5bc-42a3-b9d6-6ad3c9f06de5	promo	promo	promo	templates/new_promo	Здравстувуйте, {{user_name}}! {{text_to_promo}}
 2023-04-08 01:16:55.098486+00	2023-04-08 01:16:55.098506+00	a7663943-1f5c-4573-bc71-17cecbd46fb8	Welcome	welcome_message	Welcome	templates/welcome	-
 2023-04-08 01:18:52.521995+00	2023-04-08 01:18:52.522011+00	45ee664f-3230-4e29-8ddb-43bf66e891cc	announce_delete	announce_delete	announce_delete	templates/announce_delete	Здравстувуйте, {{user_name}}! Ваш знакомый {{author_name}} решил отменить свое событие {{announce_title}} Мы можем найти для вас новое событие {{link}}
@@ -990,6 +990,7 @@ COPY public.notifications_template (created, modified, pkid, title, event_type, 
 2023-04-08 01:22:57.153993+00	2023-04-08 01:22:57.154011+00	4aee1f43-3942-4313-a6cc-9da18ecd9b14	booking_delete	booking_delete	booking_delete	templates/booking_delete	Здравстувуйте, {{user_name}}! {{guest_name}} отказался от участия в {{announce_title}}
 2023-04-08 01:25:14.623389+00	2023-04-08 01:25:14.623412+00	91846a53-1745-4c64-b045-e890c10d7172	booking_new	booking_new	booking_new	templates/booking_new	Здравстувуйте, {{user_name}}! {{guest_name}} хочет посетить {{announce_title}} Для просмотра подробной информации {{link}}
 2023-04-08 01:26:29.795012+00	2023-04-08 01:26:29.795033+00	f454a23d-3e76-4ba1-8d98-d22f3d085478	booking_status	booking_status	booking_status	templates/booking_status	Здравстувуйте, {{user_name}}! {{another_name}} внес изменения в заявке для {{announce_title}} Для просмотра подробной информации {{link}}
+2023-04-08 01:16:14.505935+00	2023-04-13 10:54:32.441577+00	a7bd4502-f89a-4b63-ace6-570472de3e9d	New Likes	new_likes	New Likes	templates/new_likes	Здравствуйте, {{author_name}}! Мы рады сообщить, что ваше событие {{announce_title}}, получило отзыв от гостя {{guest_name}}! Подробная информация {{link}}
 \.
 
 
@@ -1056,7 +1057,7 @@ SELECT pg_catalog.setval('public.auth_permission_id_seq', 64, true);
 -- Name: django_admin_log_id_seq; Type: SEQUENCE SET; Schema: public; Owner: guest
 --
 
-SELECT pg_catalog.setval('public.django_admin_log_id_seq', 18, true);
+SELECT pg_catalog.setval('public.django_admin_log_id_seq', 19, true);
 
 
 --
