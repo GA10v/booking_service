@@ -34,6 +34,10 @@ class FastapiSettings(BaseConfig):
     class Config:
         env_prefix = 'FASTAPI_'
 
+    @property
+    def uri(self):
+        return f'http://{self.HOST}:{self.PORT}{self.API_PREFIX}'
+
 
 class ReveiwAPISettings(BaseConfig):
     HOST: str = 'localhost'
