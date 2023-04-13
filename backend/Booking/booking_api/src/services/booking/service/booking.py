@@ -8,7 +8,7 @@ from fastapi import Depends
 import utils.exceptions as exc
 from core.config import settings
 from core.logger import get_logger
-from db.redis import CacheProtocol, RedisCache, get_cache
+from db.redis import CacheProtocol, get_cache
 from services.booking import layer_models, layer_payload
 from services.booking.repositories import (
     _protocols,
@@ -38,7 +38,7 @@ class BookingService:
         rating_repo: _protocols.RatingRepositoryProtocol,
         announce_repo: _protocols.AnnouncementRepositoryProtocol,
         notific_repo: _protocols.NotificRepositoryProtocol,
-        cache: RedisCache,
+        cache: CacheProtocol,
     ) -> None:
         self.repo = repo
         self.user_repo = user_repo
@@ -81,7 +81,11 @@ class BookingService:
         """
         try:
             prem: Permission = await self._check_permissions(user, booking_id)
-            if prem.value in [0, 1, 2]:
+            if prem.value in [
+                Permission.super.value,
+                Permission.author.value,
+                Permission.guest.value,
+            ]:
                 _booking: layer_models.PGBooking = await self.repo.get_by_id(booking_id)
         except (exc.NotFoundError, exc.NoAccessError):
             raise
@@ -211,7 +215,10 @@ class BookingService:
             ):  # noqa: W503
                 return
             # sudo не может влиять на статус заявки
-            if perm.value not in [1, 2]:
+            if perm.value not in [
+                Permission.author.value,
+                Permission.guest.value,
+            ]:
                 raise exc.NoAccessError
             await self.repo.update(
                 user_id=user.get('user_id'),
@@ -269,7 +276,10 @@ class BookingService:
         try:
             prem: Permission = await self._check_permissions(user, booking_id)
             # только sudo и гость могут удалить заявку
-            if prem.value not in [0, 2]:
+            if prem.value not in [
+                Permission.super.value,
+                Permission.guest.value,
+            ]:
                 raise exc.NoAccessError
             await self.repo.delete(booking_id=booking_id)
         except (exc.NoAccessError, exc.NotFoundError):

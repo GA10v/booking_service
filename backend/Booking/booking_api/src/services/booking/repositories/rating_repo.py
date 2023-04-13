@@ -8,7 +8,7 @@ from aiohttp.client_exceptions import ClientError
 
 from core.config import settings
 from core.logger import get_logger
-from db.redis import get_cache
+from db.redis import CacheProtocol, get_cache
 from services.booking import layer_models
 from services.booking.repositories import _protocols
 from utils.auth import _headers
@@ -17,8 +17,8 @@ logger = get_logger(__name__)
 
 
 class RatingMockRepository(_protocols.RatingRepositoryProtocol):
-    def __init__(self) -> None:
-        self.redis = get_cache()
+    def __init__(self, cache: CacheProtocol) -> None:
+        self.redis = cache
         logger.info('RatingMockRepository init ...')
 
     async def _get_from_cache(self, key: str) -> Any:
@@ -40,8 +40,8 @@ class RatingMockRepository(_protocols.RatingRepositoryProtocol):
 
 
 class RatingAPIRepository(_protocols.RatingRepositoryProtocol):
-    def __init__(self) -> None:
-        self.redis = get_cache()
+    def __init__(self, cache: CacheProtocol) -> None:
+        self.redis = cache
         self.rating_endpoint = settings.rating.uri  # TODO
         self._headers = _headers()
         logger.info('RatingMockRepository init ...')
@@ -76,5 +76,6 @@ class RatingAPIRepository(_protocols.RatingRepositoryProtocol):
 
 @lru_cache()
 def get_rating_repo() -> _protocols.RatingRepositoryProtocol:
-    return RatingMockRepository()
-    return RatingAPIRepository()
+    cache: CacheProtocol = get_cache()
+    return RatingMockRepository(cache)
+    return RatingAPIRepository(cache)

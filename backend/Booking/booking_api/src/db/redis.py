@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 from functools import lru_cache
 from typing import Any
 
-import aioredis
 import orjson
+from redis import asyncio as aioredis
 
 from core.config import settings
 

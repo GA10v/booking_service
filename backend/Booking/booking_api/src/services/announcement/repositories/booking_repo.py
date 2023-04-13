@@ -8,7 +8,7 @@ from sqlalchemy import select
 from core.logger import get_logger
 from db.models.booking import Booking
 from db.pg_db import AsyncSession, get_session
-from db.redis import get_cache
+from db.redis import CacheProtocol, get_cache
 from services.announcement import layer_models
 from services.announcement.repositories import _protocols, rating_repo, user_repo
 
@@ -16,10 +16,10 @@ logger = get_logger(__name__)
 
 
 class BookingMockRepository(_protocols.BookingRepositoryProtocol):
-    def __init__(self) -> None:
+    def __init__(self, cache: CacheProtocol) -> None:
         self.user_repo = user_repo.get_user_repo()
         self.rating_repo = rating_repo.get_rating_repo()
-        self.redis = get_cache()
+        self.redis = cache
         logger.info('BookingMockRepository init ...')
 
     async def _get_from_cache(self, key: str) -> Any:
@@ -41,11 +41,11 @@ class BookingMockRepository(_protocols.BookingRepositoryProtocol):
 
 
 class BookingSqlachemyRepository(_protocols.BookingRepositoryProtocol):
-    def __init__(self, db_session: AsyncSession) -> None:
+    def __init__(self, db_session: AsyncSession, cache: CacheProtocol) -> None:
         self.user_repo = user_repo.get_user_repo()
         self.rating_repo = rating_repo.get_rating_repo()
         self.db = db_session
-        self.redis = get_cache()
+        self.redis = cache
         logger.info('BookingSqlachemyRepository init ...')
         ...
 
@@ -122,4 +122,5 @@ class BookingSqlachemyRepository(_protocols.BookingRepositoryProtocol):
 def get_booking_repo(
     db_session: AsyncSession = Depends(get_session),
 ) -> _protocols.BookingRepositoryProtocol:
-    return BookingSqlachemyRepository(db_session)
+    cache: CacheProtocol = get_cache()
+    return BookingSqlachemyRepository(db_session, cache)

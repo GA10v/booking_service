@@ -1,5 +1,7 @@
 """Module to store settings for django admin panel."""
 from pathlib import Path
+from random import choice
+from string import ascii_letters
 
 from pydantic import BaseSettings
 
@@ -65,7 +67,7 @@ class DjangoSettings(BaseConfig):
 
 
 class JWTSettings(BaseConfig):
-    SECRET_KEY: str = '245585dbb5cbe2f151742298d61d364880575bff0bdcbf4ae383f0180e7e47dd'
+    SECRET_KEY: str = ''.join(choice(ascii_letters) for _ in range(200))
     JWT_TOKEN_LOCATION: list = ['headers']
     ALGORITHM: str = 'HS256'
 
