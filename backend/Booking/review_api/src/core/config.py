@@ -88,6 +88,19 @@ class RedisSettings(BaseConfig):
         env_prefix = 'REDIS_'
 
 
+class NotificationSettings(BaseConfig):
+    HOST: str = 'localhost'
+    PORT: int = 8070
+    NOTIFIC_PREFIX: str = '/app/v1/notification/'
+
+    @property
+    def uri(self):
+        return f'http://{self.HOST}:{self.PORT}{self.NOTIFIC_PREFIX}'
+
+    class Config:
+        env_prefix = 'NOTIFIC_FASTAPI_'
+
+
 class ProjectSettings(BaseConfig):
     PROJECT_NAME: str = 'Graduate_work'
     BASE_DIR = Path(__file__).parent.parent
@@ -98,6 +111,7 @@ class ProjectSettings(BaseConfig):
     mongo: MongoSettings = MongoSettings()
     redis: RedisSettings = RedisSettings()
     review_api: ReveiwAPISettings = ReveiwAPISettings()
+    notific: NotificationSettings = NotificationSettings()
 
 
 settings = ProjectSettings()

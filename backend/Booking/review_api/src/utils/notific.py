@@ -6,16 +6,16 @@ import aiohttp
 
 from src.core.config import settings
 from src.core.logger import get_logger
+from src.models import noitifciations
 from src.service.base import NoificationServiceBase
 from src.utils.auth import _headers
-from src.models import noitifciations
 
 logger = get_logger(__name__)
 
 
 class NotificApiRepository(NoificationServiceBase):
     def __init__(self) -> None:
-        self.notific_endpoint = f'{settings.nptific.uri}send'
+        self.notific_endpoint = f'{settings.notific.uri}send'
         self._headers = _headers()
 
     async def send(self, payload: noitifciations.NewReviewsLikes) -> None:
