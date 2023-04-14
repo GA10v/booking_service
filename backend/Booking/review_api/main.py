@@ -16,6 +16,8 @@ from src.utils.sentry import init_sentry
 
 init_sentry()
 
+logger = logging.getLogger(__name__)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -24,6 +26,7 @@ async def lifespan(app: FastAPI):
         decode_responses=True,
     )
     redis_storage.redis = redis_storage.RedisStorage(redis_instance)
+    logger.info(f'Mongo uri {settings.mongo.uri}')
     mongo_instance = motor_asyncio.AsyncIOMotorClient(settings.mongo.uri)
     mongo_storage.mongo = mongo_storage.MongoStorage(mongo_instance)
     yield
