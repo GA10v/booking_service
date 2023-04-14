@@ -30,7 +30,7 @@ class BookingService:
         logger.info(url)
         async with httpx.AsyncClient() as client:
             response = await client.get(url, headers=_headers())
-        logger.info(f'Response: {response.text} status {response.status_code}')
+        logger.info(f'Response: {response.json()} status {response.status_code}')
         result = None
         if response.json():
             logger.info(response.json())
