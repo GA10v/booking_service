@@ -32,6 +32,11 @@ class NewAnnounce(BaseModel):
     user_id: str | UUID
 
 
+class NewScore(BaseModel):
+    announce_id: str | UUID
+    author_id: str | UUID
+
+
 class PutAnnounce(BaseModel):
     put_announce_id: str | UUID
     user_id: str | UUID

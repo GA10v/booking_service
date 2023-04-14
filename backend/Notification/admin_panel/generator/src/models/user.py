@@ -1,8 +1,7 @@
 from datetime import date, datetime
 
-from pydantic import BaseModel
-
 from generator.src.models.base import DeliveryType
+from pydantic import BaseModel
 
 
 class User(BaseModel):

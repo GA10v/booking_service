@@ -30,3 +30,7 @@ services:
   redis:
     ports:
       - 6379:6379
+
+  booking_review_api:
+    ports:
+      - 8084:8084

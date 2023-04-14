@@ -19,6 +19,7 @@ psycopg2-binary = "^2.9.5"
 databases = "^0.7.0"
 aioredis = "^2.0.1"
 pytz = "^2023.3"
+fastapi = "^0.95.0"
 
 
 [tool.poetry.dev-dependencies]

@@ -171,3 +171,4 @@ services:
       retries: 5
     networks:
       - project-network
+

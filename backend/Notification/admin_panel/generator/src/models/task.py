@@ -1,6 +1,5 @@
-from pydantic import BaseModel
-
 from generator.src.models.base import EventType
+from pydantic import BaseModel
 
 
 class Task(BaseModel):
