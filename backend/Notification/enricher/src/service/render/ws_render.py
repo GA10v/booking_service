@@ -10,9 +10,10 @@ class TextRender(RenderProtocol):
 
         elif isinstance(data, payloads.NewReviewsLikesContext):
             return (
-                template.text_msg.replace('{{user_name}}', data.user_name)
-                .replace('{{movie_title}}', data.movie_title)
-                .replace('{{likes}}', str(data.likes))
+                template.text_msg.replace('{{author_name}}', data.author_name)
+                .replace('{{announce_title}}', data.announce_title)
+                .replace('{{guest_name}}', data.guest_name)
+                .replace('{{link}}', data.link)
             )
 
         elif isinstance(data, payloads.NewContentContext):

@@ -11,10 +11,9 @@ class NewUser(BaseModel):
 
 
 class NewReviewsLikes(BaseModel):
-    review_id: str
-    author_id: str
-    movie_id: str
-    likes: int
+    author_id: str | UUID
+    guest_id: str | UUID
+    announcement_id: str | UUID
 
 
 class NewContent(BaseModel):

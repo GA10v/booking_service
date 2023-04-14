@@ -1,12 +1,15 @@
+from datetime import datetime
+
 import aiohttp
 from aiohttp.client_exceptions import ClientError
+
+from core.config import settings
+from core.logger import get_logger
+from models import payloads
 from models.events import Event
 from models.payloads import NewReviewsLikesContext
 from service.enrich.protocol import PayloadsProtocol
 from utils.auth import _headers
-
-from core.config import settings
-from core.logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -15,9 +18,16 @@ class NewReviewLikesPayloads(PayloadsProtocol):
     def __init__(self, data: Event) -> None:
         self.data = data
         self.auth_endpoint = f'{settings.auth.uri}user_info/'
-        self.admin_panel_endpoint = f'{settings.admin_panel.uri}movie/'
-        self.ugc_endpoint = f'{settings.ugc.uri}review_info/'
+        self.booking_endpoint = settings.booking.announce_uri
+        self.url_short_endpoint = settings.url_shortner.uri
         self._headers = _headers()
+
+    def get_data_to_short(self, announce_id) -> payloads.UserShortContext:
+        return payloads.UserShortContext(
+            user_id=self.data.context.author_id,
+            created_at=datetime.now(),
+            url=f'{settings.url_shortner.REVIEW_URL}{announce_id}',
+        )
 
     async def payload(self) -> NewReviewsLikesContext:
         try:
@@ -26,32 +36,41 @@ class NewReviewLikesPayloads(PayloadsProtocol):
                     f'{self.auth_endpoint}{self.data.context.author_id}',
                     headers=self._headers,
                 ) as resp:
-                    _user = await resp.json()
+                    _author = await resp.json()
 
                 async with session.post(
-                    f'{self.admin_panel_endpoint}{self.data.context.movie_id}',
+                    f'{self.auth_endpoint}{self.data.context.guest_id}',
                     headers=self._headers,
                 ) as resp:
-                    _movie = await resp.json()
+                    _guest = await resp.json()
+
+                async with session.get(
+                    f'{self.booking_endpoint}{self.data.context.announcement_id}',
+                    headers=self._headers,
+                    ssl=False,
+                ) as resp:
+                    _announce = await resp.json()
 
                 async with session.post(
-                    f'{self.ugc_endpoint}{self.data.context.movie_id}/{self.data.context.author_id}/{self.data.context.review_id}',  # noqa: E501
+                    self.url_short_endpoint,
                     headers=self._headers,
+                    json=self.get_data_to_short(announce_id=self.data.context.announcement_id).dict(),
                 ) as resp:
-                    _review = await resp.json()
+                    _link = await resp.json()
 
         except ClientError as ex:  # noqa: F841
             logger.debug(f'Except <{ex}>')
             return None
 
         return NewReviewsLikesContext(
-            user_id=_user.get('user_id'),
-            user_name=_user.get('name'),
-            email=_user.get('email'),
-            phone_number=_user.get('phone_number'),
-            telegram_name=_user.get('telegram_name'),
-            delivery_type=_user.get('delivery_type'),
-            movie_title=_movie.get('title'),
-            review_id=_review.get('id'),
-            likes=_review.get('likes'),
+            user_id=_author.get('user_id'),
+            user_name=_author.get('name'),
+            email=_author.get('email'),
+            phone_number=_author.get('phone_number'),
+            telegram_name=_author.get('telegram_name'),
+            delivery_type=_author.get('delivery_type'),
+            author_name=_author.get('name'),
+            announce_title=_announce.get('title'),
+            guest_name=_guest.get('name'),
+            link=_link.get('url'),
         )
