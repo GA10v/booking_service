@@ -6,7 +6,7 @@ from pydantic import BaseSettings, MongoDsn
 
 class BaseConfig(BaseSettings):
     class Config:
-        env_file = Path(Path(__file__).parent.parent.parent.parent.parent.parent, '.env')
+        env_file = Path(Path(__file__).parent.parent.parent.parent.parent.parent, 'env')
         env_file_encoding = 'utf-8'
 
 
@@ -65,7 +65,7 @@ class JWTSettings(BaseConfig):
 
 
 class MongoSettings(BaseConfig):
-    HOST: str = 'localhost'
+    HOST: str
     PORT: int = 27017
     DB: str = 'booking_reviews'
     REVIEW_COLLECTION: str = 'reviews'
