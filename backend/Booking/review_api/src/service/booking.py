@@ -1,3 +1,4 @@
+import json
 import logging
 from functools import lru_cache
 from uuid import uuid4
@@ -31,7 +32,7 @@ class BookingService:
         async with httpx.AsyncClient() as client:
             response = await client.get(url, headers=_headers())
         logger.info(f'My repsonse: {response}')
-        logger.info(f'Response: {response.json()} status {response.status_code}')
+        logger.info(f'Response: {json.loads(response.json())} status {response.status_code}')
         result = None
         if response.json():
             logger.info(response.json())
