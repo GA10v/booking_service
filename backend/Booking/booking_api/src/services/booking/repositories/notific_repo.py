@@ -6,7 +6,7 @@ import aiohttp
 
 from core.config import settings
 from core.logger import get_logger
-from db.redis import get_cache
+from db.redis import CacheProtocol, get_cache
 from services.booking import layer_payload
 from services.booking.repositories import _protocols
 from utils.auth import _headers
@@ -15,10 +15,10 @@ logger = get_logger(__name__)
 
 
 class NotificApiRepository(_protocols.NotificRepositoryProtocol):
-    def __init__(self) -> None:
+    def __init__(self, cache: CacheProtocol) -> None:
         self.notific_endpoint = f'{settings.nptific.uri}send'
         self._headers = _headers()
-        self.redis = get_cache()
+        self.redis = cache
 
         logger.info('NotificApiRepository init ...')
 
@@ -42,4 +42,5 @@ class NotificApiRepository(_protocols.NotificRepositoryProtocol):
 
 @lru_cache()
 def get_notific_repo() -> _protocols.NotificRepositoryProtocol:
-    return NotificApiRepository()
+    cache: CacheProtocol = get_cache()
+    return NotificApiRepository(cache)

@@ -2,7 +2,7 @@ import json
 from abc import ABC, abstractmethod
 from enum import Enum, unique
 
-import aioredis
+from redis import asyncio as aioredis
 
 from core.config import settings
 
