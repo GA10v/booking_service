@@ -38,13 +38,13 @@ group Announcement Service
 
         Service -> Service
         note right
-            - self.repo.delete()
+            - self.repo.get_bi_id()
         end note
         end group
 
-        Service --> AnnounceRepo: - announce_id
-        group #B1C7E8 layer_repo
+        Service --> AnnounceRepo: - Announcement_id
 
+        group #B1C7E8 layer_repo
             AnnounceRepo -> AnnounceRepo
             note right
                 - create query
@@ -55,10 +55,63 @@ group Announcement Service
                 - self.db.execute()
             end note
 
-            AnnounceRepo --> DB_Booking: Delete announce_id
+            AnnounceRepo -> DB_Booking: Select Announcement(id)
+            DB_Booking -> AnnounceRepo: - layer_models.PGAnnouncement
             end group
+            AnnounceRepo -> Service: - layer_models.PGAnnouncement
 
-            Service -> API: - HTTPStatus
+            group #B2C7E8 layer_service
+                Service -> Service
+                note right
+                    - row check
+                end note
+                Service -> Service
+                note right
+                    - self.repo.delete()
+                end note
+                end group
 
-            API -> Client: - HTTPStatus
-            @enduml
+                Service --> AnnounceRepo: - announce_id
+                group #B1C7E8 layer_repo
+
+                    AnnounceRepo -> AnnounceRepo
+                    note right
+                        - create query
+                    end note
+
+                    AnnounceRepo -> AnnounceRepo
+                    note right
+                        - self.db.execute()
+                    end note
+
+                    AnnounceRepo --> DB_Booking: Delete announce_id
+                    end group
+
+                    group #B1C7E8 layer_service
+                        Service -> Service
+                        note right
+                            - create payload
+                        end note
+                        Service -> Service
+                        note right
+                            - self.notific_repo.send()
+                        end note
+                        end group
+                        Service -> Notification: - layer_models.Event
+                        group #B1C7E8 layer_repo
+                            Notification -> Notification
+                            note right
+                                - create Notific
+                            end note
+                            Notification -> Notification
+                            note right
+                                - send Notific
+                            end note
+
+                            end group
+                            end group
+
+                            Service -> API: - HTTPStatus
+
+                            API -> Client: - HTTPStatus
+                            @enduml
