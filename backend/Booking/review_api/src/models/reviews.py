@@ -12,11 +12,13 @@ class ReviewBase(DefaultModel):
 
     guest_id: str | UUID
     event_id: str | UUID
+    author_id: str | UUID
 
     def dict(self, *args, **kwargs) -> dict:
         _dict: dict = super().dict(*args, **kwargs)
         _dict['guest_id'] = str(_dict['guest_id'])
         _dict['event_id'] = str(_dict['event_id'])
+        _dict['author_id'] = str(_dict['author_id'])
         return _dict
 
 

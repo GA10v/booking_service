@@ -45,6 +45,7 @@ async def create_review(
         created=dt.utcnow(),
         modified=dt.utcnow(),
         id=uuid.uuid4(),
+        author_id=booking.get('author_id'),
     )
     await review_service.add_review(review)
     notification: NewReviewsLikes = NewReviewsLikes(
