@@ -53,11 +53,12 @@
 6. Полученить access_jwt_token командой:
    `$ python3 jwt_token.py`
 7. Перейти к документации Booking API по url: `http://localhost:8080/api/openapi`
-8. Перейти к документации Notification Admin_panel по url: `http://localhost:80/admin/`(USER='admin', PASSWORD='admin')
-9. Перейти к документации Notification API по url: `http://localhost:8070/api/openapi`
-10. Перейти к документации Mock_Auth по url: `http://localhost:8081/api/openapi`
-11. Перейти к документации Mock_Admin_panel по url: `http://localhost:8082/api/openapi`
-12. Перейти к документации Mock_ugc по url: `http://localhost:8083/api/openapi`
+8. Перейти к документации Review API по url: `http://localhost:8084/api/openapi`
+9. Перейти к документации Notification Admin_panel по url: `http://localhost:80/admin/`(USER='admin', PASSWORD='admin')
+10. Перейти к документации Notification API по url: `http://localhost:8070/api/openapi`
+11. Перейти к документации Mock_Auth по url: `http://localhost:8081/api/openapi`
+12. Перейти к документации Mock_Admin_panel по url: `http://localhost:8082/api/openapi`
+13. Перейти к документации Mock_ugc по url: `http://localhost:8083/api/openapi`
 
 ### Запуск тестов
 

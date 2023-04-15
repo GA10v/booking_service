@@ -1,8 +1,9 @@
 from datetime import datetime
 from typing import Union
 
-from models.base import DeliveryType
 from pydantic import BaseModel
+
+from models.base import DeliveryType
 
 
 class BaseUserContext(BaseModel):
@@ -33,9 +34,10 @@ class UserShortContext(BaseModel):
 
 
 class NewReviewsLikesContext(BaseUserContext):
-    review_id: str
-    movie_title: str
-    likes: int
+    author_name: str
+    announce_title: str
+    guest_name: str
+    link: str
 
 
 class NewContentContext(BaseUserContext):

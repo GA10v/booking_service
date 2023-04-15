@@ -1,5 +1,4 @@
 from datetime import datetime
-from random import randint
 from uuid import uuid4
 
 from faker import Faker
@@ -28,10 +27,9 @@ def _get_user() -> context.NewUser:
 
 def _get_likes() -> context.NewReviewsLikes:
     return context.NewReviewsLikes(
-        review_id=str(uuid4()),
-        author_id=str(uuid4()),
-        movie_id=str(uuid4()),
-        likes=randint(0, 50),
+        author_id='50760ee6-2073-445d-ad25-f665937f3b33',
+        guest_id='d0c5635c-3211-4cf8-94ab-cbe6800771c4',
+        announcement_id='eca370e7-c65d-44f3-b390-5c2733df02e6',
     ).dict()
 
 

@@ -7,6 +7,7 @@ import aiohttp
 from src.core.config import settings
 from src.core.logger import get_logger
 from src.models import noitifciations
+from src.models.noitifciations import EventType
 from src.service.base import NoificationServiceBase
 from src.utils.auth import _headers
 
@@ -19,10 +20,10 @@ class NotificApiRepository(NoificationServiceBase):
         self._headers = _headers()
 
     async def send(self, payload: noitifciations.NewReviewsLikes) -> None:
-        event_type = 'NewReview'  # is this right?
+        event_type = EventType.new_likes
         event = noitifciations.NotificEvent(
             notification_id=str(uuid4()),
-            source_name='Announcement service',
+            source_name='Review service',
             event_type=event_type,
             context=payload.dict(),
             created_at=datetime.now(),
