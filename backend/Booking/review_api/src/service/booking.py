@@ -18,9 +18,9 @@ class BookingService:
         url = f'{self.base_url}/{announcement_id}/{guest_id}'
         async with httpx.AsyncClient() as client:
             response = await client.get(url, headers=_headers())
+        logger.info(f'Booking: {response}')
         result = None
         if response.json():
-            logger.info(response.json())
             result = AnnouncementToReviewResponse.parse_obj(response.json())
         return result
 

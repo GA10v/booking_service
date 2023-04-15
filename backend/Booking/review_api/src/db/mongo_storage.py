@@ -52,7 +52,10 @@ class MongoStorage(Storage):
         return Event.parse_obj(doc)
 
     async def get_average_for_user(self, user_id: str):
-        pipeline = [{'$group': {'_id': user_id, 'score_average': {'$avg': '$score'}}}]
+        pipeline = [
+            {'$match': {'author_id': user_id}},
+            {'$group': {'_id': None, 'score_average': {'$avg': '$score'}}},
+        ]
         doc = await self.collection.aggregate(pipeline).next()
         if doc.get('score_average'):
             doc['score_average'] = round(doc['score_average'], 1)
