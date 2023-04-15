@@ -26,7 +26,7 @@ class ReviewService:
     ):
         self.redis = redis
         self.mongo = mongo
-        self.notific = NotificApiRepository
+        self.notific = notific
 
     async def add_review(self, review: Review):
         await self.mongo.insert_document(review)

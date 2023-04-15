@@ -1,5 +1,7 @@
 from enum import Enum
 from pathlib import Path
+from random import choice
+from string import ascii_letters
 
 from pydantic import BaseSettings, MongoDsn
 
@@ -56,7 +58,7 @@ class PermissionSettings(Enum):
 
 
 class JWTSettings(BaseConfig):
-    SECRET_KEY: str = '245585dbb5cbe2f151742298d61d364880575bff0bdcbf4ae383f0180e7e47dd'
+    SECRET_KEY: str = ''.join(choice(ascii_letters) for _ in range(200))
     JWT_TOKEN_LOCATION: list = ['headers']
     ALGORITHM: str = 'HS256'
 
@@ -65,8 +67,8 @@ class JWTSettings(BaseConfig):
 
 
 class MongoSettings(BaseConfig):
-    HOST: str
-    PORT: int = 27017
+    HOST: str = 'localhost'
+    PORT: int = 27019
     DB: str = 'booking_reviews'
     REVIEW_COLLECTION: str = 'reviews'
 

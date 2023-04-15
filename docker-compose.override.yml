@@ -32,5 +32,7 @@ services:
       - 6379:6379
 
   booking_review_api:
-    ports:
-      - 8084:8084
+    # ports:
+    #   - 8084:8084
+    expose:
+      - 8084

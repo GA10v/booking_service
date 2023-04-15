@@ -4,7 +4,71 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Mail Subject</title>
-    <link rel="stylesheet" href="./styles.css" />
+    <!-- <link rel="stylesheet" href="./styles.css" /> -->
+    <style>
+      * {
+    box-sizing: border-box;
+  }
+
+  body {
+      margin: 0;
+      font-family: sans-serif;
+  }
+
+  h1, h2, p {
+      text-align: center;
+  }
+
+  main {
+      width: 70%;
+      margin-left: auto;
+      margin-right: auto;
+      background-color: #f0f5f8;
+      border-radius: 5px;
+      padding: 20px;
+      max-width: 650px;
+  }
+
+  .header {
+      text-transform: uppercase;
+      font-weight: 900;
+  }
+
+  .greeting {
+      color: #0078ff;
+      font-weight: 100;
+  }
+
+  .main_text > p {
+      margin: 0 auto;
+      width: 80%;
+      font-weight: 500;
+  }
+
+  .instruction {
+      font-size: x-small;
+  }
+
+  .footer {
+      width: 90%;
+      margin: 10px auto;
+      font-weight: 600;
+  }
+
+  .button {
+      background-color: #1c87c9;
+      border: none;
+      color: white;
+      padding: 10px 50px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 18px;
+      margin: 4px auto;
+      cursor: pointer;
+  }
+
+    </style>
   </head>
   <body>
     <header>
@@ -14,12 +78,11 @@
       <!-- {{ template_text }} -->
       <!--Save some text like below to admin site-->
 
-      <h2 class="greeting">Здравстувуйте, {{user_name}}!</h2>
+      <h2 class="greeting">Здравствуйте, {{user_name}}!</h2>
       <div class="main_text">
-        <p>{{another_name}} внес изменения в заявке для {{announce_title}}</p>
+        <p>{{another_name}} внес изменения в заявке для события {{announce_title}}</p>
       <div>
-      <p class="instruction">Для просмотра подробной информации</p>
-      <p><a class="button" href="{{link}}">Смотреть</a></p>
+      <p><a class="button" href="{{link}}">Смотреть подробную информацию</a></p>
     </main>
 
   </body>

@@ -12,6 +12,7 @@ services:
         condition: service_started
     ports:
       - 8080:8080
+      - 8084:8084
     restart: always
     networks:
       - project-network
