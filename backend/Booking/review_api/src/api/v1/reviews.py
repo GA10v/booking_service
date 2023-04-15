@@ -9,9 +9,9 @@ from src.models.announce import AnnouncementToReviewResponse
 from src.models.noitifciations import NewReviewsLikes
 from src.models.reviews import Event, Review, ReviewIncoming, UserReviewAvg
 from src.service.booking import BookingService, get_booking_service
+from src.service.notific import NotificApiRepository, get_notific_repo
 from src.service.review import ReviewService, get_review_service
 from src.utils import auth
-from src.utils.notific import NotificApiRepository, get_notific_repo
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

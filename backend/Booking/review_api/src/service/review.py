@@ -7,7 +7,7 @@ from src.db.models import base_classes
 from src.db.mongo_storage import get_mongo
 from src.db.redis_storage import get_redis
 from src.models.reviews import Event, Review, UserReviewAvg
-from src.utils.notific import NotificApiRepository, get_notific_repo
+from src.service.notific import NotificApiRepository, get_notific_repo
 
 REDIS_INSTANCE = Depends(get_redis)
 MONGO_INSTANCE = Depends(get_mongo)
