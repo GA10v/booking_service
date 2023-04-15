@@ -14,7 +14,8 @@ from src.middleware.auth import auth_middleware
 from src.middleware.logger import logging_middleware
 from src.utils.sentry import init_sentry
 
-init_sentry()
+if settings.logging.SENTRY_DSN:
+    init_sentry()
 
 logger = logging.getLogger(__name__)
 
