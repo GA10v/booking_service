@@ -4,14 +4,13 @@ from datetime import datetime as dt
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from src.core.config import settings
 from src.models.announce import AnnouncementToReviewResponse
 from src.models.noitifciations import NewReviewsLikes
 from src.models.reviews import Event, Review, ReviewIncoming, UserReviewAvg
 from src.service.booking import BookingService, get_booking_service
+from src.service.notific import NotificApiRepository, get_notific_repo
 from src.service.review import ReviewService, get_review_service
 from src.utils import auth
-from src.utils.notific import NotificApiRepository, get_notific_repo
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -48,13 +47,9 @@ async def create_review(
     )
     await review_service.add_review(review)
     notification: NewReviewsLikes = NewReviewsLikes(
-        author_name=booking.author_name,
-        announce_title='New Review for booking',
-        link=(
-            f'http://{settings.review_api.HOST}:{settings.review_api.PORT}'
-            f'/api/v1//reviews/{booking.announcement_id}/{review.id}'
-        ),
-        guest_name=_user.get('user_id'),
+        author_id=booking.author_id,
+        guest_id=booking.guest_id,
+        announcement_id=booking.announcement_id,
     )
     await notific_service.send(notification)
     return review
@@ -145,14 +140,14 @@ async def get_average_for_event(
 
 @router.get(
     '/average_score/{user_id}',
-    summary='Получение среднего значения оценки по событию',
-    description='Получение среднего значения оценки по событию',
+    summary='Получение среднего значения оценки пользователя',
+    description='Получение среднего значения оценки пользователя',
     response_model=UserReviewAvg,
-    response_description='Средняя оценка по событию',
+    response_description='Средняя оценка пользователя',
 )
 async def get_average(
     user_id: str,
     _user: dict = Depends(auth_handler.auth_wrapper),
     review_service: ReviewService = REVIEW_SERVICE_INSTANCE,
-) -> Event:
+) -> UserReviewAvg:
     return await review_service.get_average_for_user(user_id)

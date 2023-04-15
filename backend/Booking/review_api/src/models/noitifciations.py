@@ -1,19 +1,27 @@
 from datetime import datetime
+from enum import Enum
+from uuid import UUID
 
 from pydantic import BaseModel
 
 
+class EventType(str, Enum):
+    new_likes = 'new_likes'
+
+    def __repr__(self) -> str:
+        return f'{self.value}'
+
+
 class NewReviewsLikes(BaseModel):
-    author_name: str
-    announce_title: str
-    link: str
-    guest_name: str
+    author_id: str | UUID
+    guest_id: str | UUID
+    announcement_id: str | UUID
 
 
 class NotificEvent(BaseModel):
     notification_id: str
     source_name: str
-    event_type: str
+    event_type: EventType
     context: NewReviewsLikes
     created_at: datetime
 
