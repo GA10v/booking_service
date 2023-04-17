@@ -1,0 +1,20 @@
+@startuml layers
+autonumber
+skinparam sequence {
+    ParticipantPadding 20
+    MessageAlign center
+}
+
+title PUT '/reviews/{announcement_id}/{review_id}}'
+
+participant Client as Client
+participant "Reviews API" as ReviewsAPI
+participant "Review Service" as RService
+
+
+Client -> ReviewsAPI: authentication
+ReviewsAPI -> ReviewsAPI: check jwt token
+
+Client -> ReviewsAPI: change modified review
+ReviewsAPI -> RService: change review
+

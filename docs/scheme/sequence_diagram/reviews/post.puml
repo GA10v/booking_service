@@ -1,0 +1,22 @@
+@startuml layers
+autonumber
+skinparam sequence {
+    ParticipantPadding 20
+    MessageAlign center
+}
+
+title POST '/reviews/{announcement_id}'
+
+participant Client as Client
+participant "Reviews API" as ReviewsAPI
+participant "Announcement Service" as Service
+participant "Review Service" as RService
+participant "Notification Service" as NService
+
+Client -> ReviewsAPI: authentication
+ReviewsAPI -> ReviewsAPI: check jwt token
+
+Client -> ReviewsAPI: send review
+ReviewsAPI -> Service: get info about announcement/booking
+ReviewsAPI -> RService: store data from user
+ReviewsAPI -> NService: inform author about review

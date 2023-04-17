@@ -1,0 +1,20 @@
+@startuml layers
+autonumber
+skinparam sequence {
+    ParticipantPadding 20
+    MessageAlign center
+}
+
+title GET '/reviews/{announcement_id}/{review_id}'
+
+participant Client as Client
+participant "Reviews API" as ReviewsAPI
+participant "Review Service" as RService
+participant "Notification Service" as NService
+
+Client -> ReviewsAPI: authentication
+ReviewsAPI -> ReviewsAPI: check jwt token
+
+Client -> ReviewsAPI: get review by id
+ReviewsAPI -> RService: store data from user
+
